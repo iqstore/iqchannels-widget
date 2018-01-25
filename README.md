@@ -135,7 +135,7 @@ widget.logout();
 
 Уничтожение виджета, удаляет чат и кнопку:
 ```javascript
-widget.destory();
+widget.destroy();
 ```
 
 ### 4.3. События
