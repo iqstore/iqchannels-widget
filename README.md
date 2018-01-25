@@ -133,6 +133,11 @@ widget.toggle();
 widget.logout();
 ```
 
+Уничтожение виджета, удаляет чат и кнопку:
+```javascript
+widget.destory();
+```
+
 ### 4.3. События
 События на которые можно подписаться использую стандартный для JavasScript интерфейс `EventEmitter`:
 ```javascript
