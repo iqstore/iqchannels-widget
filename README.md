@@ -41,8 +41,7 @@ API предоставляет простой интерфейс по управ
 <script type="text/javascript">
     var widget = new IQChannelsWidget({ 
         channel: 'support',
-        credentials: 'some user secret',
-        width: 280
+        credentials: 'user-token'
     });
 </script>
 ```
@@ -50,7 +49,6 @@ API предоставляет простой интерфейс по управ
 Где:
 * `channel` — имя канала для подключения (тип канала в IQChannels должен быть `Веб / мобильный`).
 * `credentials` — авторизационные данные для авторизации клиента в iSimpleBank.
-* `width` — ширина виджета в пикселях.
 
 После этого виджет полностью готов к работе.
 
@@ -70,37 +68,41 @@ API предоставляет простой интерфейс по управ
 ```html
 <script type="text/javascript">
     var widget = new IQChannelsWidget({ 
-        channel: 'support-site',
-        width: 280
+        channel: 'support'
     });
 </script>
 ```
 
-### 3.3. Настройка кнопки управления виджетом
-По умолчанию кнопка открытия/закрытия виджета отображается в левом нижнем углу экрана, 
-имеет фиксированную позицию и цвет.
+### 3.3. Настройка виджета
 
-Для настройки отображения кнопки, конструктор виджета может принимать дополнительный параметр, `iconOptions`:
+Настройки виджета:
 ```html
 <script type="text/javascript">
 var widget = new IQChannelsWidget({ 
     channel: 'support',
     credentials: 'some user secret',
     width: 280,
+    padBody: true,
     iconOptions: {
         show: true,
         color: "#000000",
-        backgroundColor: "#FFFFFF"
+        backgroundColor: "#FFFFFF",
+        style: {}
     }
 });
 </script>
 ```
 
-Где:
-* `show` — отображать кнопку или нет.
-* `color` — цвет иконки.
-* `backgroundColor` — цвет фона.
+Параметры:
+* `width` — ширина виджета в пикселях.
+* `padBody` — автоматическое добавление паддинга к тегу `body` при открытии виджета.
+* `iconOptions` — настройки отображения кнопки виджета.
+* `iconOptions.show` — отображать кнопку или нет.
+* `iconOptions.style` — дополнительные CSS-стили для кнопки.
+* `iconOptions.color` — цвет иконки.
+* `iconOptions.backgroundColor` — цвет фона кнопки.
 
+Для более глубокой стилизации виджета см. раздел "5. Стилизация виджета".
 
 ## 4. Программное управление виджетом
 В случае если кнопка управления виджетом по умолчанию не устраивает, она может быть отключена 
@@ -168,3 +170,70 @@ widget.on('unread', function (count) {
 С помощью события `unread` можно показывать пользователю количество непрочитанных сообщений. 
 Событие возникает всякий раз, когда значение меняется. При первоначальном получении списка сообщений, 
 если непрочитанных нет, то события не будет. Предполагается, что подписчик инициализирует счетчик сообщений как 0.  
+
+### 5. Стилизация виджета
+Для более глубокой стилизации виджета можно переопределить стандарные стили виджета и кнопки с помощью CSS.
+
+Стандартные стили:
+```css
+/* Контейнер, в котором показывается переписка */
+#iqchannels-widget-container {
+  position: fixed;
+  height: 100%;
+  min-height: 100%;
+  top: 0;
+  right: 0;
+  width: 0;
+  z-index: 10;
+  display: none;
+}
+
+/* Кнопка виджета */
+#iqchannels-widget-icon {
+  color: #ffffff;
+  background-color: #ee5c13;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  line-height: 48px;
+  margin-right: 2px;
+  margin-bottom: 2px;
+}
+
+/* Икона на кнопке виджета */
+#iqchannels-widget-icon svg {
+  fill: #ffffff;
+  width: 24px;
+  height: 24px;
+  padding: 12px 12px;
+}
+
+#iqchannels-widget-icon:hover {
+  width: 52px;
+  height: 52px;
+  border-radius: 26px;
+  line-height: 52px;
+  margin-right: 0;
+  margin-bottom: 0;
+}
+
+#iqchannels-widget-icon:hover svg {
+  width: 28px;
+  height: 28px;
+  padding: 12px 12px;
+}
+
+@media (max-width: 768px) {
+  #iqchannels-widget {
+    width: 100% !important;
+  }
+
+  #iqchannels-widget-container {
+    width: 100% !important;
+    height: 100%;
+  }
+} 
+```
