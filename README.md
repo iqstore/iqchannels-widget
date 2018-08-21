@@ -83,6 +83,7 @@ var widget = new IQChannelsWidget({
     credentials: 'some user secret',
     width: 280,
     padBody: true,
+    requireName: false,
     iconOptions: {
         show: true,
         color: "#000000",
@@ -96,6 +97,7 @@ var widget = new IQChannelsWidget({
 Параметры:
 * `width` — ширина виджета в пикселях.
 * `padBody` — автоматическое добавление паддинга к тегу `body` при открытии виджета.
+* `requireName` — выключает требование представиться у анонимного клиента.
 * `iconOptions` — настройки отображения кнопки виджета.
 * `iconOptions.show` — отображать кнопку или нет.
 * `iconOptions.style` — дополнительные CSS-стили для кнопки.
