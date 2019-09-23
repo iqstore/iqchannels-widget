@@ -1,0 +1,61 @@
+{
+  "name": "widget",
+  "version": "1.0.0",
+  "description": "iqchannels web widget",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iqstore/iqchannels.git"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint --fix ./; true",
+    "start": "webpack-dev-server --config webpack/dev.js",
+    "build": "rm -rf build/* && webpack --config webpack/prod.js --progress --profile --bail"
+  },
+  "dependencies": {
+    "core-js": "2.4.1",
+    "es6-promise": "4.0.5",
+    "event-emitter": "0.3.4",
+    "event-source-polyfill": "0.0.16",
+    "jquery": "1.12.4",
+    "normalize.css": "5.0.0",
+    "vue": "2.1.10",
+    "vue-awesome": "2.0.3",
+    "vue-linkify": "^1.0.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "6.5.3",
+    "babel": "6.5.2",
+    "babel-core": "6.18.2",
+    "babel-eslint": "7.1.1",
+    "babel-loader": "6.2.8",
+    "babel-polyfill": "6.16.0",
+    "babel-preset-es2015": "6.18.0",
+    "babel-preset-stage-1": "6.16.0",
+    "css-loader": "0.26.0",
+    "eslint": "3.10.2",
+    "eslint-config-standard": "6.2.1",
+    "eslint-plugin-promise": "3.4.0",
+    "eslint-plugin-standard": "2.0.1",
+    "extract-text-webpack-plugin": "1.0.1",
+    "file-loader": "0.9.0",
+    "html-loader": "0.4.4",
+    "html-webpack-plugin": "2.24.1",
+    "json-loader": "0.5.4",
+    "node-sass": "^4.12.0",
+    "pug-html-loader": "1.0.9",
+    "raw-loader": "0.5.1",
+    "rimraf": "2.5.4",
+    "sass-loader": "^4.0.2",
+    "style-loader": "0.13.1",
+    "url-loader": "0.5.7",
+    "vue-loader": "10.2.0",
+    "vue-spinner": "1.0.2",
+    "vue-template-compiler": "2.1.10",
+    "webpack": "1.13.3",
+    "webpack-dev-middleware": "1.8.4",
+    "webpack-dev-server": "1.16.2",
+    "webpack-merge": "0.18.0"
+  }
+}

@@ -1,0 +1,75 @@
+body.example {
+  background-color: #f0eadc;
+  padding: 10px 20px;
+}
+
+#iqchannels-widget-container {
+  position: fixed;
+  height: 100%;
+  min-height: 100%;
+  top: 0;
+  right: 0;
+  width: 0;
+  z-index: 10;
+  display: none;
+}
+
+#iqchannels-widget {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  border: 1px solid #cccccc;
+}
+
+#iqchannels-widget-iframe {
+  height: 100%;
+  width: 100%;
+  border: 0;
+}
+
+#iqchannels-widget-icon {
+  color: #ffffff;
+  background-color: #ee5c13;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  line-height: 48px;
+  margin-right: 2px;
+  margin-bottom: 2px;
+  svg {
+    fill: #ffffff;
+    width: 24px;
+    height: 24px;
+    padding: 12px 12px;
+  }
+}
+
+#iqchannels-widget-icon:hover {
+  width: 52px;
+  height: 52px;
+  border-radius: 26px;
+  line-height: 52px;
+  margin-right: 0;
+  margin-bottom: 0;
+  svg {
+    width: 28px;
+    height: 28px;
+    padding: 12px 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  #iqchannels-widget {
+    width: 100% !important;
+  }
+
+  #iqchannels-widget-container {
+    width: 100% !important;
+    height: 100%;
+  }
+}

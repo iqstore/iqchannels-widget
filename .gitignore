@@ -1,0 +1,20 @@
+# OSX
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Project
+build/
+dist/
+
+# Node
+logs
+*.log
+npm-debug.log*
+node_modules
+coverage
+
+pids
+*.pid
+*.seed
+*.pid.lock

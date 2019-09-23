@@ -1,0 +1,24 @@
+{
+  "extends": "standard",
+  "parser": "babel-eslint",
+  "env": {
+    "es6": true
+  },
+  "rules": {
+    "operator-linebreak": ["error", "before"],
+    "object-curly-spacing": [2, "always"],
+    "semi": ["error", "always"],
+    "key-spacing": ["error",
+      {
+        "singleLine": {
+          "beforeColon": false,
+          "afterColon": true
+        },
+        "multiLine": {
+          "beforeColon": false,
+          "afterColon": true
+        }
+      }
+    ]
+  }
+}

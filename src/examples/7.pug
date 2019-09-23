@@ -1,0 +1,23 @@
+doctype html
+html
+  head
+    base(href="/")
+    title Альберт Эйнштейн - IQChannels
+    meta(charset="UTF-8")
+    meta(name="viewport",content="width=device-width, initial-scale=1")
+
+  body.example
+    h1
+      a(href="widget/example.html", style="text-decoration: none") Чаты
+      span(style="opacity: 0.5") &nbsp;/&nbsp;
+      | Альберт Эйнштейн
+
+    p
+      button(type="button", onclick="widget.open();") Открыть
+      | &nbsp;
+      button(type="button", onclick="widget.close();") Закрыть
+      | &nbsp;
+      button(type="button", onclick="widget.logout();") Выйти
+      | &nbsp;
+      button(type="button", onclick="widget.destroy();") Уничтожить
+

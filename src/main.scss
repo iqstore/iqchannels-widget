@@ -1,0 +1,57 @@
+body {
+  background-color: #fcfcfc;
+  color: #666666;
+}
+
+// Scrollbar styles
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-border-radius: 0;
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  background: rgba(47, 64, 80, 0.2);
+}
+::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(47, 64, 80, 0.1);
+}
+
+// Placeholders
+
+::-webkit-input-placeholder {
+  color: #9f9f9f;
+  opacity:  1;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  color:    #9f9f9f;
+  opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  color:    #9f9f9f;
+  opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color:    #9f9f9f;
+}
+
+.full-screen {
+  display: table;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #f0f0f0;
+  text-align: center;
+  .center {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0 8px 0 8px;
+  }
+}
