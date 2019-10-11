@@ -58,7 +58,7 @@ function cleanIconOptions(iconOptions) {
 }
 
 class IQChannelsWidget extends EventEmitter {
-  constructor({ channel = 'support', credentials, project, width = 280, padBody = true, requireName = true, iconOptions = {} }) {
+  constructor({ channel = 'support', credentials, project, width = 280, padBody = true, requireName = true, iconOptions = {}, DOMIdentifier }) {
     super();
     this.width = width;
     this.channel = channel;
@@ -67,6 +67,7 @@ class IQChannelsWidget extends EventEmitter {
     this.padBody = padBody;
     this.requireName = requireName;
     this.opened = false;
+    this.DOMIdentifier = DOMIdentifier || null;
     iconOptions = cleanIconOptions(iconOptions);
 
     // Add elements
@@ -96,8 +97,9 @@ class IQChannelsWidget extends EventEmitter {
 
     jquery(document).ready(() => {
       jquery(document.body).append(this.icon);
-      jquery(document.body).append(this.frameContainer);
 
+      const widgetContaier = document.getElementById(this.DOMIdentifier);
+      jquery(!this.DOMIdentifier || !widgetContaier ? document.body : widgetContaier).append(this.frameContainer);
       // Setup handlers
       jquery(window).on('message', this.onFrameMessage);
 
