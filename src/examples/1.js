@@ -1,3 +1,5 @@
+import "normalize.css";
+
 /* globals IQChannelsWidget */
 var w = new IQChannelsWidget({
   channel: 'support',
