@@ -30,6 +30,8 @@ const app = new Vue({
   el: '#app',
   template: `
         <div v-if="initialized">
+          <link type="text/css" rel="stylesheet" :href="stylesURL" />
+          
           <client-create v-if="!client && !credentials" @on-client-created='onLogin' :channel="channel" :requireName="requireName"/>
           <client-auth v-if="!client && credentials" @on-client-authorized='onLogin' :credentials="credentials" :channel="channel"/>
           <messenger v-if="client" ref="messenger"
@@ -42,6 +44,12 @@ const app = new Vue({
               :channel='channel'
           />
         </div>`,
+
+  computed: {
+    'stylesURL': function() {
+      return config.apiUrl('/widget/styles.css?channel=' + this.channel);
+    }
+  },
 
   data: () => {
     return {
