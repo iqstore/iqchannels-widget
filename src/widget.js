@@ -1,6 +1,6 @@
 import EventEmitter from "event-emitter";
 import jquery from "jquery";
-import "normalize.css";
+import "./widget-normalize.scss";
 import "./widget.scss";
 
 function getBaseUrl() {
