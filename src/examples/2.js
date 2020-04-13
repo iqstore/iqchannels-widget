@@ -18,3 +18,5 @@ widget.on('close', function () {
 widget.on('open', function () {
   console.log('WIDGET OPENED');
 });
+
+widget.setAndroidPushToken('test-android-push-token0');

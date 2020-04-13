@@ -135,6 +135,35 @@ class Client {
     return this._enqueueRequest(`/chats/messages/received`, messagesIds);
   }
 
+  channelPushToken(channel, type, token) {
+    switch (type) {
+      case 'apns':
+        return this.channelAPNSToken(channel, token);
+        
+      case 'fcm':
+        return this.channelFCMToken(channel, token);
+
+      default:
+        return this.channelAPNSToken(channel, token);
+    }
+  }
+
+  channelAPNSToken(channel, token) {
+    let body = {
+      Type: 'apns',
+      Token: token
+    };
+    return this._enqueueRequest(`/push//channel/apns/${channel}`, body);
+  }
+
+  channelFCMToken(channel, token) {
+    let body = {
+      Type: 'fcm',
+      Token: token
+    };
+    return this._enqueueRequest(`/push//channel/fcm/${channel}`, body);
+  }
+
   rateRating(ratingId, value, comment) {
     const request = {
       RatingId: ratingId, 

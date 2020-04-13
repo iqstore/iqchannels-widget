@@ -8,6 +8,7 @@ import 'vue-awesome/icons/paperclip';
 import 'vue-awesome/icons/send';
 import linkify from 'vue-linkify';
 import ScaleLoader from 'vue-spinner/src/ScaleLoader.vue';
+import client from '../client';
 import config from '../config';
 import { humanDate, humanSize } from '../lib/filters';
 import { clearCookie } from '../lib/web';
@@ -59,7 +60,8 @@ const app = new Vue({
       credentials: null,
       project: null,
       requireName: true,
-      client: null
+      client: null,
+      pushToken: null
     };
   },
 
@@ -80,6 +82,9 @@ const app = new Vue({
           this.credentials = event.data.credentials;
           this.project = event.data.project;
           this.requireName = event.data.requireName;
+          this.pushToken = event.data.pushToken;
+
+          this.maybeSendPushToken();
           break;
 
         case 'close':
@@ -107,6 +112,16 @@ const app = new Vue({
 
           this.$refs.messenger.appendText(text);
           break;
+        
+        case 'push_token':
+          const tdata = event.data;
+          if (!tdata) {
+            return;
+          }
+          
+          this.pushToken = tdata;
+          this.maybeSendPushToken();
+          break;
       }
     });
   },
@@ -118,6 +133,7 @@ const app = new Vue({
 
     onLogin(client) {
       this.client = client;
+      this.maybeSendPushToken();
     },
 
     onLogout() {
@@ -125,6 +141,18 @@ const app = new Vue({
       this.credentials = null;
       this.project = null;
       this.client = null;
+    },
+
+    maybeSendPushToken() {
+      if (!this.client) {
+        return;
+      }
+      if (!this.pushToken) {
+        return;
+      }
+
+      const tdata = this.pushToken;
+      client.channelPushToken(this.channel, tdata.type, tdata.token);
     }
   }
 });

@@ -66,6 +66,7 @@ class IQChannelsWidget extends EventEmitter {
     this.project = project || '';
     this.padBody = padBody;
     this.requireName = requireName;
+    this.pushToken = null;
     this.opened = false;
     this.DOMIdentifier = DOMIdentifier || null;
     iconOptions = cleanIconOptions(iconOptions);
@@ -117,7 +118,8 @@ class IQChannelsWidget extends EventEmitter {
           channel: this.channel,
           credentials: this.credentials,
           project: this.project,
-          requireName: this.requireName
+          requireName: this.requireName,
+          pushToken: this.pushToken
         });
         this.frameWindow.postMessage(JSON.stringify(event), '*');
       });
@@ -203,6 +205,28 @@ class IQChannelsWidget extends EventEmitter {
   logout = () => {
     const event = newChatEvent('logout');
     this.frameWindow.postMessage(JSON.stringify(event), '*');
+  };
+
+  setIPhonePushToken = (token) => {
+    const data = { type: "apns", token: token };
+    const event = newChatEvent("push_token", data);
+
+    if (this.frameWindow) {
+      this.frameWindow.postMessage(JSON.stringify(event), '*');
+    } else {
+      this.pushToken = data;
+    }
+  };
+  
+  setAndroidPushToken = (token) => {
+    const data = { type: "fcm", token: token };
+    const event = newChatEvent("push_token", data);
+    
+    if (this.frameWindow) {
+      this.frameWindow.postMessage(JSON.stringify(event), '*');
+    } else {
+      this.pushToken = data;
+    }
   };
 }
 
