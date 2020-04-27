@@ -153,7 +153,7 @@ class Client {
       Type: 'apns',
       Token: token
     };
-    return this._enqueueRequest(`/push//channel/apns/${channel}`, body);
+    return this._enqueueRequest(`/push/channel/apns/${channel}`, body);
   }
 
   channelFCMToken(channel, token) {
@@ -161,7 +161,7 @@ class Client {
       Type: 'fcm',
       Token: token
     };
-    return this._enqueueRequest(`/push//channel/fcm/${channel}`, body);
+    return this._enqueueRequest(`/push/channel/fcm/${channel}`, body);
   }
 
   rateRating(ratingId, value, comment) {
