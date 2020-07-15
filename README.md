@@ -100,7 +100,7 @@ API предоставляет простой интерфейс по управ
 var widget = new IQChannelsWidget({ 
     channel: 'support',
     credentials: 'some user secret',
-    mode: 'web' // web || mobile
+    mode: 'web', // web || mobile
     width: 280,
     padBody: true,
     requireName: false,
