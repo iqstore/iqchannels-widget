@@ -182,6 +182,23 @@ class Client {
       .then(response => new Relations(config, response.Rels).rating(response.Result));
   }
 
+  fileToken(fileId) {
+    const request = {FileId: fileId};
+    return this.post(`/files/token`, request).then(response => {
+      let token = response.Result;
+      return token.Token;
+    });
+  }
+
+  fileSignedUrl(fileId) {
+    return this.fileToken(fileId).then(token => {
+      let path = `/files/get/${fileId}?token=${token}`;
+      let fullpath = config.apiUrl(path);
+      let url = window.location.protocol + '//' + window.location.host + fullpath;
+      return url;
+    });
+  }
+
   uploadFile(file, onSuccess, onError, onProgress) {
     let type = 'file';
     if (file.type.startsWith('image/')) {

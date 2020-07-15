@@ -58,11 +58,22 @@ function cleanIconOptions(iconOptions) {
 }
 
 class IQChannelsWidget extends EventEmitter {
-  constructor({ channel = 'support', credentials, project, width = 280, padBody = true, requireName = true, iconOptions = {}, DOMIdentifier }) {
+  constructor({ 
+    channel = 'support', 
+    credentials, 
+    mode = 'web',
+    project, 
+    width = 280, 
+    padBody = true, 
+    requireName = true, 
+    iconOptions = {}, 
+    DOMIdentifier
+  }) {
     super();
     this.width = width;
     this.channel = channel;
     this.credentials = credentials || '';
+    this.mode = mode === 'mobile' ? mode : 'web';
     this.project = project || '';
     this.padBody = padBody;
     this.requireName = requireName;
@@ -117,6 +128,7 @@ class IQChannelsWidget extends EventEmitter {
         const event = newChatEvent('init', {
           channel: this.channel,
           credentials: this.credentials,
+          mode: this.mode,
           project: this.project,
           requireName: this.requireName,
           pushToken: this.pushToken
@@ -186,12 +198,19 @@ class IQChannelsWidget extends EventEmitter {
       case 'iqchannels-widget-close':
         this.close();
         break;
+
       case 'iqchannels-widget-message':
         this.emit('message');
         break;
+
+      case 'iqchannels-widget-file':
+        this.emit('file-clicked', data);
+        break;
+
       case 'iqchannels-widget-unread':
         this.emit('unread', data);
         break;
+        
       default:
         break;
         // console.log(`Unknown frame event: type=${type}, data=${data}`);

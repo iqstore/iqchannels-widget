@@ -38,8 +38,10 @@ const app = new Vue({
           <messenger v-if="client" ref="messenger"
               @on-unread-changed='onUnreadChanged'
               @on-message-received='onMessageReceived'
+              @on-file-clicked='onFileClicked'
               @on-close='onClose'
               @on-logout='onLogout'
+              :mode='mode'
               :client='client'
               :opened='opened'
               :channel='channel'
@@ -55,6 +57,7 @@ const app = new Vue({
   data: () => {
     return {
       initialized: false,
+      mode: 'web', // web'\'mobile'
       opened: false,
       channel: null,
       credentials: null,
@@ -78,6 +81,7 @@ const app = new Vue({
       switch (event.type) {
         case 'init':
           this.initialized = true;
+          this.mode = event.data.mode ? event.data.mode : 'web';
           this.channel = event.data.channel;
           this.credentials = event.data.credentials;
           this.project = event.data.project;
@@ -129,6 +133,7 @@ const app = new Vue({
   methods: {
     onClose: () => parent.postMessage({ type: 'iqchannels-widget-close' }, '*'),
     onMessageReceived: () => parent.postMessage({ type: 'iqchannels-widget-message' }, '*'),
+    onFileClicked: (url) => parent.postMessage({ type: 'iqchannels-widget-file', data: url }, '*'),
     onUnreadChanged: (count) => parent.postMessage({ type: 'iqchannels-widget-unread', data: count }, '*'),
 
     onLogin(client) {

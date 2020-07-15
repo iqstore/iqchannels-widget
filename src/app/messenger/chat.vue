@@ -239,9 +239,15 @@
                             .error {{ msg.UploadError }}
                             a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
                             a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
-                    a.image(v-else-if="msg.File && msg.File.Type == 'image'" v-bind:href="msg.File.URL" target="_blank")
+                    a.image(v-else-if="msg.File && msg.File.Type == 'image'" 
+                        v-bind:href="msg.File.URL" 
+                        target="_blank",
+                        @click="clickFile(msg, $event)")
                         img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                    a.file(v-else-if="msg.File && msg.File.Type == 'file'" v-bind:href="msg.File.URL" target="_blank")
+                    a.file(v-else-if="msg.File && msg.File.Type == 'file'" 
+                        v-bind:href="msg.File.URL"
+                        target="_blank"
+                        @click="clickFile(msg, $event)")
                         .filename {{ msg.File.Name }}
                         .filesize {{ msg.File.Size | humanSize }}
 
@@ -268,6 +274,7 @@ export default {
   components: { avatar, rating },
 
   props: {
+    mode: String,
     opened: Boolean,
     groups: Array
   },
@@ -305,6 +312,23 @@ export default {
 
     ignoreRating(rating) {
       this.$emit("ignore-rating", rating);
+    },
+
+    clickFile(msg, event) {
+        let file = msg.File;
+
+        if (!file) {
+            return;
+        }
+        if (!event) {
+            return;
+        }
+        if (this.mode != 'mobile') {
+            return;
+        }
+
+        event.preventDefault();
+        this.$emit("click-file", file);
     }
   }
 };

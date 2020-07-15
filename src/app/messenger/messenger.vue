@@ -57,12 +57,14 @@
                     icon(name="close")
         #chat
             chat(
+              v-bind:mode="mode",
               v-bind:opened="opened",
               v-bind:groups="groups",
               @cancel-upload="cancelUpload",
               @retry-upload="retryUpload",
               @rate-rating="rateRating",
-              @ignore-rating="ignoreRating")
+              @ignore-rating="ignoreRating",
+              @click-file="clickFile")
         #composer
             composer(
               ref="composer"
@@ -84,6 +86,7 @@ export default {
   components: { chat, composer },
 
   props: {
+    mode: String,
     opened: Boolean,
     channel: String,
     client: Object
@@ -528,6 +531,17 @@ export default {
         error => {
           rating.Sending = null;
           rating.Value = 0;
+        }
+      );
+    },
+
+    clickFile(file) {
+      client.fileSignedUrl(file.Id).then(
+        url => {
+          this.$emit("on-file-clicked", url);
+        },
+        error => {
+          console.log(error);
         }
       );
     },
