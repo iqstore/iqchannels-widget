@@ -179,6 +179,11 @@ widget.setIPhonePushToken("my-iphone-token");
 widget.setAndroidPushToken("my-android-token");
 ```
 
+Ручное обновление авторизованного клиента из CRM:
+```javascript
+widget.refreshClient();
+```
+
 ### 4.3. События
 События на которые можно подписаться использую стандартный для JavasScript интерфейс `EventEmitter`:
 ```javascript
