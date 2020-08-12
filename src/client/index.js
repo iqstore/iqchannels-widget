@@ -112,6 +112,15 @@ class Client {
       .then(response => response.Result.Client);
   }
 
+  refreshClient(credentials) {
+    const data = {
+      Credentials: credentials
+    };
+
+    return this.post('/clients/integration_refresh', data)
+      .then(response => response.Result.Client);
+  }
+
   channelMessages(channel) {
     const data = { Limit: config.REQUEST_MESSAGES_LIMIT };
     return this._enqueueRequest(`/chats/channel/messages/${channel}`, data)

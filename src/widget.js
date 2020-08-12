@@ -226,6 +226,11 @@ class IQChannelsWidget extends EventEmitter {
     this.frameWindow.postMessage(JSON.stringify(event), '*');
   };
 
+  refreshClient = () => {
+    const event = newChatEvent('refresh_client');
+    this.frameWindow.postMessage(JSON.stringify(event), '*');
+  };
+
   setIPhonePushToken = (token) => {
     const data = { type: "apns", token: token };
     const event = newChatEvent("push_token", data);

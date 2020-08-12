@@ -126,6 +126,10 @@ const app = new Vue({
           this.pushToken = tdata;
           this.maybeSendPushToken();
           break;
+
+        case 'refresh_client':
+          this.refreshClient();
+          break;
       }
     });
   },
@@ -158,6 +162,17 @@ const app = new Vue({
 
       const tdata = this.pushToken;
       client.channelPushToken(this.channel, tdata.type, tdata.token);
+    },
+
+    refreshClient() {
+      if (!this.client) {
+        return;
+      }
+      if (!this.credentials) {
+        return;
+      }
+
+      client.refreshClient(this.credentials);
     }
   }
 });
