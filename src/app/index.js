@@ -150,6 +150,8 @@ const app = new Vue({
       this.credentials = null;
       this.project = null;
       this.client = null;
+      
+      client.clearAuth();
     },
 
     maybeSendPushToken() {

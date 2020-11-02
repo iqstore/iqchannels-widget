@@ -3,18 +3,50 @@
 import 'es6-promise/auto';
 import 'event-source-polyfill';
 import jquery from 'jquery';
+import jsSHA from 'jssha';
 import config from '../config';
 import AppError, { ErrExpired } from './errors';
 import Relations from './relations';
 import Request from './request';
 
+const XClientAuthorizationHeader = 'X-Client-Authorization';
+
 class Client {
   constructor(apiUrl) {
     this.sendQueue = [];
     this.sending = null;
+
+    this.authToken = null;
+    this.authSessionID = null;
+  }
+
+  clearAuth() {
+    this.authToken = null;
+    this.authSessionID = null;
+
+    // console.log("Deauthorized client");
+  }
+
+  setAuth(auth) {
+    if (!auth) {
+      return;
+    }
+    if (!auth.Session) {
+      return;
+    }
+
+    let s = auth.Session;
+    this.authToken = s.Token;
+    this.authSessionID = s.Id;
+    // console.log("Authorized client, session=", s.Id);
   }
 
   post(path, data) {
+    let headers = {};
+    if (this.authToken) {
+      headers[XClientAuthorizationHeader] = this.authToken;
+    }
+
     return new Promise((resolve, reject) => {
       jquery.ajax({
         type: 'POST',
@@ -24,6 +56,7 @@ class Client {
         dataType: 'json',
         withCredentials: true,
         contentType: 'application/json',
+        headers: headers,
         success: response => this.handleResponse(response, resolve, reject),
         error: request => reject(AppError.fromRequest(request))
       });
@@ -43,12 +76,18 @@ class Client {
   }
 
   multipart(path, data, onSuccess, onError, onProgress) {
+    let headers = {};
+    if (this.authToken) {
+      headers[XClientAuthorizationHeader] = this.authToken;
+    }
+    
     return jquery.ajax({
       type: 'POST',
       url: config.apiUrl(path),
       crossDomain: true,
       data: data,
       withCredentials: true,
+      headers: headers,
       xhr: () => this.xhr(onProgress),
       success: response => this.handleResponse(response, onSuccess, onError),
       error: request => onError(AppError.fromRequest(request)),
@@ -69,7 +108,12 @@ class Client {
   anonymousAuth() {
     const options = { shouldRetry: (error) => !error.unauthorized() };
     return this._enqueueRequest('/clients/anonymous/auth', null, options)
-      .then(response => response.Result);
+      .then(response => {
+        let auth = response.Result;
+        this.setAuth(auth);
+
+        return auth;
+      });
   }
 
   anonymousSignup(name, channel) {
@@ -77,7 +121,12 @@ class Client {
     const options = { shouldRetry: (error) => error.http() };
 
     return this._enqueueRequest('/clients/anonymous/signup', data, options)
-      .then(response => response.Result.Client);
+      .then(response => {
+        let auth = response.Result;
+        this.setAuth(auth);
+
+        return auth.Client;
+      });
   }
 
   // Deprecated
@@ -86,7 +135,12 @@ class Client {
     const options = { shouldRetry: (error) => error.http() };
 
     return this._enqueueRequest('/clients/anonymous/create', data, options)
-      .then(response => response.Result.Client);
+      .then(response => {
+        let auth = response.Result;
+        this.setAuth(auth);
+
+        return auth.Client;
+      });
   }
 
   authorize(credentials, channel) {
@@ -97,7 +151,12 @@ class Client {
     const options = { shouldRetry: (error) => !(error.unauthorized() || error.invalid()) };
 
     return this._enqueueRequest('/clients/integration_auth', data, options)
-      .then(response => response.Result.Client);
+      .then(response => {
+        let auth = response.Result;
+        this.setAuth(auth);
+        
+        return auth.Client;
+      });
   }
 
   // Deprecated.
@@ -109,7 +168,12 @@ class Client {
     const options = { shouldRetry: (error) => !(error.unauthorized() || error.invalid()) };
 
     return this._enqueueRequest('/clients/integration_auth_in_project', data, options)
-      .then(response => response.Result.Client);
+      .then(response => {
+        let auth = response.Result;
+        this.setAuth(auth);
+
+        return auth.Client;
+      });
   }
 
   refreshClient(credentials) {
@@ -227,7 +291,24 @@ class Client {
   }
 
   channelListen(channel, lastEventId, onMessage, onError) {
-    const url = config.apiUrl(`/sse/chats/channel/events/${channel}`) + (lastEventId ? `?LastEventId=${lastEventId}` : '');
+    let token = this._encryptToken();
+    let url = config.apiUrl(`/sse/chats/channel/events/${channel}`);
+    
+    if (lastEventId || token) {
+      url += '?';
+    }
+
+    if (lastEventId) {
+      url += `LastEventId=${lastEventId}`;
+    }
+    
+    if (token) {
+      if (lastEventId) {
+        url += '&';
+      }
+      url += `x-client-token=${token}`;
+    }
+
     const source = new EventSource(url, { withCredentials: true });
     source.addEventListener('message', message => {
       try {
@@ -305,6 +386,36 @@ class Client {
           this._triggerFlush({ clearSending: true });
         }
       });
+  }
+  
+  // _encryptToken returns signed x-client-token for SSE connections.
+  _encryptToken() {
+    if (!this.authToken || !this.authSessionID) {
+      return;
+    }
+
+    // Combine a session and the current timestamp.
+    let time = + new Date();
+    let token = {SessionID: this.authSessionID, Time: time};
+    let text = JSON.stringify(token);
+
+    // Sign them as JSON using the auth token.
+    let hmac = new jsSHA('SHA-1', 'TEXT', {
+      hmacKey: { value: this.authToken, format: 'TEXT' },
+    });
+    hmac.update(text);
+    let sign = hmac.getHash('HEX');
+
+    // Convert to JSON.
+    let signed = {
+      Token: text,
+      Sign: sign
+    };
+    let json = JSON.stringify(signed);;
+
+    // Base64 encode the result.
+    let b64 = btoa(json);
+    return b64;
   }
 }
 
