@@ -6,7 +6,8 @@ import "./widget.scss";
 function getBaseUrl() {
   const scripts = document.getElementsByTagName('script');
   const path = scripts[scripts.length - 1].src.split('?')[0];
-  return path.split('/').slice(0, -1).join('/') + '/';
+  const url = path.split('/').slice(0, -1).join('/') + '/';
+  return url;
 }
 
 // From where widget.js is loaded
@@ -58,7 +59,8 @@ function cleanIconOptions(iconOptions) {
 }
 
 class IQChannelsWidget extends EventEmitter {
-  constructor({ 
+  constructor({
+    url = null,
     channel = 'support', 
     credentials, 
     mode = 'web',
@@ -66,10 +68,12 @@ class IQChannelsWidget extends EventEmitter {
     width = 280, 
     padBody = true, 
     requireName = true, 
-    iconOptions = {}, 
+    iconOptions = {},
     DOMIdentifier
   }) {
     super();
+    url = url ? url : BASE_URL;
+    
     this.width = width;
     this.channel = channel;
     this.credentials = credentials || '';
@@ -89,7 +93,7 @@ class IQChannelsWidget extends EventEmitter {
     <div id="iqchannels-widget" style="width: ${this.width}px">
         <iframe 
             id="iqchannels-widget-iframe" 
-            src="${BASE_URL}"></iframe>
+            src="${url}"></iframe>
     </div>
 </div>    
 `);

@@ -109,7 +109,8 @@ var widget = new IQChannelsWidget({
         color: "#000000",
         backgroundColor: "#FFFFFF",
         style: {}
-    }
+    },
+    url: 'https://app.iqstore.ru/widget/'
 });
 </script>
 ```
@@ -124,6 +125,7 @@ var widget = new IQChannelsWidget({
 * `iconOptions.style` — дополнительные CSS-стили для кнопки.
 * `iconOptions.color` — цвет иконки.
 * `iconOptions.backgroundColor` — цвет фона кнопки.
+* `url` — опциональный адрес сервера с виджетом, если не указан, то определяется автоматически.
 
 Для более глубокой стилизации виджета см. раздел "5. Стилизация виджета".
 
