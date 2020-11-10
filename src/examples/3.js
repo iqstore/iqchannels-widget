@@ -4,5 +4,10 @@ import "normalize.css";
 window.widget = new IQChannelsWidget({
   channel: 'support',
   credentials: '3',
-  iconOptions: { show: true }
+  iconOptions: {
+    show: true,
+    style: {
+      backgroundColor: "#004885",
+    }
+  }
 });

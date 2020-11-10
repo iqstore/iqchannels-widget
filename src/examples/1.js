@@ -6,11 +6,10 @@ var w = new IQChannelsWidget({
   channel: 'support',
   credentials: '101',
   padBody: false,
-  DOMIdentifier: 'ion-nav',
   iconOptions: {
     show: true,
     style: {
-      backgroundColor: "#faef13",
+      backgroundColor: "#004885",
     }
   }
 });

@@ -4,7 +4,13 @@ import "normalize.css";
 window.widget = new IQChannelsWidget({
   project: 'retail',
   channel: 'support',
-  credentials: '2'
+  credentials: '2',
+  iconOptions: {
+    show: true,
+    style: {
+      backgroundColor: "#004885",
+    }
+  }
 });
 widget.on('unread', function (count) {
   console.log('WIDGET UNREAD COUNT', count);
