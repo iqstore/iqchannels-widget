@@ -2,7 +2,6 @@ import "normalize.css";
 
 /* globals IQChannelsWidget */
 var w = new IQChannelsWidget({
-  url: 'https://app.iqstore.ru/widget/',
   channel: 'support',
   credentials: '101',
   padBody: false,
