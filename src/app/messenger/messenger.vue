@@ -5,12 +5,13 @@
         background-color: #f0f0f0;
         text-align: center;
         display: table;
+
         .content {
             display: table-cell;
             vertical-align: middle;
             text-align: center;
             p {
-                margin: 8px;
+                margin-bottom: 0;
             }
         }
     }
@@ -44,6 +45,19 @@
         right: 0;
         height: 120px;
     }
+
+    .chat-type-container {
+        padding: 8px;
+    }
+
+    .chat-type-select {
+        width: 100%;
+        color: inherit;
+        background-color: inherit;
+        border-radius: 0.25rem;
+        border: 1px solid #ced4da;
+        padding: .375rem 2.25rem .375rem .75rem;
+    }
 </style>
 
 <template lang="pug">
@@ -51,10 +65,14 @@
         .header
             .content
                 p {{ client.Name }}
-                p
-                    a.logout(v-if="anonymous" href="#" @click.prevent="onLogoutClicked") удалить переписку
+                p(v-if="anonymous")
+                    a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
                 a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
                     icon(name="close")
+                div.chat-type-container
+                    select(name="chat-type" @change="onChatTypeSelected").chat-type-select
+                        option(selected value="regular") Общий чат
+                        option(value="personal_manager") Чат с персональным менеджером
         #chat
             chat(
               v-bind:mode="mode",
@@ -68,8 +86,8 @@
         #composer
             composer(
               ref="composer"
-              @message-composed="onMessageComposed" 
-              @file-selected="onFileSelected" 
+              @message-composed="onMessageComposed"
+              @file-selected="onFileSelected"
               @start-typing="onStartTyping")
 </template>
 
@@ -89,6 +107,7 @@ export default {
     mode: String,
     opened: Boolean,
     channel: String,
+    chatType: String,
     client: Object
   },
 
@@ -185,7 +204,7 @@ export default {
     // Private
 
     loadHistory() {
-      client.channelMessages(this.channel).then(messages => {
+      client.channelMessages(this.channel, this.chatType).then(messages => {
         this.lastEventId = messages.length
           ? messages[messages.length - 1].EventId
           : null;
@@ -431,7 +450,8 @@ export default {
       return {
         LocalId: this.getNextLocalId(),
         Payload: schema.ChatPayloadText,
-        Text: text
+        Text: text,
+        ChatType: this.chatType
       };
     },
 
@@ -440,7 +460,8 @@ export default {
         LocalId: this.getNextLocalId(),
         Payload: schema.ChatPayloadFile,
         Text: "",
-        Upload: file
+        Upload: file,
+        ChatType: this.chatType
       };
     },
 
@@ -556,6 +577,11 @@ export default {
       this.$emit("on-logout");
     },
 
+    onChatTypeSelected(event) {
+      this.chatType = event.target.value;
+      this.loadHistory();
+    },
+
     onChannelEvents(events) {
       // Clear subscribe attempts count,
       // this is the only way to know that we successfully
@@ -649,7 +675,7 @@ export default {
     },
 
     onStartTyping() {
-      client.channelTyping(this.channel).catch(() => {
+      client.channelTyping(this.channel, this.chatType).catch(() => {
         // ignore error, cause event is transitive
       });
     },

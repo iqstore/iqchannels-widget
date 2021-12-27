@@ -61,19 +61,19 @@ function cleanIconOptions(iconOptions) {
 class IQChannelsWidget extends EventEmitter {
   constructor({
     url = null,
-    channel = 'support', 
-    credentials, 
+    channel = 'support',
+    credentials,
     mode = 'web',
-    project, 
-    width = 280, 
-    padBody = true, 
-    requireName = true, 
+    project,
+    width = 280,
+    padBody = true,
+    requireName = true,
     iconOptions = {},
     DOMIdentifier
   }) {
     super();
     url = url ? url : BASE_URL;
-    
+
     this.width = width;
     this.channel = channel;
     this.credentials = credentials || '';
@@ -114,8 +114,8 @@ class IQChannelsWidget extends EventEmitter {
     jquery(document).ready(() => {
       jquery(document.body).append(this.icon);
 
-      const widgetContaier = document.getElementById(this.DOMIdentifier);
-      jquery(!this.DOMIdentifier || !widgetContaier ? document.body : widgetContaier).append(this.frameContainer);
+      const widgetContainer = document.getElementById(this.DOMIdentifier);
+      jquery(!this.DOMIdentifier || !widgetContainer ? document.body : widgetContainer).append(this.frameContainer);
       // Setup handlers
       jquery(window).on('message', this.onFrameMessage);
 
@@ -214,7 +214,7 @@ class IQChannelsWidget extends EventEmitter {
       case 'iqchannels-widget-unread':
         this.emit('unread', data);
         break;
-        
+
       default:
         break;
         // console.log(`Unknown frame event: type=${type}, data=${data}`);
@@ -245,11 +245,11 @@ class IQChannelsWidget extends EventEmitter {
       this.pushToken = data;
     }
   };
-  
+
   setAndroidPushToken = (token) => {
     const data = { type: "fcm", token: token };
     const event = newChatEvent("push_token", data);
-    
+
     if (this.frameWindow) {
       this.frameWindow.postMessage(JSON.stringify(event), '*');
     } else {
