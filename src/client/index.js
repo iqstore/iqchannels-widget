@@ -291,20 +291,27 @@ class Client {
     return this.multipart('/files/upload', data, _onSuccess, onError, onProgress);
   }
 
-  channelListen(channel, lastEventId, onMessage, onError) {
+  channelListen(channel, chatType, lastEventId, onMessage, onError) {
     let token = this._encryptToken();
     let url = config.apiUrl(`/sse/chats/channel/events/${channel}`);
 
-    if (lastEventId || token) {
+    if (chatType || lastEventId || token) {
       url += '?';
     }
 
+    if (chatType) {
+      url += `ChatType=${chatType}`;
+    }
+
     if (lastEventId) {
+      if (chatType) {
+        url += '&';
+      }
       url += `LastEventId=${lastEventId}`;
     }
 
     if (token) {
-      if (lastEventId) {
+      if (chatType || lastEventId) {
         url += '&';
       }
       url += `x-client-token=${token}`;

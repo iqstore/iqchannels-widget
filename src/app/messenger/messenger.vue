@@ -219,6 +219,7 @@ export default {
       this.unsubscribe();
       this.subscription = client.channelListen(
         this.channel,
+        this.chatType,
         this.lastEventId,
         this.onChannelEvents,
         this.onSubscriptionError
