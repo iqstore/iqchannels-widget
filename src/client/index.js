@@ -146,7 +146,7 @@ class Client {
   authorize(credentials, channel) {
     const data = {
       Credentials: credentials,
-      Channel: channel,
+      Channel: channel
     };
     const options = { shouldRetry: (error) => !(error.unauthorized() || error.invalid()) };
 

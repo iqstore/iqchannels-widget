@@ -11,7 +11,7 @@
             vertical-align: middle;
             text-align: center;
             p {
-                margin-bottom: 0;
+                margin-bottom: 8px;
             }
         }
     }
@@ -69,7 +69,7 @@
                     a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
                 a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
                     icon(name="close")
-                div.chat-type-container
+                div.chat-type-container(v-if="hasPersonalManager")
                     select(name="chat-type" @change="onChatTypeSelected").chat-type-select
                         option(selected value="regular") Общий чат
                         option(value="personal_manager") Чат с персональным менеджером
@@ -95,7 +95,6 @@
 import chat from "./chat.vue";
 import composer from "./composer.vue";
 import client from "../../client";
-import config from "../../config";
 import * as schema from "../../schema";
 import { isSameDate } from "../../lib/datetime";
 import { retryTimeout } from "../../lib/timeout";
@@ -171,6 +170,9 @@ export default {
     },
     anonymous: function() {
       return this.client.Type === "anonymous";
+    },
+    hasPersonalManager() {
+      return !!this.client.PersonalManagerId
     }
   },
 
