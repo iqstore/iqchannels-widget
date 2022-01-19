@@ -226,8 +226,8 @@
                     :class="{ sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
 
 
-                    pre.text(v-if="msg.Payload == 'text'", v-linkified="")
-                        | {{ msg.Text }}
+                    pre.text(v-if="msg.Payload == 'text'" v-html="linkifyText(msg.Text)")
+
                     .file.text(v-if="msg.Upload")
                         div(v-if="msg.Uploading")
                             .filename {{ msg.Upload.name }}
@@ -239,12 +239,12 @@
                             .error {{ msg.UploadError }}
                             a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
                             a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
-                    a.image(v-else-if="msg.File && msg.File.Type == 'image'" 
-                        v-bind:href="msg.File.URL" 
+                    a.image(v-else-if="msg.File && msg.File.Type == 'image'"
+                        v-bind:href="msg.File.URL"
                         target="_blank",
                         @click="clickFile(msg, $event)")
                         img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                    a.file(v-else-if="msg.File && msg.File.Type == 'file'" 
+                    a.file(v-else-if="msg.File && msg.File.Type == 'file'"
                         v-bind:href="msg.File.URL"
                         target="_blank"
                         @click="clickFile(msg, $event)")
@@ -256,9 +256,9 @@
                     span.received(v-if="group.LastMessage.Id && group.LastMessage.Received" title="Доставлено") ✓
                     span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
                     scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
-            
+
             rating(
-                v-if="group.Rating", 
+                v-if="group.Rating",
                 v-bind:rating="group.Rating",
                 @rate-rating="rateRating",
                 @ignore-rating="ignoreRating")
@@ -269,6 +269,7 @@
 import { smoothScroll } from "../../lib/scroll";
 import avatar from "./avatar.vue";
 import rating from "./rating.vue";
+import linkifyString from 'linkify-string';
 
 export default {
   components: { avatar, rating },
@@ -329,6 +330,10 @@ export default {
 
         event.preventDefault();
         this.$emit("click-file", file);
+    },
+
+    linkifyText(text) {
+      return linkifyString(text);
     }
   }
 };

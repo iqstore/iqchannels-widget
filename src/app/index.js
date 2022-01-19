@@ -6,7 +6,6 @@ import Icon from 'vue-awesome/components/Icon.vue';
 import 'vue-awesome/icons/close';
 import 'vue-awesome/icons/paperclip';
 import 'vue-awesome/icons/send';
-import linkify from 'vue-linkify';
 import ScaleLoader from 'vue-spinner/src/ScaleLoader.vue';
 import client from '../client';
 import config from '../config';
@@ -24,8 +23,6 @@ Vue.component('scale-loader', ScaleLoader);
 Vue.component('client-auth', clientAuth);
 Vue.component('client-create', clientCreate);
 Vue.component('messenger', messenger);
-
-Vue.directive('linkified', linkify);
 
 const app = new Vue({
   el: '#app',
@@ -116,13 +113,13 @@ const app = new Vue({
 
           this.$refs.messenger.appendText(text);
           break;
-        
+
         case 'push_token':
           const tdata = event.data;
           if (!tdata) {
             return;
           }
-          
+
           this.pushToken = tdata;
           this.maybeSendPushToken();
           break;
@@ -150,7 +147,7 @@ const app = new Vue({
       this.credentials = null;
       this.project = null;
       this.client = null;
-      
+
       client.clearAuth();
     },
 
