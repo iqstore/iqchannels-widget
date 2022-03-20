@@ -8,7 +8,6 @@ import 'vue-awesome/icons/paperclip';
 import 'vue-awesome/icons/send';
 import 'vue-awesome/icons/long-arrow-up';
 import 'vue-awesome/icons/check';
-import linkify from 'vue-linkify';
 import ScaleLoader from 'vue-spinner/src/ScaleLoader.vue';
 import client from '../client';
 import config from '../config';
@@ -36,8 +35,6 @@ Vue.component('scale-loader', ScaleLoader);
 Vue.component('client-auth', clientAuth);
 Vue.component('client-create', clientCreate);
 Vue.component('messenger', messenger);
-
-Vue.directive('linkified', linkify);
 
 const app = new Vue({
   el: '#app',

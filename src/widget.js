@@ -114,8 +114,8 @@ class IQChannelsWidget extends EventEmitter {
     jquery(document).ready(() => {
       jquery(document.body).append(this.icon);
 
-      const widgetContaier = document.getElementById(this.DOMIdentifier);
-      jquery(!this.DOMIdentifier || !widgetContaier ? document.body : widgetContaier).append(this.frameContainer);
+      const widgetContainer = document.getElementById(this.DOMIdentifier);
+      jquery(!this.DOMIdentifier || !widgetContainer ? document.body : widgetContainer).append(this.frameContainer);
       // Setup handlers
       jquery(window).on('message', this.onFrameMessage);
 
@@ -222,7 +222,6 @@ class IQChannelsWidget extends EventEmitter {
       case 'iqchannels-widget-rating':
         this.emit('rating', data);
         break;
-
       default:
         break;
         // console.log(`Unknown frame event: type=${type}, data=${data}`);

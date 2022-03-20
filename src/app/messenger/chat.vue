@@ -277,8 +277,7 @@
                       .reply-text {{ getAuthorAndText(msg).text }}
 
                     .message-data
-                      pre.text(v-if="msg.Payload == 'text'", v-linkified="")
-                        | {{ msg.Text }}
+                      pre.text(v-if="msg.Payload == 'text'" v-html="linkifyText(msg.Text)")
 
                       .file.text(v-if="msg.Upload")
                         div(v-if="msg.Uploading")
@@ -311,7 +310,6 @@
                           svg(width='13' height='8' viewbox='0 0 13 8' fill='none' xmlns='http://www.w3.org/2000/svg' class="svg-read")
                             path(d='M12 0.302282C11.7304 0.0352342 11.2403 0.287629 11.026 0.499975L5.39909 6.24939C5.12983 6.56509 5.39862 6.85352 5.39862 6.85352C5.61285 7.06584 5.96621 7.03873 6.18036 6.82656L12 1.07104C12.2143 0.85872 12.2143 0.514628 12 0.302282Z' fill='#5F814A')
                         scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
-
             rating(
                 v-if="group.Rating",
                 v-bind:rating="group.Rating",
@@ -323,6 +321,7 @@
 <script>
 import avatar from './avatar.vue';
 import rating from './rating.vue';
+import linkifyString from 'linkify-string';
 
 export default {
   components: { avatar, rating },
@@ -444,6 +443,10 @@ export default {
 
         event.preventDefault();
         this.$emit("click-file", file);
+    },
+
+    linkifyText(text) {
+      return linkifyString(text);
     }
   }
 };

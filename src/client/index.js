@@ -146,7 +146,7 @@ class Client {
   authorize(credentials, channel) {
     const data = {
       Credentials: credentials,
-      Channel: channel,
+      Channel: channel
     };
     const options = { shouldRetry: (error) => !(error.unauthorized() || error.invalid()) };
 
@@ -185,15 +185,16 @@ class Client {
       .then(response => response.Result.Client);
   }
 
-  channelMessages(channel) {
-    const data = { Limit: config.REQUEST_MESSAGES_LIMIT };
+  channelMessages(channel, chatType) {
+    const data = { ChatType: chatType, Limit: config.REQUEST_MESSAGES_LIMIT };
     return this._enqueueRequest(`/chats/channel/messages/${channel}`, data)
       .then(response => new Relations(config, response.Rels).messages(response.Result));
   }
 
-  channelTyping(channel) {
+  channelTyping(channel, chatType) {
+    const data = { ChatType: chatType };
     const options = { timeout: 5000 };
-    return this._enqueueRequest(`/chats/channel/typing/${channel}`, null, options);
+    return this._enqueueRequest(`/chats/channel/typing/${channel}`, data, options);
   }
 
   channelSend(channel, message) {
@@ -291,20 +292,27 @@ class Client {
     return this.multipart('/files/upload', data, _onSuccess, onError, onProgress);
   }
 
-  channelListen(channel, lastEventId, onMessage, onError) {
+  channelListen(channel, chatType, lastEventId, onMessage, onError) {
     let token = this._encryptToken();
     let url = config.apiUrl(`/sse/chats/channel/events/${channel}`);
 
-    if (lastEventId || token) {
+    if (chatType || lastEventId || token) {
       url += '?';
     }
 
+    if (chatType) {
+      url += `ChatType=${chatType}`;
+    }
+
     if (lastEventId) {
+      if (chatType) {
+        url += '&';
+      }
       url += `LastEventId=${lastEventId}`;
     }
 
     if (token) {
-      if (lastEventId) {
+      if (chatType || lastEventId) {
         url += '&';
       }
       url += `x-client-token=${token}`;
