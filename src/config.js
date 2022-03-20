@@ -4,6 +4,7 @@ class Config {
   CLIENT_SESSION_COOKIE = 'client-session';
 
   constructor () {
+    // this.apiBaseUrl = 'https://iqchannels.isimplelab.com/public/api/';
     this.apiBaseUrl = '/public/api/';
     this.apiVersion = 'v1';
   }

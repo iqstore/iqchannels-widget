@@ -6,6 +6,8 @@ import Icon from 'vue-awesome/components/Icon.vue';
 import 'vue-awesome/icons/close';
 import 'vue-awesome/icons/paperclip';
 import 'vue-awesome/icons/send';
+import 'vue-awesome/icons/long-arrow-up';
+import 'vue-awesome/icons/check';
 import linkify from 'vue-linkify';
 import ScaleLoader from 'vue-spinner/src/ScaleLoader.vue';
 import client from '../client';
@@ -15,6 +17,16 @@ import { clearCookie } from '../lib/web';
 import clientAuth from './client-auth.vue';
 import clientCreate from './client-create.vue';
 import messenger from './messenger/messenger.vue';
+import Vue2TouchEvents from 'vue2-touch-events';
+import { VueHammer } from 'vue2-hammer';
+
+VueHammer.config.pan = {
+  threshold: 25,
+  direction: 'right'
+};
+
+Vue.use(Vue2TouchEvents);
+Vue.use(VueHammer);
 
 Vue.filter('humanDate', humanDate);
 Vue.filter('humanSize', humanSize);
@@ -41,10 +53,14 @@ const app = new Vue({
               @on-file-clicked='onFileClicked'
               @on-close='onClose'
               @on-logout='onLogout'
+              @on-longtap="onLongTap"
+              @on-rating="onRating"
               :mode='mode'
               :client='client'
               :opened='opened'
               :channel='channel'
+              :replayed-msg="replayedMsg"
+              :rating="rating"
           />
         </div>`,
 
@@ -64,7 +80,9 @@ const app = new Vue({
       project: null,
       requireName: true,
       client: null,
-      pushToken: null
+      pushToken: null,
+      replayedMsg: null,
+      rating: null
     };
   },
 
@@ -76,7 +94,7 @@ const app = new Vue({
         return;
       }
 
-      const event = JSON.parse(data);
+      let event = data.length ? JSON.parse(data) : data;
 
       switch (event.type) {
         case 'init':
@@ -116,13 +134,13 @@ const app = new Vue({
 
           this.$refs.messenger.appendText(text);
           break;
-        
+
         case 'push_token':
           const tdata = event.data;
           if (!tdata) {
             return;
           }
-          
+
           this.pushToken = tdata;
           this.maybeSendPushToken();
           break;
@@ -130,6 +148,15 @@ const app = new Vue({
         case 'refresh_client':
           this.refreshClient();
           break;
+
+        case 'reply-message':
+          this.replayedMsg = event.data;
+          break;
+
+        case 'get-rating':
+          this.rating = event.data;
+          break;
+
       }
     });
   },
@@ -139,6 +166,8 @@ const app = new Vue({
     onMessageReceived: () => parent.postMessage({ type: 'iqchannels-widget-message' }, '*'),
     onFileClicked: (url) => parent.postMessage({ type: 'iqchannels-widget-file', data: url }, '*'),
     onUnreadChanged: (count) => parent.postMessage({ type: 'iqchannels-widget-unread', data: count }, '*'),
+    onLongTap: (msg) => parent.postMessage({ type: 'iqchannels-widget-longtap', data: msg }, '*'),
+    onRating: (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*'),
 
     onLogin(client) {
       this.client = client;
@@ -150,7 +179,7 @@ const app = new Vue({
       this.credentials = null;
       this.project = null;
       this.client = null;
-      
+
       client.clearAuth();
     },
 

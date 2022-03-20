@@ -80,7 +80,7 @@ class Client {
     if (this.authToken) {
       headers[XClientAuthorizationHeader] = this.authToken;
     }
-    
+
     return jquery.ajax({
       type: 'POST',
       url: config.apiUrl(path),
@@ -154,7 +154,7 @@ class Client {
       .then(response => {
         let auth = response.Result;
         this.setAuth(auth);
-        
+
         return auth.Client;
       });
   }
@@ -197,6 +197,7 @@ class Client {
   }
 
   channelSend(channel, message) {
+    console.log(message);
     return this._enqueueRequest(`/chats/channel/send/${channel}`, message);
   }
 
@@ -212,7 +213,7 @@ class Client {
     switch (type) {
       case 'apns':
         return this.channelAPNSToken(channel, token);
-        
+
       case 'fcm':
         return this.channelFCMToken(channel, token);
 
@@ -239,7 +240,7 @@ class Client {
 
   rateRating(ratingId, value, comment) {
     const request = {
-      RatingId: ratingId, 
+      RatingId: ratingId,
       Rating: {
         Value: value,
         Comment: comment
@@ -293,7 +294,7 @@ class Client {
   channelListen(channel, lastEventId, onMessage, onError) {
     let token = this._encryptToken();
     let url = config.apiUrl(`/sse/chats/channel/events/${channel}`);
-    
+
     if (lastEventId || token) {
       url += '?';
     }
@@ -301,7 +302,7 @@ class Client {
     if (lastEventId) {
       url += `LastEventId=${lastEventId}`;
     }
-    
+
     if (token) {
       if (lastEventId) {
         url += '&';
@@ -387,7 +388,7 @@ class Client {
         }
       });
   }
-  
+
   // _encryptToken returns signed x-client-token for SSE connections.
   _encryptToken() {
     if (!this.authToken || !this.authSessionID) {

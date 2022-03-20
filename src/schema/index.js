@@ -2,7 +2,7 @@ export const FileTypeFile = 'file';
 export const FileTypeImage = 'image';
 
 export const ImageSizeAvatar = 'avatar';
-export const ImageSizeThumbnail = 'thumbnail';
+export const ImageSizeThumbnail = 'preview';
 export const ImageSizePreview = 'preview';
 
 export const ChatPayloadText = 'text';

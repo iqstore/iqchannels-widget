@@ -4,7 +4,7 @@
         width: 100%;
         background-color: #f0f0f0;
         text-align: center;
-        display: table;
+        display: none;
         .content {
             display: table-cell;
             vertical-align: middle;
@@ -35,42 +35,91 @@
     #chat {
         width: 100%;
         background-color: white;
+        position: relative;
+        overflow-y: scroll;
+        -webkit-touch-callout:none;
+        -webkit-user-select:none;
+        -khtml-user-select:none;
+        -moz-user-select:none;
+        -ms-user-select:none;
+        user-select:none;
+        -webkit-tap-highlight-color:rgba(0,0,0,0);
     }
 
     #composer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 120px;
+        background: #fff;
     }
+
+    .wrapper {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+    }
+
+    .messenger {
+      height: 100%;
+      overflow-y: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .scrollBottom {
+      width: 30px;
+      height: 30px;
+      position: sticky;
+      bottom: 0;
+      background: #EBEBEB;
+      border-radius: 50%;
+      display: flex;
+      z-index: 2;
+      left: 0;
+      margin-right: 5px;
+      margin-left: auto;
+
+      svg {
+        margin: auto;
+      }
+    }
+
 </style>
 
 <template lang="pug">
-    .messenger
+    .wrapper
+      .messenger
         .header
-            .content
-                p {{ client.Name }}
-                p
-                    a.logout(v-if="anonymous" href="#" @click.prevent="onLogoutClicked") удалить переписку
-                a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
-                    icon(name="close")
+          .content
+            p {{ client.Name }}
+            p
+              a.logout(v-if="anonymous" href="#" @click.prevent="onLogoutClicked") удалить переписку
+            a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
+              icon(name="close")
         #chat
-            chat(
-              v-bind:mode="mode",
-              v-bind:opened="opened",
-              v-bind:groups="groups",
-              @cancel-upload="cancelUpload",
-              @retry-upload="retryUpload",
-              @rate-rating="rateRating",
-              @ignore-rating="ignoreRating",
-              @click-file="clickFile")
+          chat(
+            v-bind:mode="mode",
+            v-bind:opened="opened",
+            v-bind:groups="groups",
+            v-bind:rating="rating",
+            @cancel-upload="cancelUpload",
+            @retry-upload="retryUpload",
+            @rate-rating="rateRating",
+            @ignore-rating="ignoreRating",
+            @mobile-rating="mobileRating",
+            @long-tap="longTap",
+            @reply-msg="reply",
+            @click-file="clickFile")
+          .scrollBottom(v-if="!isBottom" @click="scrollToLastMessage(false)")
+            svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
+              path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
         #composer
-            composer(
-              ref="composer"
-              @message-composed="onMessageComposed" 
-              @file-selected="onFileSelected" 
-              @start-typing="onStartTyping")
+          composer(
+            ref="composer"
+            v-bind:replayedMsg="inputMsg"
+            v-bind:operatorTyping="inputTyping"
+            @message-composed="onMessageComposed"
+            @file-selected="onFileSelected"
+            @start-typing="onStartTyping")
 </template>
 
 <script>
@@ -81,6 +130,7 @@ import config from "../../config";
 import * as schema from "../../schema";
 import { isSameDate } from "../../lib/datetime";
 import { retryTimeout } from "../../lib/timeout";
+import { smoothScroll } from '../../lib/scroll';
 
 export default {
   components: { chat, composer },
@@ -89,6 +139,9 @@ export default {
     mode: String,
     opened: Boolean,
     channel: String,
+    replayedMsg: Object,
+    typing: Object,
+    rating: Number,
     client: Object
   },
 
@@ -113,21 +166,31 @@ export default {
     this.lastLocalId = 0;
   },
 
+  beforeMount () {
+    setTimeout(() => {
+      this.scrollToLastMessage();
+    }, 200);
+  },
+
   mounted() {
-    this.adjustThreadHeight();
-    window.addEventListener("resize", this.adjustThreadHeight);
     this.loadHistory();
+    document.getElementById('chat').addEventListener('scroll', ev => {
+      const height = document.getElementById('chat').getBoundingClientRect().height;
+      this.isBottom = !(ev.target.scrollHeight - ev.target.scrollTop > height);
+    });
   },
 
   beforeDestroy() {
-    window.removeEventListener("resize", this.adjustThreadHeight);
     this.unsubscribe();
   },
 
   data: () => {
     return {
       // reactive props
-      groups: []
+      groups: [],
+      inputMsg: {},
+      inputTyping: {},
+      isBottom: true,
     };
   },
 
@@ -169,10 +232,26 @@ export default {
     },
     unreadCount: function(newValue, oldValue) {
       this.$emit("on-unread-changed", newValue);
-    }
+    },
+    replayedMsg: function (newValue) {
+      this.inputMsg = JSON.parse(JSON.stringify(newValue));
+    },
+    rating: function (newRating) {
+      if (newRating === 0) {
+        this.ignoreRating(0);
+      }
+    },
   },
 
   methods: {
+
+    scrollToLastMessage() {
+      const el = $('#chat');
+          el.stop().animate({
+            scrollTop: el[0].scrollHeight
+          }, 800);
+    },
+
     // Public
     appendText(text) {
       if (!text) {
@@ -283,7 +362,8 @@ export default {
         Client: this.client,
         ClientId: this.client.Id,
         Author: "client",
-        CreatedAt: new Date()
+        CreatedAt: new Date(),
+        ReplyToMessageId: messageForm.ReplyToMessageId
       });
       this.appendMessage(message);
       return message;
@@ -435,12 +515,31 @@ export default {
       };
     },
 
+    newTextMessageWithReply(text, id) {
+      return {
+        LocalId: this.getNextLocalId(),
+        Payload: schema.ChatPayloadText,
+        Text: text,
+        ReplyToMessageId: id
+      }
+    },
+
     newFileMessage(file) {
       return {
         LocalId: this.getNextLocalId(),
         Payload: schema.ChatPayloadFile,
         Text: "",
         Upload: file
+      };
+    },
+
+    newFileMessageWithReply(file, id) {
+      return {
+        LocalId: this.getNextLocalId(),
+        Payload: schema.ChatPayloadFile,
+        Text: "",
+        Upload: file,
+        ReplyToMessageId: id
       };
     },
 
@@ -535,6 +634,10 @@ export default {
       );
     },
 
+    mobileRating(rating) {
+      this.$emit("on-rating", rating);
+    },
+
     clickFile(file) {
       client.fileSignedUrl(file.Id).then(
         url => {
@@ -544,6 +647,14 @@ export default {
           console.log(error);
         }
       );
+    },
+
+    longTap(msg) {
+      this.$emit("on-longtap", msg);
+    },
+
+    reply(msg) {
+      this.inputMsg = JSON.parse(JSON.stringify(msg));
     },
 
     // Handlers
@@ -582,6 +693,7 @@ export default {
             this.handleIncomingReceived(event);
             break;
           case schema.ChatEventTyping:
+            this.handleOperatorTyping(event);
             break;
           default:
             console.log("Unhandled channel event", event);
@@ -642,8 +754,17 @@ export default {
       this.replaceMessage(message);
     },
 
+    handleOperatorTyping(event) {
+      this.inputTyping = JSON.parse(JSON.stringify(event));
+    },
+
     onMessageComposed(text) {
-      const messageForm = this.newTextMessage(text);
+      let messageForm;
+      if (typeof text !== 'object') {
+        messageForm = this.newTextMessage(text);
+      } else {
+        messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId);
+      }
       this.appendLocalMessage(messageForm);
       client.channelSend(this.channel, messageForm);
     },
@@ -660,16 +781,6 @@ export default {
       this.uploadMessage(message);
     },
 
-    adjustThreadHeight() {
-      const thread = $("#chat");
-      if (thread.length === 0) return;
-      const minHeight = 90; // Min height about 2 one line messages
-      const height =
-        window.innerHeight - // Document height
-        thread.offset().top - // Chat div position
-        $("#composer").height();
-      thread.height(Math.max(height, minHeight));
-    }
   }
 };
 </script>

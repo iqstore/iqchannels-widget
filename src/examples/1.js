@@ -5,6 +5,7 @@ var w = new IQChannelsWidget({
   channel: 'support',
   credentials: '101',
   padBody: false,
+  width: 425,
   iconOptions: {
     show: true,
     style: {

@@ -27,7 +27,7 @@ export default class Relations {
                 this.rels.Users[user.Id] = user;
             });
         }
-        
+
         if (rels.Files) {
             this.files(rels.Files).forEach(file => {
                 this.rels.Files[file.Id] = file;
@@ -39,7 +39,7 @@ export default class Relations {
                 this.rels.Ratings[rating.Id] = rating;
             });
         }
-        
+
         if (rels.ChatMessages) {
             this.messages(rels.ChatMessages).forEach(message => {
                 this.rels.ChatMessages[message.Id] = message;
