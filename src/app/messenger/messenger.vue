@@ -4,6 +4,7 @@
         background-color: #f0f0f0;
         text-align: center;
         display: flex;
+        min-height: 50px;
 
         .content {
             display: table-cell;
@@ -103,14 +104,9 @@
 <template lang="pug">
     .wrapper
       .messenger
-        .header(v-bind:style="headerStyle")
+        .header(v-if="hasPersonalManager")
           .content
-            p {{ client.Name }}
-            p(v-if="anonymous")
-              a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
-            a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
-              icon(name="close")
-            div.chat-type-container(v-if="hasPersonalManager")
+            div.chat-type-container
               select(name="chat-type" @change="onChatTypeSelected").chat-type-select
                 option(selected value="regular") Общий чат
                 option(value="personal_manager") Чат с персональным менеджером
@@ -182,8 +178,6 @@ export default {
     // last generated local message id, to make
     // sure next generated value will be greater
     this.lastLocalId = 0;
-
-    this.headerStyle['min-height'] = !!this.client.PersonalManagerId ? '90px' : '50px';
   },
 
   beforeMount () {
@@ -210,8 +204,7 @@ export default {
       groups: [],
       inputMsg: {},
       inputTyping: {},
-      isBottom: true,
-      headerStyle: {}
+      isBottom: true
     };
   },
 
