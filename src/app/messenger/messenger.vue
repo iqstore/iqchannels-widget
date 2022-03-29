@@ -51,6 +51,7 @@
         -ms-user-select:none;
         user-select:none;
         -webkit-tap-highlight-color:rgba(0,0,0,0);
+        flex: 1;
     }
 
     #composer {

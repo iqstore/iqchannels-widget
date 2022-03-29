@@ -23,8 +23,6 @@ class Client {
   clearAuth() {
     this.authToken = null;
     this.authSessionID = null;
-
-    // console.log("Deauthorized client");
   }
 
   setAuth(auth) {
@@ -38,7 +36,6 @@ class Client {
     let s = auth.Session;
     this.authToken = s.Token;
     this.authSessionID = s.Id;
-    // console.log("Authorized client, session=", s.Id);
   }
 
   post(path, data) {
