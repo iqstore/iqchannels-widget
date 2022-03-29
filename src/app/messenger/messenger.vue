@@ -229,7 +229,7 @@ export default {
       );
     },
     unreadMessages: function() {
-      return this.incomingMessages.filter(m => m.Author == "user" && !m.Read);
+      return this.incomingMessages.filter(m => m.Author === "user" && !m.Read);
     },
     unreceivedMessages: function() {
       return this.incomingMessages.filter(m => !m.Received);
@@ -255,6 +255,7 @@ export default {
         $("#composer")
           .hide()
           .show(0);
+        this.setScrollPositionToBottom();
       }
     },
     unreadCount: function(newValue, oldValue) {
@@ -271,12 +272,16 @@ export default {
   },
 
   methods: {
-
     scrollToLastMessage() {
       const el = $('#chat');
-          el.stop().animate({
-            scrollTop: el[0].scrollHeight
-          }, 800);
+      el.stop().animate({
+        scrollTop: el[0].scrollHeight
+      }, 800);
+    },
+
+    setScrollPositionToBottom() {
+      const chatElement = $('#chat');
+      chatElement[0].scrollTop = chatElement[0].scrollHeight - chatElement[0].clientHeight;
     },
 
     // Public

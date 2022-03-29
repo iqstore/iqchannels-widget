@@ -198,7 +198,6 @@ class Client {
   }
 
   channelSend(channel, message) {
-    console.log(message);
     return this._enqueueRequest(`/chats/channel/send/${channel}`, message);
   }
 
