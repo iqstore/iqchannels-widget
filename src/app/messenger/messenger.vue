@@ -4,13 +4,17 @@
         background-color: #f0f0f0;
         text-align: center;
         display: flex;
-        min-height: 50px;
 
         .content {
             display: table-cell;
             vertical-align: middle;
             text-align: center;
             flex: 1;
+            padding-bottom: 4px;
+
+            .client-name-container {
+              display: block;
+            }
 
             p {
                 margin-bottom: 8px;
@@ -104,9 +108,15 @@
 <template lang="pug">
     .wrapper
       .messenger
-        .header(v-if="hasPersonalManager")
+        .header
           .content
-            div.chat-type-container
+            div.client-name-container
+              p {{ client.Name }}
+              p(v-if="anonymous")
+                a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
+              a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
+                icon(name="close")
+            div.chat-type-container(v-if="hasPersonalManager")
               select(name="chat-type" @change="onChatTypeSelected").chat-type-select
                 option(selected value="regular") Общий чат
                 option(value="personal_manager") Чат с персональным менеджером
