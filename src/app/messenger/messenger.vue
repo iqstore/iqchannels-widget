@@ -549,7 +549,8 @@ export default {
         LocalId: this.getNextLocalId(),
         Payload: schema.ChatPayloadText,
         Text: text,
-        ReplyToMessageId: id
+        ReplyToMessageId: id,
+        ChatType: this.chatType
       }
     },
 
@@ -569,7 +570,8 @@ export default {
         Payload: schema.ChatPayloadFile,
         Text: "",
         Upload: file,
-        ReplyToMessageId: id
+        ReplyToMessageId: id,
+        ChatType: this.chatType
       };
     },
 
