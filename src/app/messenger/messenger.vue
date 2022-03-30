@@ -111,7 +111,7 @@
       .messenger
         .header
           .content
-            div.client-name-container
+            div.client-name-container(v-if="mode !== 'mobile'")
               p {{ client.Name }}
               p(v-if="anonymous")
                 a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
@@ -203,6 +203,8 @@ export default {
       const height = document.getElementById('chat').getBoundingClientRect().height;
       this.isBottom = !(ev.target.scrollHeight - ev.target.scrollTop > height);
     });
+
+    console.log(this.mode);
   },
 
   beforeDestroy() {
