@@ -203,8 +203,6 @@ export default {
       const height = document.getElementById('chat').getBoundingClientRect().height;
       this.isBottom = !(ev.target.scrollHeight - ev.target.scrollTop > height);
     });
-
-    console.log(this.mode);
   },
 
   beforeDestroy() {
