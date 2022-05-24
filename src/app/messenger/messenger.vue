@@ -10,9 +10,8 @@
             vertical-align: middle;
             text-align: center;
             flex: 1;
-            padding-bottom: 4px;
 
-            .client-name-container {
+          .client-name-container {
               display: block;
             }
 
@@ -74,8 +73,8 @@
     }
 
     .scrollBottom {
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       position: sticky;
       bottom: 0;
       background: #EBEBEB;
@@ -83,7 +82,7 @@
       display: flex;
       z-index: 2;
       left: 0;
-      margin-right: 5px;
+      margin-right: 8px;
       margin-left: auto;
 
       svg {
@@ -200,8 +199,10 @@ export default {
   mounted() {
     this.loadHistory();
     document.getElementById('chat').addEventListener('scroll', ev => {
-      const height = document.getElementById('chat').getBoundingClientRect().height;
-      this.isBottom = !(ev.target.scrollHeight - ev.target.scrollTop > height);
+      setTimeout(() => {
+        const height = document.getElementById('chat').getBoundingClientRect().height;
+        this.isBottom = !(ev.target.scrollHeight - ev.target.scrollTop > height);
+      }, 300);
     });
   },
 
@@ -677,14 +678,19 @@ export default {
     },
 
     clickFile(file) {
-      client.fileSignedUrl(file.Id).then(
-        url => {
-          this.$emit("on-file-clicked", url);
-        },
-        error => {
-          console.log(error);
-        }
-      );
+      if (file.Id) {
+        client.fileSignedUrl(file.Id).then(
+            url => {
+              this.$emit("on-file-clicked", url);
+            },
+            error => {
+              console.log(error);
+            }
+        );
+      } else {
+        this.$emit("on-file-clicked", file);
+      }
+
     },
 
     longTap(msg) {

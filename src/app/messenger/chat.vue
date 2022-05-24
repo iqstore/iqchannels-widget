@@ -79,7 +79,7 @@
     }
 
     .read {
-        margin-left: -5px;
+        margin-left: -4px;
         position: absolute;
     }
 
@@ -153,7 +153,7 @@
 
     .time {
         font-size: 10px;
-        color: #666666;
+        color: #5F814A;
         white-space: nowrap;
         clear: both;
         margin: auto 0 0 12px;
@@ -277,7 +277,7 @@
                       .reply-text {{ getAuthorAndText(msg).text }}
 
                     .message-data
-                      pre.text(v-if="msg.Payload == 'text'" v-html="linkifyText(msg.Text)")
+                      pre.text(v-if="msg.Payload == 'text'" v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
 
                       .file.text(v-if="msg.Upload")
                         div(v-if="msg.Uploading")
@@ -346,6 +346,13 @@ export default {
   methods: {
     scrollToLastMessage() {
       const el = $('#chat');
+
+      el.on('scroll', () => {
+        setTimeout(() => {
+          const htmlMessages = [].slice.apply(document.getElementsByClassName('message-wrapper'));
+          htmlMessages.forEach(transform => transform.style.transform = 'none');
+        });
+      });
 
       el.stop().animate({
         scrollTop: el[0].scrollHeight
@@ -445,8 +452,26 @@ export default {
         this.$emit("click-file", file);
     },
 
+    clickLink(url, event, text) {
+      if (!text) {
+        return;
+      }
+
+      if (!event) {
+        return;
+      }
+
+      if (this.mode !== 'mobile') {
+        return;
+      }
+
+      event.preventDefault();
+      this.$emit("click-file", url);
+
+    },
+
     linkifyText(text) {
-      return linkifyString(text);
+      return linkifyString(text, {target: '_blank'});
     }
   }
 };
