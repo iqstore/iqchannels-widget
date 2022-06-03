@@ -267,7 +267,8 @@ export default {
         v = text;
       }
 
-      field.value = v;
+      field.textContent = v;
+      this.handleChange();
     },
 
     getClass() {
