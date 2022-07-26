@@ -465,9 +465,12 @@ export default {
         return;
       }
 
-      event.preventDefault();
-      this.$emit("click-file", url);
+      if (!event.target.href) {
+        return;
+      }
 
+      event.preventDefault();
+      this.$emit("click-file", { href: event.target.href });
     },
 
     linkifyText(text) {
