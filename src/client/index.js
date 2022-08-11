@@ -12,7 +12,7 @@ import Request from './request';
 const XClientAuthorizationHeader = 'X-Client-Authorization';
 
 class Client {
-  constructor(apiUrl) {
+  constructor (apiUrl) {
     this.sendQueue = [];
     this.sending = null;
 
@@ -20,12 +20,12 @@ class Client {
     this.authSessionID = null;
   }
 
-  clearAuth() {
+  clearAuth () {
     this.authToken = null;
     this.authSessionID = null;
   }
 
-  setAuth(auth) {
+  setAuth (auth) {
     if (!auth) {
       return;
     }
@@ -38,7 +38,7 @@ class Client {
     this.authSessionID = s.Id;
   }
 
-  post(path, data) {
+  post (path, data) {
     let headers = {};
     if (this.authToken) {
       headers[XClientAuthorizationHeader] = this.authToken;
@@ -60,7 +60,7 @@ class Client {
     });
   }
 
-  xhr(onProgress) {
+  xhr (onProgress) {
     const xhr = jquery.ajaxSettings.xhr();
     if (xhr.upload) {
       xhr.upload.addEventListener('progress', (e) => {
@@ -72,7 +72,7 @@ class Client {
     return xhr;
   }
 
-  multipart(path, data, onSuccess, onError, onProgress) {
+  multipart (path, data, onSuccess, onError, onProgress) {
     let headers = {};
     if (this.authToken) {
       headers[XClientAuthorizationHeader] = this.authToken;
@@ -94,7 +94,7 @@ class Client {
     });
   }
 
-  handleResponse(response, onSuccess, onError) {
+  handleResponse (response, onSuccess, onError) {
     if (response.OK) {
       return onSuccess(response);
     }
@@ -102,7 +102,7 @@ class Client {
     onError(error);
   }
 
-  anonymousAuth() {
+  anonymousAuth () {
     const options = { shouldRetry: (error) => !error.unauthorized() };
     return this._enqueueRequest('/clients/anonymous/auth', null, options)
       .then(response => {
@@ -113,7 +113,7 @@ class Client {
       });
   }
 
-  anonymousSignup(name, channel) {
+  anonymousSignup (name, channel) {
     const data = { Name: name, Channel: channel };
     const options = { shouldRetry: (error) => error.http() };
 
@@ -127,7 +127,7 @@ class Client {
   }
 
   // Deprecated
-  anonymousCreate(name, channel) {
+  anonymousCreate (name, channel) {
     const data = { Name: name, Channel: channel };
     const options = { shouldRetry: (error) => error.http() };
 
@@ -140,7 +140,7 @@ class Client {
       });
   }
 
-  authorize(credentials, channel) {
+  authorize (credentials, channel) {
     const data = {
       Credentials: credentials,
       Channel: channel
@@ -157,7 +157,7 @@ class Client {
   }
 
   // Deprecated.
-  authorizeInProject(credentials, project) {
+  authorizeInProject (credentials, project) {
     const data = {
       Credentials: credentials,
       Project: project
@@ -173,7 +173,7 @@ class Client {
       });
   }
 
-  refreshClient(credentials) {
+  refreshClient (credentials) {
     const data = {
       Credentials: credentials
     };
@@ -182,31 +182,31 @@ class Client {
       .then(response => response.Result.Client);
   }
 
-  channelMessages(channel, chatType) {
+  channelMessages (channel, chatType) {
     const data = { ChatType: chatType, Limit: config.REQUEST_MESSAGES_LIMIT };
     return this._enqueueRequest(`/chats/channel/messages/${channel}`, data)
       .then(response => new Relations(config, response.Rels).messages(response.Result));
   }
 
-  channelTyping(channel, chatType) {
+  channelTyping (channel, chatType) {
     const data = { ChatType: chatType };
     const options = { timeout: 5000 };
     return this._enqueueRequest(`/chats/channel/typing/${channel}`, data, options);
   }
 
-  channelSend(channel, message) {
+  channelSend (channel, message) {
     return this._enqueueRequest(`/chats/channel/send/${channel}`, message);
   }
 
-  channelMessagesRead(messagesIds) {
+  channelMessagesRead (messagesIds) {
     return this._enqueueRequest(`/chats/messages/read`, messagesIds);
   }
 
-  channelMessagesReceived(messagesIds) {
+  channelMessagesReceived (messagesIds) {
     return this._enqueueRequest(`/chats/messages/received`, messagesIds);
   }
 
-  channelPushToken(channel, type, token) {
+  channelPushToken (channel, type, token) {
     switch (type) {
       case 'apns':
         return this.channelAPNSToken(channel, token);
@@ -219,7 +219,7 @@ class Client {
     }
   }
 
-  channelAPNSToken(channel, token) {
+  channelAPNSToken (channel, token) {
     let body = {
       Type: 'apns',
       Token: token
@@ -227,7 +227,7 @@ class Client {
     return this._enqueueRequest(`/push/channel/apns/${channel}`, body);
   }
 
-  channelFCMToken(channel, token) {
+  channelFCMToken (channel, token) {
     let body = {
       Type: 'fcm',
       Token: token
@@ -235,7 +235,7 @@ class Client {
     return this._enqueueRequest(`/push/channel/fcm/${channel}`, body);
   }
 
-  rateRating(ratingId, value, comment) {
+  rateRating (ratingId, value, comment) {
     const request = {
       RatingId: ratingId,
       Rating: {
@@ -247,21 +247,21 @@ class Client {
       .then(response => new Relations(config, response.Rels).rating(response.Result));
   }
 
-  ignoreRating(ratingId) {
-    const request = {RatingId: ratingId};
+  ignoreRating (ratingId) {
+    const request = { RatingId: ratingId };
     return this._enqueueRequest(`/ratings/ignore`, request)
       .then(response => new Relations(config, response.Rels).rating(response.Result));
   }
 
-  fileToken(fileId) {
-    const request = {FileId: fileId};
+  fileToken (fileId) {
+    const request = { FileId: fileId };
     return this.post(`/files/token`, request).then(response => {
       let token = response.Result;
       return token.Token;
     });
   }
 
-  fileSignedUrl(fileId) {
+  fileSignedUrl (fileId) {
     return this.fileToken(fileId).then(token => {
       let path = `/files/get/${fileId}?token=${token}`;
       let fullpath = config.apiUrl(path);
@@ -270,7 +270,7 @@ class Client {
     });
   }
 
-  uploadFile(file, onSuccess, onError, onProgress) {
+  uploadFile (file, onSuccess, onError, onProgress) {
     let type = 'file';
     if (file.type.startsWith('image/')) {
       type = 'image';
@@ -288,7 +288,7 @@ class Client {
     return this.multipart('/files/upload', data, _onSuccess, onError, onProgress);
   }
 
-  channelListen(channel, chatType, lastEventId, onMessage, onError) {
+  channelListen (channel, chatType, lastEventId, onMessage, onError) {
     let token = this._encryptToken();
     let url = config.apiUrl(`/sse/chats/channel/events/${channel}`);
 
@@ -337,7 +337,7 @@ class Client {
     return source;
   }
 
-  _enqueueRequest(url, data, options = { timeout: 0, shouldRetry: null }) {
+  _enqueueRequest (url, data, options = { timeout: 0, shouldRetry: null }) {
     const req = new Request(url, data, options);
     const promise = new Promise((resolve, reject) => {
       req.onError(reject);
@@ -348,7 +348,7 @@ class Client {
     return promise;
   }
 
-  _nextRequest() {
+  _nextRequest () {
     while (this.sendQueue.length) {
       const req = this.sendQueue.shift();
       if (!req.expired()) return req;
@@ -357,7 +357,7 @@ class Client {
     return null;
   }
 
-  _triggerFlush({ timeout = 1, clearSending = false }) {
+  _triggerFlush ({ timeout = 1, clearSending = false }) {
     setTimeout(() => {
       if (clearSending) {
         this.sending = null;
@@ -394,19 +394,19 @@ class Client {
   }
 
   // _encryptToken returns signed x-client-token for SSE connections.
-  _encryptToken() {
+  _encryptToken () {
     if (!this.authToken || !this.authSessionID) {
       return;
     }
 
     // Combine a session and the current timestamp.
-    let time = + new Date();
-    let token = {SessionID: this.authSessionID, Time: time};
+    let time = +new Date();
+    let token = { SessionID: this.authSessionID, Time: time };
     let text = JSON.stringify(token);
 
     // Sign them as JSON using the auth token.
     let hmac = new jsSHA('SHA-1', 'TEXT', {
-      hmacKey: { value: this.authToken, format: 'TEXT' },
+      hmacKey: { value: this.authToken, format: 'TEXT' }
     });
     hmac.update(text);
     let sign = hmac.getHash('HEX');
@@ -416,7 +416,7 @@ class Client {
       Token: text,
       Sign: sign
     };
-    let json = JSON.stringify(signed);;
+    let json = JSON.stringify(signed); ;
 
     // Base64 encode the result.
     let b64 = btoa(json);

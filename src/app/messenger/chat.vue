@@ -277,8 +277,7 @@
                       .reply-text {{ getAuthorAndText(msg).text }}
 
                     .message-data
-                      pre.text(v-if="msg.Payload == 'text'" v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
-
+                      pre.text(v-if="msg.Payload === 'text' || msg.Payload === 'single-choice'" v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
                       .file.text(v-if="msg.Upload")
                         div(v-if="msg.Uploading")
                           .filename {{ msg.Upload.name }}
