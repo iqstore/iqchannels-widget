@@ -103,6 +103,102 @@
       padding: .375rem 2.25rem .375rem .75rem;
     }
 
+    .choice_box{
+    --font-family: Roboto;
+    --white: #ffffff;
+    --bg: #f5f6f8;
+    --seashell: #e2e2e2;
+    --gray: #bec5c9;
+    --reef: #5c7080;
+    --shark: #1a1e22;
+    --overlay: rgba(26, 30, 34, 0.8);
+    --say: #a4ded0;
+    --trigger: #ffe5b4;
+    --execute: #b0c4de;
+    --prompt: #e2c7e0;
+    --color-fill-if-else: #febbad;
+    --lighthouse: #f66f48;
+    --focus-lighthouse: #e06542;
+    --hover-lighthouse: #f39c82;
+    --hover-lighthouse-30: #f9ddd5;
+    --ocean: #3276ea;
+    --hover-ocean: #cad7f5;
+    --spacing-x-small: 2px;
+    --spacing-small: 4px;
+    --spacing-medium: 8px;
+    --spacing-large: 12px;
+    --spacing-x-large: 16px;
+    --spacing-xx-large: 20px;
+    --spacing-xxx-large: 24px;
+    --spacing-xxxx-large: 28px;
+    --right-sidebar-width: 240px;
+    --emulator-width: 300px;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.28581;
+    text-transform: none;
+    font-family: Roboto;
+    color: #000000;
+    visibility: visible;
+    -webkit-box-direction: normal;
+    box-sizing: border-box;
+    outline: none !important;
+    overflow-y: auto;
+    background-color: var(--bg);
+    padding: var(--spacing-large) var(--spacing-medium);
+    text-align: left;
+    border-radius: 3px;
+    margin: var(--spacing-large);
+    margin-bottom: 0;
+    }
+    .choice_button{
+      --font-family: Roboto;
+      --white: #ffffff;
+      --bg: #f5f6f8;
+      --seashell: #e2e2e2;
+      --gray: #bec5c9;
+      --reef: #5c7080;
+      --shark: #1a1e22;
+      --overlay: rgba(26, 30, 34, 0.8);
+      --say: #a4ded0;
+      --trigger: #ffe5b4;
+      --execute: #b0c4de;
+      --prompt: #e2c7e0;
+      --color-fill-if-else: #febbad;
+      --lighthouse: #f66f48;
+      --focus-lighthouse: #e06542;
+      --hover-lighthouse: #f39c82;
+      --hover-lighthouse-30: #f9ddd5;
+      --ocean: #3276ea;
+      --hover-ocean: #cad7f5;
+      --spacing-x-small: 2px;
+      --spacing-small: 4px;
+      --spacing-medium: 8px;
+      --spacing-large: 12px;
+      --spacing-x-large: 16px;
+      --spacing-xx-large: 20px;
+      --spacing-xxx-large: 24px;
+      --spacing-xxxx-large: 28px;
+      --right-sidebar-width: 240px;
+      --emulator-width: 300px;
+      visibility: visible;
+      -webkit-box-direction: normal;
+      box-sizing: border-box;
+      outline: none !important;
+      border-radius: 15px;
+      border: dashed 1px var(--seashell);
+      background: none;
+      font-size: 12px;
+      line-height: 40px;
+      color: var(--shark);
+      margin-right: 12px;
+      cursor: pointer;
+      min-height: 40px;
+      padding: var(--spacing-x-small) var(--spacing-large);
+      transition: border 0.3s, background 0.3s, color 0.3s;
+    }
+
 </style>
 
 <template lang="pug">
@@ -137,6 +233,10 @@
           .scrollBottom(v-if="!isBottom" @click="scrollToLastMessage(false)")
             svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
               path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
+          .choice_box.d-block(v-if="groups[groups.length -1].LastMessage.Payload === 'single-choice'")
+            button.choice_button(type="button",
+              v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
+              @click.prevent="onMessageComposed(choice.title)") {{ choice.title }}
         #composer
           composer(
             ref="composer"
@@ -154,6 +254,8 @@ import client from '../../client';
 import * as schema from '../../schema';
 import { isSameDate } from '../../lib/datetime';
 import { retryTimeout } from '../../lib/timeout';
+import Vue from 'vue';
+
 
 export default {
   components: { chat, composer },
@@ -184,10 +286,10 @@ export default {
     // last event id, updated in events handler
     // used in subscribe to channel
     this.lastEventId = null;
-
     // last generated local message id, to make
     // sure next generated value will be greater
     this.lastLocalId = 0;
+
   },
 
   beforeMount () {
@@ -216,7 +318,7 @@ export default {
       groups: [],
       inputMsg: {},
       inputTyping: {},
-      isBottom: true
+      isBottom: true,
     };
   },
 
@@ -244,9 +346,9 @@ export default {
     },
     hasPersonalManager() {
       return !!this.client.PersonalManagerId;
-    }
-  },
+    },
 
+  },
   watch: {
     opened: function(newValue, oldValue) {
       if (newValue && !oldValue) {
@@ -319,7 +421,6 @@ export default {
         this.onSubscriptionError
       );
     },
-
     unsubscribe() {
       if (this.subscription) {
         this.subscription.close();
@@ -438,6 +539,7 @@ export default {
       for (let g = this.groups.length - 1; g >= 0; g--) {
         for (let i = this.groups[g].Messages.length - 1; i >= 0; i--) {
           const message = this.groups[g].Messages[i];
+          console.log(message)
           if (message.Id && message.Id === id) {
             return message;
           }
@@ -767,19 +869,16 @@ export default {
       if (!message) {
         return false;
       }
-
       // Someone else's message
       if (!message.My) {
         this.appendMessage(message);
         return true;
       }
-
       // Replace my own message
       if (!this.replaceMessage(message)) {
         // Sent from concurrent session from another browser?
         this.appendMessage(message);
       }
-
       return false;
     },
 
