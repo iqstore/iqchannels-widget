@@ -233,7 +233,7 @@
           .scrollBottom(v-if="!isBottom" @click="scrollToLastMessage(false)")
             svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
               path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
-          .choice_box.d-block(v-if="groups[groups.length -1].LastMessage.Payload === 'single-choice'")
+          .choice_box.d-block(v-if="groups.length && groups[groups.length -1].LastMessage.Payload === 'single-choice'")
             button.choice_button(type="button",
               v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
               @click.prevent="onMessageComposed(choice.title)") {{ choice.title }}
@@ -539,7 +539,6 @@ export default {
       for (let g = this.groups.length - 1; g >= 0; g--) {
         for (let i = this.groups[g].Messages.length - 1; i >= 0; i--) {
           const message = this.groups[g].Messages[i];
-          console.log(message)
           if (message.Id && message.Id === id) {
             return message;
           }
