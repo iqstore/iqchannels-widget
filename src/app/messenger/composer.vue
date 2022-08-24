@@ -13,12 +13,10 @@
         }
 
         textarea {
-            position: absolute;
             background-color: transparent;
             padding: 8px 32px 8px 8px;
             border: 0;
             width: 100%;
-            height: 100%;
             outline: none;
             color: #000000;
             -moz-box-sizing: border-box;
@@ -26,6 +24,7 @@
             box-sizing: border-box;
             float: right;
             clear: both;
+            height: 34px
 
         }
 
@@ -65,7 +64,7 @@
         display: flex;
         min-width: 32px;
         height: 32px;
-        margin: 0 8px;
+        margin: auto 8px 3px;
         align-self: end;
 
         &.button-active {
@@ -168,8 +167,7 @@
               span.icon
 
             .textarea
-              .textarea-title(v-show="titleVisible" @click="focusInput") Сообщение
-              .textarea-field(contenteditable="true" title="Сообщение" role="textbox" @input="handleChange" ref="text")
+              textarea(ref="text" placeholder="Сообщение..." @keydown.enter="handleEnterPressed" @input="handleChange")
 
             a.button(href="#" @click.prevent="trySendMessage" title="Отправить сообщение" v-bind:class="getClass()")
                 icon(name="long-arrow-up")
@@ -179,6 +177,7 @@
 
 <script>
 const TYPING_INTERVAL = 2000;
+const TEXTAREA_HEIGHT = '32px';
 
 export default {
   data: function() {
@@ -267,7 +266,7 @@ export default {
         v = text;
       }
 
-      field.textContent = v;
+      field.value = v;
       this.handleChange();
     },
 
@@ -279,6 +278,7 @@ export default {
 
     resetReplayedMsg() {
       this.msgVisible = false;
+      this.$refs.text.style.height = TEXTAREA_HEIGHT;
     },
 
     // Private
@@ -298,7 +298,7 @@ export default {
     },
 
     trySendMessage() {
-      const messageText = this.$refs.text.innerText
+      const messageText = this.$refs.text.value
         .replace(/[\r\n]{2,}/g, "\n")
         .replace(/^[\s]+|[\s]+$/gm, "");
       if (messageText) {
@@ -311,15 +311,21 @@ export default {
         }
         this.resetReplayedMsg();
       }
-      this.$refs.text.innerText = "";
+      this.$refs.text.value = "";
       this.titleVisible = true;
     },
 
     handleChange(event) {
-      const messageText = this.$refs.text.innerText
+      const messageText = this.$refs.text.value
           .replace(/[\r\n]{2,}/g, "\n")
           .replace(/^[\s]+|[\s]+$/gm, "");
-      this.titleVisible = !(this.$refs.text && messageText);
+      this.titleVisible = !(this.$refs.text.value && messageText);
+
+      const target = this.$refs.text;
+
+      target.style.height = TEXTAREA_HEIGHT;
+      target.style.height = (target.scrollHeight)+"px";
+
       this.startTyping();
     },
 
