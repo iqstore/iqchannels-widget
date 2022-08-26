@@ -337,7 +337,7 @@ class Client {
     return source;
   }
 
-  _enqueueRequest (url, data, options = { timeout: 0, shouldRetry: null }) {
+  _enqueueRequest (url, data, options = { timeout: 0, shouldRetry: true }) {
     const req = new Request(url, data, options);
     const promise = new Promise((resolve, reject) => {
       req.onError(reject);
