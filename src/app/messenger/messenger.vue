@@ -845,6 +845,9 @@ export default {
           case schema.ChatEventTyping:
             this.handleOperatorTyping(event);
             break;
+          case schema.ChatClosed:
+            this.handleIncomingReceived(event);
+            break;
           default:
             console.log("Unhandled channel event", event);
         }

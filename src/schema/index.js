@@ -14,3 +14,4 @@ export const ChatEventMessageCreated = 'message_created';
 export const ChatEventMessageReceived = 'message_received';
 export const ChatEventMessageRead = 'message_read';
 export const ChatEventTyping = 'typing';
+export const ChatClosed = 'chat_closed';
