@@ -71,9 +71,12 @@
         return COLORS[this.user.Id % COLORS.length];
       },
       'initials': function () {
-        return this.user.Name
-          ? this.user.Name.split(' ').slice(0,2).map(s => s ? s[0].toUpperCase() : '').join('')
-          : '';
+        if (this.user.Pseudonym){
+          return this.user.Pseudonym.split(' ').slice(0,2).map(s => s ? s[0].toUpperCase() : '').join('')
+        }else if (this.user.Name){
+        return this.user.Name.split(' ').slice(0,2).map(s => s ? s[0].toUpperCase() : '').join('')
+        }
+          return  '';
       },
       'url': function () {
         return this.user.AvatarURL
