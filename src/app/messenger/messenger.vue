@@ -111,6 +111,8 @@
     --gray: #bec5c9;
     --reef: #5c7080;
     --shark: #1a1e22;
+    display: flex;
+    align-items: flex-end;
     --overlay: rgba(26, 30, 34, 0.8);
     --say: #a4ded0;
     --trigger: #ffe5b4;
@@ -134,6 +136,7 @@
     --right-sidebar-width: 240px;
     --emulator-width: 300px;
     font-size: 14px;
+    justify-content: flex-end;
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1.28581;
@@ -143,13 +146,10 @@
     visibility: visible;
     -webkit-box-direction: normal;
     box-sizing: border-box;
-    outline: none !important;
     overflow-y: auto;
-    background-color: var(--bg);
-    padding: var(--spacing-large) var(--spacing-medium);
     text-align: left;
+    flex-direction: column;
     border-radius: 3px;
-    margin: var(--spacing-large);
     margin-bottom: 0;
     }
     .choice_button{
@@ -186,12 +186,13 @@
       -webkit-box-direction: normal;
       box-sizing: border-box;
       outline: none !important;
-      border-radius: 15px;
-      border: dashed 1px var(--seashell);
+      border: 1px solid #A3DE62;
+      margin-bottom: 5px;
+      border-radius: 10px;
       background: none;
+      color: #74B928;
+      height: 36px;
       font-size: 12px;
-      line-height: 40px;
-      color: var(--shark);
       margin-right: 12px;
       cursor: pointer;
       min-height: 40px;
