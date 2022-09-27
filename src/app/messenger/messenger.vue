@@ -139,7 +139,7 @@
     justify-content: flex-end;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 1.28581;
+    line-height: 1;
     text-transform: none;
     font-family: Roboto;
     color: #000000;
@@ -193,9 +193,8 @@
       color: #74B928;
       height: 36px;
       font-size: 12px;
-      margin-right: 12px;
+      margin-right: 6px;
       cursor: pointer;
-      min-height: 40px;
       padding: var(--spacing-x-small) var(--spacing-large);
       transition: border 0.3s, background 0.3s, color 0.3s;
     }
@@ -234,10 +233,18 @@
           .scrollBottom(v-if="!isBottom" @click="scrollToLastMessage(false)")
             svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
               path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
-          .choice_box.d-block(v-if="groups.length && groups[groups.length -1].LastMessage.Payload === 'single-choice'")
-            button.choice_button(type="button",
-              v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
-              @click.prevent="onMessageComposed(choice.title)") {{ choice.title }}
+          .d-block(v-if="groups.length && groups[groups.length -1].LastMessage.Payload === 'single-choice'")
+            div.choice_box(v-if="!groups[groups.length -1].LastMessage.IsDropDown")
+              button.choice_button(type="button",
+                v-for="choice in singleChoices",
+                @click.prevent="onMessageComposed(choice.title)") {{ choice.title }}
+            div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
+              button.choice_button(type="button", style="width:200px;"
+                  @click.prevent="onMessageComposed(singleChoices[0].title)") {{ singleChoices[0].title }}
+              div(style="display:flex;justify-content:flex-end")
+                button.choice_button(type="button"
+                  v-for="choice in singleChoices.slice(1)",
+                  @click.prevent="onMessageComposed(choice.title)") {{ choice.title }}
         #composer
           composer(
             ref="composer"
@@ -320,6 +327,7 @@ export default {
       inputMsg: {},
       inputTyping: {},
       isBottom: true,
+      singleChoices: [],
     };
   },
 
@@ -560,6 +568,7 @@ export default {
             group.Messages[i] = message;
             if (i === group.Messages.length - 1) {
               group.LastMessage = message;
+              this.singleChoices = group.LastMessage.SingleChoices
             }
             return true;
           }
@@ -582,6 +591,7 @@ export default {
               groups.splice(g, 1);
             } else {
               group.LastMessage = group.Messages[group.Messages.length - 1];
+              this.singleChoices = group.Messages[group.Messages.length - 1].SingleChoices;
             }
             return true;
           }
@@ -604,6 +614,7 @@ export default {
         ) {
           group.Messages.push(message);
           group.LastMessage = message;
+          this.singleChoices = group.LastMessage.SingleChoices
           return;
         }
       }
