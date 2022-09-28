@@ -105,26 +105,9 @@
 
     .choice_box{
     --font-family: Roboto;
-    --white: #ffffff;
-    --bg: #f5f6f8;
-    --seashell: #e2e2e2;
-    --gray: #bec5c9;
-    --reef: #5c7080;
-    --shark: #1a1e22;
     display: flex;
     align-items: flex-end;
     --overlay: rgba(26, 30, 34, 0.8);
-    --say: #a4ded0;
-    --trigger: #ffe5b4;
-    --execute: #b0c4de;
-    --prompt: #e2c7e0;
-    --color-fill-if-else: #febbad;
-    --lighthouse: #f66f48;
-    --focus-lighthouse: #e06542;
-    --hover-lighthouse: #f39c82;
-    --hover-lighthouse-30: #f9ddd5;
-    --ocean: #3276ea;
-    --hover-ocean: #cad7f5;
     --spacing-x-small: 2px;
     --spacing-small: 4px;
     --spacing-medium: 8px;
@@ -135,6 +118,28 @@
     --spacing-xxxx-large: 28px;
     --right-sidebar-width: 240px;
     --emulator-width: 300px;
+    font-size: 14px;
+    justify-content: flex-end;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.5;
+    text-transform: none;
+    font-family: Roboto;
+    color: #000000;
+    visibility: visible;
+    flex-wrap: wrap;
+    -webkit-box-direction: normal;
+    box-sizing: border-box;
+    overflow-y: auto;
+    text-align: left;
+    border-radius: 3px;
+    margin-bottom: 0;
+    }
+    .choice_box_dropdown{
+    --font-family: Roboto;
+    display: flex;
+    align-items: flex-end;
+    --overlay: rgba(26, 30, 34, 0.8);
     font-size: 14px;
     justify-content: flex-end;
     font-weight: 400;
@@ -154,37 +159,7 @@
     }
     .choice_button{
       --font-family: Roboto;
-      --white: #ffffff;
-      --bg: #f5f6f8;
-      --seashell: #e2e2e2;
-      --gray: #bec5c9;
-      --reef: #5c7080;
-      --shark: #1a1e22;
-      --overlay: rgba(26, 30, 34, 0.8);
-      --say: #a4ded0;
-      --trigger: #ffe5b4;
-      --execute: #b0c4de;
-      --prompt: #e2c7e0;
-      --color-fill-if-else: #febbad;
-      --lighthouse: #f66f48;
-      --focus-lighthouse: #e06542;
-      --hover-lighthouse: #f39c82;
-      --hover-lighthouse-30: #f9ddd5;
-      --ocean: #3276ea;
-      --hover-ocean: #cad7f5;
-      --spacing-x-small: 2px;
-      --spacing-small: 4px;
-      --spacing-medium: 8px;
-      --spacing-large: 12px;
-      --spacing-x-large: 16px;
-      --spacing-xx-large: 20px;
-      --spacing-xxx-large: 24px;
-      --spacing-xxxx-large: 28px;
-      --right-sidebar-width: 240px;
-      --emulator-width: 300px;
-      visibility: visible;
       -webkit-box-direction: normal;
-      box-sizing: border-box;
       outline: none !important;
       border: 1px solid #A3DE62;
       margin-bottom: 5px;
@@ -195,7 +170,6 @@
       font-size: 12px;
       margin-right: 6px;
       cursor: pointer;
-      padding: var(--spacing-x-small) var(--spacing-large);
       transition: border 0.3s, background 0.3s, color 0.3s;
     }
 
@@ -238,7 +212,7 @@
               button.choice_button(type="button",
                 v-for="choice in singleChoices",
                 @click.prevent="onMessageComposed(choice.title)") {{ choice.title }}
-            div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
+            div.choice_box_dropdown(v-if="groups[groups.length -1].LastMessage.IsDropDown")
               button.choice_button(type="button", style="width:200px;"
                   @click.prevent="onMessageComposed(singleChoices[0].title)") {{ singleChoices[0].title }}
               div(style="display:flex;justify-content:flex-end")
