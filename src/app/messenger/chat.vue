@@ -257,7 +257,6 @@
       border-color: lightgray;
       }
     .choice_box_dropdown{
-    --font-family: Roboto;
     display: flex;
     font-size: 14px;
     justify-content: flex-start;
@@ -267,13 +266,18 @@
     display: flex;
     flex-wrap: wrap;
     text-transform: none;
-    font-family: Roboto;
-    color: #000000;
     visibility: visible;
     text-align: left;
     border-radius: 3px;
     }
     .choice_button{
+      white-space: pre-wrap;       /* css-3 */
+      white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+      white-space: -pre-wrap;      /* Opera 4-6 */
+      white-space: -o-pre-wrap;    /* Opera 7 */
+      word-wrap: break-word;       /* Internet Explorer 5.5+ */
+      font-family: inherit;
+      font-size: inherit;
       --font-family: Roboto;
       -webkit-box-direction: normal;
       outline: none !important;
@@ -286,7 +290,6 @@
       line-height: 1;
       color: #74B928;
       height: 36px;
-      font-size: 12px;
       cursor: pointer;
       transition: border 0.3s, background 0.3s, color 0.3s;
     }

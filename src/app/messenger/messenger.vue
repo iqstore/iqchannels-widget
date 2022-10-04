@@ -107,35 +107,25 @@
       width: 50%;
       float: right;
       margin-top: 5px;
-    --font-family: Roboto;
-    --overlay: rgba(26, 30, 34, 0.8);
-    --spacing-x-small: 2px;
-    --spacing-small: 4px;
-    --spacing-medium: 8px;
-    --spacing-large: 12px;
-    --spacing-x-large: 16px;
-    --spacing-xx-large: 20px;
-    --spacing-xxx-large: 24px;
-    --spacing-xxxx-large: 28px;
-    --right-sidebar-width: 240px;
-    --emulator-width: 300px;
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 1.5;
+    line-height: 1.15;
     text-transform: none;
-    font-family: Roboto;
-    color: #000000;
     visibility: visible;
     flex-wrap: wrap;
     -webkit-box-direction: normal;
     text-align: left;
+    font-size: 14px;
     border-radius: 3px;
     }
     .choice_button{
+      white-space: pre-wrap;       /* css-3 */
+      white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+      white-space: -pre-wrap;      /* Opera 4-6 */
+      white-space: -o-pre-wrap;    /* Opera 7 */
+      word-wrap: break-word;       /* Internet Explorer 5.5+ */
+      font-family: inherit;
+      font-size: inherit;
       max-width: 150px;
       float: right;
-      --font-family: Roboto;
       outline: none !important;
       border: 1px solid #A3DE62;
       margin-bottom: 5px;
@@ -143,7 +133,6 @@
       background: none;
       color: #74B928;
       height: 36px;
-      font-size: 12px;
       margin-right: 6px;
       cursor: pointer;
       transition: border 0.3s, background 0.3s, color 0.3s;
