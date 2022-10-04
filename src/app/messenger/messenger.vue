@@ -104,9 +104,10 @@
     }
 
     .choice_box{
+      width: 50%;
+      float: right;
+      margin-top: 5px;
     --font-family: Roboto;
-    display: flex;
-    align-items: flex-end;
     --overlay: rgba(26, 30, 34, 0.8);
     --spacing-x-small: 2px;
     --spacing-small: 4px;
@@ -119,7 +120,6 @@
     --right-sidebar-width: 240px;
     --emulator-width: 300px;
     font-size: 14px;
-    justify-content: flex-end;
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1.5;
@@ -129,32 +129,13 @@
     visibility: visible;
     flex-wrap: wrap;
     -webkit-box-direction: normal;
-    box-sizing: border-box;
     text-align: left;
     border-radius: 3px;
-    }
-    .choice_box_dropdown{
-    --font-family: Roboto;
-    display: flex;
-    padding-bottom: 10px;
-    font-size: 14px;
-    float: left;
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 1;
-    text-transform: none;
-    font-family: Roboto;
-    color: #000000;
-    visibility: visible;
-    -webkit-box-direction: normal;
-    text-align: left;
-    flex-direction: column;
-    border-radius: 3px;
-    margin-bottom: 0;
     }
     .choice_button{
+      max-width: 150px;
+      float: right;
       --font-family: Roboto;
-      -webkit-box-direction: normal;
       outline: none !important;
       border: 1px solid #A3DE62;
       margin-bottom: 5px;
@@ -204,7 +185,7 @@
           .scrollBottom(v-if="!isBottom" @click="scrollToLastMessage(false)")
             svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
               path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
-          .d-block(v-if="groups.length && groups[groups.length -1].LastMessage.Payload === 'single-choice'")
+          .div(v-if="groups.length && groups[groups.length -1].LastMessage.Payload === 'single-choice'")
             div.choice_box(v-if="!groups[groups.length -1].LastMessage.IsDropDown")
               button.choice_button(type="button",
                 v-for="choice in singleChoices",
