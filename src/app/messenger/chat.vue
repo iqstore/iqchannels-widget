@@ -25,6 +25,8 @@
         }
 
         .image {
+          text-decoration: none;
+          color: black;
             img {
                 vertical-align: middle;
                 width: 100%;
@@ -242,6 +244,53 @@
       transition: all 0.3s;
       font-size: 14px;
     }
+    .img-caption{
+      color: black;
+      text-align: center !important;
+      pointer-events: none !important;
+    }
+    .img-button{
+      width: 100%;
+      margin-top: 5px;
+      color: cornflowerblue;
+      border-width: 0.5px;
+      border-color: lightgray;
+      }
+    .choice_box_dropdown{
+    --font-family: Roboto;
+    margin-top: 5px;
+    font-size: 14px;
+    float: left;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1;
+    display: flex;
+    flex-wrap: wrap;
+    text-transform: none;
+    font-family: Roboto;
+    color: #000000;
+    visibility: visible;
+    -webkit-box-direction: normal;
+    text-align: left;
+    flex-direction: column;
+    border-radius: 3px;
+    }
+    .choice_button{
+      --font-family: Roboto;
+      -webkit-box-direction: normal;
+      outline: none !important;
+      border: 1px solid #A3DE62;
+      margin-bottom: 5px;
+      border-radius: 10px;
+      background: none;
+      line-height: 1;
+      color: #74B928;
+      height: 36px;
+      font-size: 12px;
+      margin-right: 1px;
+      cursor: pointer;
+      transition: border 0.3s, background 0.3s, color 0.3s;
+    }
 
 </style>
 
@@ -290,11 +339,15 @@
                           .error {{ msg.UploadError }}
                           a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
                           a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
-                      a.image(v-else-if="msg.File && msg.File.Type == 'image'"
-                        v-bind:href="msg.File.URL"
+                      div(v-else-if="msg.File && msg.File.Type == 'image'")
+                        a.image(
+                        v-bind:href="msg.File.URL",
                         target="_blank",
                         @click="clickFile(msg, $event)")
-                        img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                          img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                        div.img-caption {{ msg.Text }}
+                        button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
+                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title)" ) {{ action.Title }}
                       a.file(v-else-if="msg.File && msg.File.Type == 'file'"
                         v-bind:href="msg.File.URL"
                         target="_blank"
@@ -310,6 +363,14 @@
                           svg(width='13' height='8' viewbox='0 0 13 8' fill='none' xmlns='http://www.w3.org/2000/svg' class="svg-read")
                             path(d='M12 0.302282C11.7304 0.0352342 11.2403 0.287629 11.026 0.499975L5.39909 6.24939C5.12983 6.56509 5.39862 6.85352 5.39862 6.85352C5.61285 7.06584 5.96621 7.03873 6.18036 6.82656L12 1.07104C12.2143 0.85872 12.2143 0.514628 12 0.302282Z' fill='#5F814A')
                         scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
+                div(v-if="group.LastMessage.Payload === 'single-choice'", style="margin-top:5px")
+                  div.choice_box_dropdown(v-if="group.LastMessage.IsDropDown")
+                  button.choice_button(type="button", style="width:200px;",
+                  @click.prevent="trySendMessage(group.LastMessage.SingleChoices[0].title)") {{ group.LastMessage.SingleChoices[0].title }}
+                  div(style="display:flex;justify-content:flex-end")
+                    button.choice_button(type="button"
+                    v-for="choice in group.LastMessage.SingleChoices.slice(1)",
+                    @click.prevent="trySendMessage(choice.title)") {{ choice.title }}
             rating(
                 v-if="group.Rating",
                 v-bind:rating="group.Rating",
@@ -330,7 +391,7 @@ export default {
     mode: String,
     opened: Boolean,
     groups: Array,
-    rating: Object
+    rating: Object,
   },
 
   data: function () {
@@ -357,6 +418,18 @@ export default {
       el.stop().animate({
         scrollTop: el[0].scrollHeight
       }, 800);
+    },
+
+    trySendMessage(messageText) {
+      if (messageText) {
+        this.scrollToLastMessage();
+        if (this.msg && this.msgVisible) {
+          this.$emit("message-composed", { messageText, replyToMessageId: this.msg.Id });
+        } else {
+          this.$emit("message-composed", messageText);
+        }
+      }
+      this.titleVisible = true;
     },
 
     getAuthorAndText: function(message) {

@@ -130,18 +130,15 @@
     flex-wrap: wrap;
     -webkit-box-direction: normal;
     box-sizing: border-box;
-    overflow-y: auto;
     text-align: left;
     border-radius: 3px;
-    margin-bottom: 0;
     }
     .choice_box_dropdown{
     --font-family: Roboto;
     display: flex;
-    align-items: flex-end;
-    --overlay: rgba(26, 30, 34, 0.8);
+    padding-bottom: 10px;
     font-size: 14px;
-    justify-content: flex-end;
+    float: left;
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1;
@@ -150,8 +147,6 @@
     color: #000000;
     visibility: visible;
     -webkit-box-direction: normal;
-    box-sizing: border-box;
-    overflow-y: auto;
     text-align: left;
     flex-direction: column;
     border-radius: 3px;
@@ -196,9 +191,11 @@
             v-bind:opened="opened",
             v-bind:groups="groups",
             v-bind:rating="rating",
+            v-bind:singleChoices="singleChoices",
             @cancel-upload="cancelUpload",
             @retry-upload="retryUpload",
             @rate-rating="rateRating",
+            @message-composed="onMessageComposed",
             @ignore-rating="ignoreRating",
             @mobile-rating="mobileRating",
             @long-tap="longTap",
@@ -212,13 +209,6 @@
               button.choice_button(type="button",
                 v-for="choice in singleChoices",
                 @click.prevent="onMessageComposed(choice.title)") {{ choice.title }}
-            div.choice_box_dropdown(v-if="groups[groups.length -1].LastMessage.IsDropDown")
-              button.choice_button(type="button", style="width:200px;"
-                  @click.prevent="onMessageComposed(singleChoices[0].title)") {{ singleChoices[0].title }}
-              div(style="display:flex;justify-content:flex-end")
-                button.choice_button(type="button"
-                  v-for="choice in singleChoices.slice(1)",
-                  @click.prevent="onMessageComposed(choice.title)") {{ choice.title }}
         #composer
           composer(
             ref="composer"
