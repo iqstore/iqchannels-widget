@@ -258,9 +258,9 @@
       }
     .choice_box_dropdown{
     --font-family: Roboto;
-    margin-top: 5px;
+    display: flex;
     font-size: 14px;
-    float: left;
+    justify-content: flex-start;
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1;
@@ -270,15 +270,15 @@
     font-family: Roboto;
     color: #000000;
     visibility: visible;
-    -webkit-box-direction: normal;
     text-align: left;
-    flex-direction: column;
     border-radius: 3px;
     }
     .choice_button{
       --font-family: Roboto;
       -webkit-box-direction: normal;
       outline: none !important;
+      width: fit-content;
+      margin-right: 5px;
       border: 1px solid #A3DE62;
       margin-bottom: 5px;
       border-radius: 10px;
@@ -287,7 +287,6 @@
       color: #74B928;
       height: 36px;
       font-size: 12px;
-      margin-right: 1px;
       cursor: pointer;
       transition: border 0.3s, background 0.3s, color 0.3s;
     }
@@ -365,11 +364,9 @@
                         scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
                 div(v-if="group.LastMessage.Payload === 'single-choice' && group.LastMessage.IsDropDown", style="margin-top:5px")
                   div.choice_box_dropdown
-                  button.choice_button(type="button", style="width:200px;",
-                  @click.prevent="trySendMessage(group.LastMessage.SingleChoices[0].title)") {{ group.LastMessage.SingleChoices[0].title }}
-                  div(style="display:flex;justify-content:flex-end")
+                    div(style="display:flex;justify-content:flex-end")
                     button.choice_button(type="button"
-                    v-for="choice in group.LastMessage.SingleChoices.slice(1)",
+                    v-for="choice in group.LastMessage.SingleChoices",
                     @click.prevent="trySendMessage(choice.title)") {{ choice.title }}
             rating(
                 v-if="group.Rating",
