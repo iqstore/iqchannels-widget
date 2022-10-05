@@ -104,13 +104,11 @@
     }
 
     .choice_box{
-      width: 50%;
-      float: right;
-      margin-top: 5px;
+    float: right;
+    margin-top: 5px;
     line-height: 1.15;
     text-transform: none;
     visibility: visible;
-    flex-wrap: wrap;
     -webkit-box-direction: normal;
     text-align: left;
     font-size: 14px;
@@ -124,8 +122,8 @@
       word-wrap: break-word;       /* Internet Explorer 5.5+ */
       font-family: inherit;
       font-size: inherit;
-      max-width: 150px;
       float: right;
+      width: fit-content;
       outline: none !important;
       border: 1px solid #A3DE62;
       margin-bottom: 5px;
