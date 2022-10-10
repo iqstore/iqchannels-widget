@@ -5,7 +5,7 @@ var w = new IQChannelsWidget({
   channel: 'support',
   credentials: '10',
   mode: 'mobile',
-  width: 280,
+  width: 425,
   iconOptions: { show: true }
 });
 w.on('open', function () {

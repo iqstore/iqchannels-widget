@@ -65,7 +65,7 @@ class IQChannelsWidget extends EventEmitter {
     credentials,
     mode = 'web',
     project,
-    width = 280,
+    width = 425,
     padBody = true,
     requireName = true,
     iconOptions = {},
@@ -90,7 +90,7 @@ class IQChannelsWidget extends EventEmitter {
 
     this.frameContainer = jquery(`
 <div id="iqchannels-widget-container">
-    <div id="iqchannels-widget" style="width: ${this.width}px">
+    <div id="iqchannels-widget" style="width: 425px">
         <iframe 
             id="iqchannels-widget-iframe" 
             src="${url}"></iframe>

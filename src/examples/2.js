@@ -4,6 +4,7 @@ import "normalize.css";
 window.widget = new IQChannelsWidget({
   project: 'retail',
   channel: 'support',
+  width: 425,
   credentials: '2',
   iconOptions: {
     show: true,
