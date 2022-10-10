@@ -245,7 +245,9 @@
       font-size: 14px;
     }
     .img-caption{
+      font-size: 14px;
       color: black;
+      font-family: sans-serif;
       pointer-events: none !important;
       padding-top: 10px;
       padding-bottom: 4px;
