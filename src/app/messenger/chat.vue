@@ -283,14 +283,14 @@
       --font-family: Roboto;
       -webkit-box-direction: normal;
       outline: none !important;
-      width: fit-content;
+      width: 90%;
       margin-right: 5px;
-      border: 1px solid #A3DE62;
+      border-radius: 4px;
+      color: #fff;
+      background-color: #ABB8C0;
+      border: 1px solid #98A8B2;
       margin-bottom: 5px;
-      border-radius: 10px;
-      background: none;
       line-height: 1;
-      color: #74B928;
       height: 36px;
       cursor: pointer;
       transition: border 0.3s, background 0.3s, color 0.3s;
@@ -368,7 +368,7 @@
                           svg(width='13' height='8' viewbox='0 0 13 8' fill='none' xmlns='http://www.w3.org/2000/svg' class="svg-read")
                             path(d='M12 0.302282C11.7304 0.0352342 11.2403 0.287629 11.026 0.499975L5.39909 6.24939C5.12983 6.56509 5.39862 6.85352 5.39862 6.85352C5.61285 7.06584 5.96621 7.03873 6.18036 6.82656L12 1.07104C12.2143 0.85872 12.2143 0.514628 12 0.302282Z' fill='#5F814A')
                         scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
-                div(v-if="group.LastMessage.Payload === 'single-choice' && group.LastMessage.IsDropDown", style="margin-top:5px")
+                div(v-if="group.LastMessage.Payload === 'single-choice' && !group.LastMessage.IsDropDown", style="margin-top:5px")
                   div.choice_box_dropdown
                     div(style="display:flex;justify-content:flex-end")
                     button.choice_button(type="button"
