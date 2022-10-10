@@ -246,15 +246,17 @@
     }
     .img-caption{
       color: black;
-      text-align: center !important;
       pointer-events: none !important;
+      padding-top: 10px;
+      padding-bottom: 4px;
     }
     .img-button{
       width: 100%;
-      margin-top: 5px;
-      color: cornflowerblue;
-      border-width: 0.5px;
-      border-color: lightgray;
+      border-radius: 4px;
+      height: 24px;
+      background-color: #E3E3E3;
+      border-width: 1px;
+      border-color: #CCCCCC;
       }
     .choice_box_dropdown{
     display: flex;
@@ -347,7 +349,8 @@
                         target="_blank",
                         @click="clickFile(msg, $event)")
                           img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                        div.img-caption {{ msg.Text }}
+                        div.img-caption
+                          b {{ msg.Text }}
                         button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
                           v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title)" ) {{ action.Title }}
                       a.file(v-else-if="msg.File && msg.File.Type == 'file'"
