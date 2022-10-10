@@ -283,7 +283,7 @@
       --font-family: Roboto;
       -webkit-box-direction: normal;
       outline: none !important;
-      width: 90%;
+      width: 84%;
       margin-right: 5px;
       border-radius: 4px;
       color: #fff;
