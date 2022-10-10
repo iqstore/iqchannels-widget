@@ -253,7 +253,7 @@
     .img-button{
       width: 100%;
       border-radius: 4px;
-      height: 24px;
+      height: 32px;
       background-color: #E3E3E3;
       border-width: 1px;
       border-color: #CCCCCC;
