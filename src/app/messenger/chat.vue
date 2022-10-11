@@ -354,7 +354,7 @@
                         div.img-caption
                           b {{ msg.Text }}
                         button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
-                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title)" ) {{ action.Title }}
+                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload)" ) {{ action.Title }}
                       a.file(v-else-if="msg.File && msg.File.Type == 'file'"
                         v-bind:href="msg.File.URL"
                         target="_blank"
@@ -375,7 +375,7 @@
                     div(style="display:flex;justify-content:flex-end")
                     button.choice_button(type="button"
                     v-for="choice in group.LastMessage.SingleChoices",
-                    @click.prevent="trySendMessage(choice.title)") {{ choice.title }}
+                    @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
             rating(
                 v-if="group.Rating",
                 v-bind:rating="group.Rating",
@@ -425,13 +425,13 @@ export default {
       }, 800);
     },
 
-    trySendMessage(messageText) {
+    trySendMessage(messageText, botpressPayload) {
       if (messageText) {
         this.scrollToLastMessage();
         if (this.msg && this.msgVisible) {
-          this.$emit("message-composed", { messageText, replyToMessageId: this.msg.Id });
+          this.$emit("message-composed", { messageText, replyToMessageId: this.msg.Id, botpressPayload: botpressPayload });
         } else {
-          this.$emit("message-composed", messageText);
+          this.$emit("message-composed", messageText, botpressPayload);
         }
       }
       this.titleVisible = true;

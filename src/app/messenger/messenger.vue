@@ -176,7 +176,7 @@
             div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
               button.choice_button(type="button",
                 v-for="choice in singleChoices",
-                @click.prevent="onMessageComposed(choice.title)") {{ choice.title }}
+                @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
         #composer
           composer(
             ref="composer"
@@ -587,11 +587,12 @@ export default {
       return localId;
     },
 
-    newTextMessage(text) {
+    newTextMessage(text, botpressPayload) {
       return {
         LocalId: this.getNextLocalId(),
         Payload: schema.ChatPayloadText,
         Text: text,
+        BotpressPayload: botpressPayload,
         ChatType: this.chatType
       };
     },
@@ -849,12 +850,12 @@ export default {
       this.inputTyping = JSON.parse(JSON.stringify(event));
     },
 
-    onMessageComposed(text) {
+    onMessageComposed(text, botpressPayload) {
       let messageForm;
       if (typeof text !== 'object') {
-        messageForm = this.newTextMessage(text);
+        messageForm = this.newTextMessage(text, botpressPayload);
       } else {
-        messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId);
+        messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
       }
       this.appendLocalMessage(messageForm);
       client.channelSend(this.channel, messageForm);
