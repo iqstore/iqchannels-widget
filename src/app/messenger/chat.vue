@@ -345,7 +345,8 @@
                           .error {{ msg.UploadError }}
                           a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
                           a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
-                      pre.text(v-if="msg.Payload === 'carousel'" v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
+                      div(v-if="msg.Payload === 'carousel' && !msg.File")
+                        pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
                         button.img-button(
                           v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload)" ) {{ action.Title }}
                       div(v-else-if="msg.File && msg.File.Type == 'image'")
