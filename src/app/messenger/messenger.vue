@@ -205,6 +205,7 @@ export default {
     opened: Boolean,
     channel: String,
     replayedMsg: Object,
+    closeSystemChat: Boolean,
     typing: Object,
     rating: Number,
     chatType: String,
@@ -239,7 +240,15 @@ export default {
   },
 
   mounted() {
+    client.checkExistingChats(this.channel).then(result => {
+      if (result.Result.Id === 0){
+      client.openSystemChat(this.channel)
+        this.groups = [];
+        this.subscribe();
+      }else{
     this.loadHistory();
+      }
+    })
     document.getElementById('chat').addEventListener('scroll', ev => {
       setTimeout(() => {
         const height = document.getElementById('chat').getBoundingClientRect().height;
@@ -314,6 +323,9 @@ export default {
         this.ignoreRating(0);
       }
     },
+    closeSystemChat: function () {
+      this.groups = []
+    }
   },
 
   methods: {
@@ -789,6 +801,9 @@ export default {
             break;
           case schema.ChatEventTyping:
             this.handleOperatorTyping(event);
+            break;
+          case schema.ChatEventCloseSystemChat:
+            this.groups = []
             break;
           default:
             console.log("Unhandled channel event", event);

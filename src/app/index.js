@@ -58,6 +58,7 @@ const app = new Vue({
               :channel='channel'
               :replayed-msg="replayedMsg"
               :rating="rating"
+              :closeSystemChat="closeSystemChat"       
           />
         </div>`,
 
@@ -72,6 +73,7 @@ const app = new Vue({
       initialized: false,
       mode: 'web', // web'\'mobile'
       opened: false,
+      closeSystemChat: false,
       channel: null,
       credentials: null,
       project: null,
@@ -92,7 +94,6 @@ const app = new Vue({
       }
 
       let event = data.length ? JSON.parse(data) : data;
-
       switch (event.type) {
         case 'init':
           this.initialized = true;
@@ -154,6 +155,10 @@ const app = new Vue({
           this.rating = event.data;
           break;
 
+        case 'close-system-chat':
+          console.log('bebras');
+          this.closeSystemChat = true;
+          break;
       }
     });
   },
