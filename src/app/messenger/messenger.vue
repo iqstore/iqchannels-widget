@@ -241,10 +241,9 @@ export default {
 
   mounted() {
     client.checkExistingChats(this.channel).then(result => {
-      if (result.Result.Id === 0){
+      if (result.Result.length === 0){
       client.openSystemChat(this.channel)
-        this.groups = [];
-        this.subscribe();
+        this.loadHistory()
       }else{
     this.loadHistory();
       }
@@ -803,7 +802,14 @@ export default {
             this.handleOperatorTyping(event);
             break;
           case schema.ChatEventCloseSystemChat:
-            this.groups = []
+            if( this.groups.length >0) {
+
+            this.groups = this.groups.reduce(
+                (result, group) =>
+                    result.concat(group.Messages.filter(m => m.Deleted !== true)),
+                []
+            );
+            }
             break;
           default:
             console.log("Unhandled channel event", event);
