@@ -240,14 +240,7 @@ export default {
   },
 
   mounted() {
-    client.checkExistingChats(this.channel).then(result => {
-      if (result.Result.length === 0){
-      client.openSystemChat(this.channel)
-        this.loadHistory()
-      }else{
     this.loadHistory();
-      }
-    })
     document.getElementById('chat').addEventListener('scroll', ev => {
       setTimeout(() => {
         const height = document.getElementById('chat').getBoundingClientRect().height;
@@ -801,16 +794,14 @@ export default {
           case schema.ChatEventTyping:
             this.handleOperatorTyping(event);
             break;
-          case schema.ChatEventCloseSystemChat:
-            if( this.groups.length >0) {
-
-            this.groups = this.groups.reduce(
-                (result, group) =>
-                    result.concat(group.Messages.filter(m => m.Deleted !== true)),
-                []
-            );
-            }
-            break;
+          // case schema.ChatEventCloseSystemChat:
+          //   this.groups.reduce(
+          //       (result, group) =>
+          //           result.concat(group.Messages.filter(m => m.Deleted === false)),
+          //       []
+          //   );
+          //   client.openSystemChat(this.channel);
+          //   break;
           default:
             console.log("Unhandled channel event", event);
         }
@@ -837,6 +828,7 @@ export default {
       // Someone else's message
       if (!message.My) {
         this.appendMessage(message);
+      this.scrollToLastMessage();
         return true;
       }
       // Replace my own message
