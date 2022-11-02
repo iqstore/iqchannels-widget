@@ -353,6 +353,7 @@ export default {
         this.appendMessages(messages);
         this.markMessages();
         this.subscribe();
+        this.sendGreeting();
       });
     },
 
@@ -580,6 +581,32 @@ export default {
       };
 
       groups.push(group);
+    },
+
+    sendGreeting() {
+      client.getChatSettings(this.channel).then(result => {
+        const settings = result.Data
+        if (settings !== null){
+          client.listTicketsByClient(this.channel,this.client.Id, {Open: true}).then(result => {
+            if (result.Data.TotalCount === 0){
+
+              const message = {
+                Id: new Date().getTime(),
+                Author: "user",
+                CreatedAt: new Date(),
+                Text: settings.Message,
+                Payload: 'text',
+                Read: true,
+                UserId: new Date().getTime(),
+                User: {DisplayName: "Марина", Name:"Марина", Active: true, Id: new Date().getTime()}
+              };
+
+              this.appendMessage(message)
+              setTimeout(() => this.removeMessage(message), 1000 * settings.Lifetime)
+            }
+          })
+        }
+      })
     },
 
     getNextLocalId() {
