@@ -198,17 +198,13 @@ class Client {
     return this._enqueueRequest(`/chats/channel/send/${channel}`, message);
   }
 
-  listTicketsByClient (channel, clientId, query) {
-    return this._enqueueRequest(`/chats/channel/tickets/existing/${channel}`, { ClientId: clientId, Query: query });
-  }
-
-  getChatSettings (channel) {
-    return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`);
-  }
   openSystemChat (channel) {
     return this._enqueueRequest(`/chats/channel/system_chats/send/${channel}`);
   }
 
+  checkExistingChats (channel) {
+    return this._enqueueRequest(`/chats/channel/system_chats/existing/${channel}`);
+  }
 
   channelMessagesRead (messagesIds) {
     return this._enqueueRequest(`/chats/messages/read`, messagesIds);
