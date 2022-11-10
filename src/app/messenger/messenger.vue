@@ -587,25 +587,32 @@ export default {
       client.getChatSettings(this.channel).then(result => {
         const settings = result.Data
         if (settings !== null){
+          // if client has no open tickets, send him greeting from bot or from made-up operator
+          // these messages are deleted if client does not respond
           client.listTicketsByClient(this.channel,this.client.Id, {Open: true}).then(result => {
             if (result.Data.TotalCount === 0){
+              if (settings.GreetFrom === 'bot') {
+                client.openSystemChat(this.channel)
+                this.subscribe();
+                this.scrollToLastMessage();
+              }else{
+                const message = {
+                  Id: new Date().getTime(),
+                  Author: "user",
+                  CreatedAt: new Date(),
+                  Text: settings.Message,
+                  Payload: 'text',
+                  Read: true,
+                  UserId: new Date().getTime(),
+                  User: {DisplayName: "Марина", Name:"Марина", Active: true, Id: new Date().getTime()}
+                };
 
-              const message = {
-                Id: new Date().getTime(),
-                Author: "user",
-                CreatedAt: new Date(),
-                Text: settings.Message,
-                Payload: 'text',
-                Read: true,
-                UserId: new Date().getTime(),
-                User: {DisplayName: "Марина", Name:"Марина", Active: true, Id: new Date().getTime()}
-              };
-
-              this.appendMessage(message)
-              setTimeout(() => this.removeMessage(message), 1000 * settings.Lifetime)
+                this.appendMessage(message)
+                setTimeout(() => this.removeMessage(message), 1000 * settings.Lifetime)
+              }
             }
           })
-        }
+            }
       })
     },
 
@@ -821,14 +828,9 @@ export default {
           case schema.ChatEventTyping:
             this.handleOperatorTyping(event);
             break;
-          // case schema.ChatEventCloseSystemChat:
-          //   this.groups.reduce(
-          //       (result, group) =>
-          //           result.concat(group.Messages.filter(m => m.Deleted === false)),
-          //       []
-          //   );
-          //   client.openSystemChat(this.channel);
-          //   break;
+          case schema.ChatEventCloseSystemChat:
+            event.Messages.forEach(msg => this.removeMessage(msg))
+            break;
           default:
             console.log("Unhandled channel event", event);
         }
