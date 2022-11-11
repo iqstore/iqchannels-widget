@@ -295,6 +295,7 @@ export default {
     opened: function(newValue, oldValue) {
       if (newValue && !oldValue) {
         // widget opened
+        this.sendGreeting();
         this.markMessagesAsRead();
         // Force fixed element to repaint,
         // because of safari issue with fixed hidden elements
@@ -313,6 +314,7 @@ export default {
     rating: function (newRating) {
       if (newRating === 0) {
         this.ignoreRating(0);
+        this.sendGreeting();
       }
     },
     closeSystemChat: function () {
@@ -353,7 +355,6 @@ export default {
         this.appendMessages(messages);
         this.markMessages();
         this.subscribe();
-        this.sendGreeting();
       });
     },
 
@@ -593,7 +594,6 @@ export default {
             if (result.Data.TotalCount === 0){
               if (settings.GreetFrom === 'bot') {
                 client.openSystemChat(this.channel)
-                this.subscribe();
                 this.scrollToLastMessage();
               }else{
                 const message = {
@@ -737,6 +737,7 @@ export default {
             rating.Value = 0;
           }
         );
+      this.sendGreeting();
     },
 
     ignoreRating(rating) {
