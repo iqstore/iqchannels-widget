@@ -260,6 +260,7 @@ export default {
       inputMsg: {},
       inputTyping: {},
       isBottom: true,
+      systemChat: false,
       singleChoices: [],
     };
   },
@@ -375,6 +376,7 @@ export default {
       if (this.subscriptionTimeout) {
         clearTimeout(this.subscriptionTimeout);
       }
+      this.systemChat = false;
     },
 
     onSubscriptionError(error) {
@@ -585,6 +587,9 @@ export default {
     },
 
     sendGreeting() {
+      if (this.systemChat === true){
+        return
+      }
       client.getChatSettings(this.channel).then(result => {
         const settings = result.Data
         if (settings !== null){
@@ -606,11 +611,14 @@ export default {
                   UserId: new Date().getTime(),
                   User: {DisplayName: "Марина", Name:"Марина", Active: true, Id: new Date().getTime()}
                 };
-
                 this.appendMessage(message)
-                setTimeout(() => this.removeMessage(message), 1000 * settings.Lifetime)
+                setTimeout(() => {
+                  this.removeMessage(message);
+                  this.systemChat = false
+                }, 1000 * settings.Lifetime)
               }
             }
+            this.systemChat = true
           })
             }
       })
@@ -737,6 +745,7 @@ export default {
             rating.Value = 0;
           }
         );
+      this.systemChat = false;
       this.sendGreeting();
     },
 
@@ -756,6 +765,8 @@ export default {
           rating.Value = 0;
         }
       );
+          this.systemChat = false;
+          this.sendGreeting();
     },
 
     mobileRating(rating) {
@@ -831,6 +842,10 @@ export default {
             break;
           case schema.ChatEventCloseSystemChat:
             event.Messages.forEach(msg => this.removeMessage(msg))
+              this.systemChat = false
+            break;
+          case schema.ChatEventChatClosed:
+            this.systemChat = false;
             break;
           default:
             console.log("Unhandled channel event", event);
