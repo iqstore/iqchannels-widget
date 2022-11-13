@@ -590,7 +590,7 @@ export default {
         if (settings !== null){
           // if client has no open tickets, send him greeting from bot or from made-up operator
           // these messages are deleted if client does not respond
-          client.listTicketsByClient(this.channel,this.client.Id, {Open: true, SystemTicket: true}).then(result => {
+          client.listTicketsByClient(this.channel,this.client.Id, {Open: true}).then(result => {
             if (result.Data.TotalCount === 0){
               if (settings.GreetFrom === 'bot') {
                 client.openSystemChat(this.channel)
