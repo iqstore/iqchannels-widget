@@ -315,7 +315,6 @@ export default {
     rating: function (newRating) {
       if (newRating === 0) {
         this.ignoreRating(0);
-        this.sendGreeting();
       }
     },
     closeSystemChat: function () {
@@ -376,7 +375,6 @@ export default {
       if (this.subscriptionTimeout) {
         clearTimeout(this.subscriptionTimeout);
       }
-      this.systemChat = false;
     },
 
     onSubscriptionError(error) {
@@ -745,7 +743,6 @@ export default {
             rating.Value = 0;
           }
         );
-      this.systemChat = false;
       this.sendGreeting();
     },
 
@@ -765,7 +762,6 @@ export default {
           rating.Value = 0;
         }
       );
-          this.systemChat = false;
           this.sendGreeting();
     },
 
