@@ -316,6 +316,7 @@ export default {
       if (newRating === 0) {
         this.ignoreRating(0);
       }
+      this.sendGreeting();
     },
     closeSystemChat: function () {
       this.groups = []
