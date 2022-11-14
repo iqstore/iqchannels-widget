@@ -607,7 +607,7 @@ export default {
                   Payload: 'text',
                   Read: true,
                   UserId: new Date().getTime(),
-                  User: {DisplayName: "Марина", Name:"Марина", Active: true, Id: new Date().getTime()}
+                  User: {DisplayName: settings.OperatorName, Name:settings.OperatorName, Active: true, Id: new Date().getTime()}
                 };
                 this.appendMessage(message)
                 setTimeout(() => {
