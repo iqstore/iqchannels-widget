@@ -241,6 +241,7 @@ export default {
 
   mounted() {
     this.loadHistory();
+    this.sendGreeting();
     document.getElementById('chat').addEventListener('scroll', ev => {
       setTimeout(() => {
         const height = document.getElementById('chat').getBoundingClientRect().height;
