@@ -592,6 +592,7 @@ export default {
       client.getChatSettings(this.channel).then(result => {
         const settings = result.Data
         if (settings !== null){
+          this.systemChat = true
           // if client has no open tickets, send him greeting from bot or from made-up operator
           // these messages are deleted if client does not respond
           client.listTicketsByClient(this.channel,this.client.Id, {Open: true}).then(result => {
@@ -617,7 +618,9 @@ export default {
                 }, 1000 * settings.Lifetime)
               }
             }
-            this.systemChat = true
+             else{
+              this.systemChat = false;
+            }
           })
             }
       })
