@@ -297,8 +297,8 @@ export default {
     opened: function(newValue, oldValue) {
       if (newValue && !oldValue) {
         // widget opened
-        this.sendGreeting();
         this.markMessagesAsRead();
+        this.sendGreeting();
         // Force fixed element to repaint,
         // because of safari issue with fixed hidden elements
         $("#composer")
