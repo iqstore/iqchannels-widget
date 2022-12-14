@@ -847,6 +847,9 @@ export default {
           case schema.ChatEventChatClosed:
             this.systemChat = false;
             break;
+          case schema.ChatEventMessagesDeleted:
+            event.Messages.forEach(msg => this.removeMessage(msg))
+            break;
           default:
             console.log("Unhandled channel event", event);
         }
