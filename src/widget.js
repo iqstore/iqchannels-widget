@@ -74,10 +74,10 @@ class IQChannelsWidget extends EventEmitter {
     super();
     url = url ? url : BASE_URL;
 
-    this.width = width;
+    this.mode = mode === 'mobile' ? mode : 'web';
+    this.width = this.mode === 'mobile' ? window.innerWidth : width;
     this.channel = channel;
     this.credentials = credentials || '';
-    this.mode = mode === 'mobile' ? mode : 'web';
     this.project = project || '';
     this.padBody = padBody;
     this.requireName = requireName;
@@ -85,12 +85,11 @@ class IQChannelsWidget extends EventEmitter {
     this.opened = false;
     this.DOMIdentifier = DOMIdentifier || null;
     iconOptions = cleanIconOptions(iconOptions);
-
     // Add elements
 
     this.frameContainer = jquery(`
 <div id="iqchannels-widget-container">
-    <div id="iqchannels-widget" style="width: 425px">
+    <div id="iqchannels-widget" style="width: ${this.width}px; height: ${window.innerHeight}">
         <iframe 
             id="iqchannels-widget-iframe" 
             src="${url}"></iframe>
