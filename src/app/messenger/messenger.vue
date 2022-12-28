@@ -747,7 +747,6 @@ export default {
             rating.Value = 0;
           }
         );
-      this.sendGreeting();
     },
 
     ignoreRating(rating) {
@@ -766,7 +765,6 @@ export default {
           rating.Value = 0;
         }
       );
-          this.sendGreeting();
     },
 
     mobileRating(rating) {
