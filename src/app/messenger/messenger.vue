@@ -244,8 +244,9 @@ export default {
     this.sendGreeting();
     document.getElementById('chat').addEventListener('scroll', ev => {
       setTimeout(() => {
-        const height = document.getElementById('chat').getBoundingClientRect().height;
-        this.isBottom = !(ev.target.scrollHeight - ev.target.scrollTop > height);
+        const height = document.getElementById('chat').offsetHeight;
+        // add 1px because the difference is 0.333 for some reason
+        this.isBottom = !((ev.target.scrollHeight - ev.target.scrollTop -1 ) >= height);
       }, 300);
     });
   },
