@@ -104,13 +104,13 @@
     }
 
     .choice_box{
-    float: right;
+    float: left;
     margin-top: 5px;
     line-height: 1.15;
     text-transform: none;
     visibility: visible;
     -webkit-box-direction: normal;
-    text-align: left;
+    text-align: right;
     font-size: 14px;
     border-radius: 3px;
     }
@@ -122,9 +122,8 @@
       word-wrap: break-word;       /* Internet Explorer 5.5+ */
       font-family: inherit;
       font-size: inherit;
-      float: right;
+      text-align: right;
       width: fit-content;
-      outline: none !important;
       border: 1px solid #A3DE62;
       margin-bottom: 5px;
       border-radius: 10px;
@@ -175,7 +174,7 @@
           .div(v-if="groups.length && groups[groups.length -1].LastMessage.Payload === 'single-choice'")
             div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
               button.choice_button(type="button",
-                v-for="choice in singleChoices",
+                v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
                 @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
         #composer
           composer(

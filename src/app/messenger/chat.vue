@@ -358,7 +358,7 @@
                         div.img-caption
                           b {{ msg.Text }}
                         button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
-                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload)" ) {{ action.Title }}
+                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                       a.file(v-else-if="msg.File && msg.File.Type == 'file'"
                         v-bind:href="msg.File.URL"
                         target="_blank"
@@ -429,7 +429,10 @@ export default {
       }, 800);
     },
 
-    trySendMessage(messageText, botpressPayload) {
+    trySendMessage(messageText, botpressPayload, url) {
+      if (url){
+        window.open(url, "_blank")
+      }
       if (messageText) {
         this.scrollToLastMessage();
         if (this.msg && this.msgVisible) {
