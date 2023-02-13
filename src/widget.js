@@ -1,9 +1,9 @@
-import EventEmitter from "event-emitter";
-import jquery from "jquery";
-import "./widget-normalize.scss";
-import "./widget.scss";
+import EventEmitter from 'event-emitter';
+import jquery from 'jquery';
+import './widget-normalize.scss';
+import './widget.scss';
 
-function getBaseUrl() {
+function getBaseUrl () {
   const scripts = document.getElementsByTagName('script');
   const path = scripts[scripts.length - 1].src.split('?')[0];
   const url = path.split('/').slice(0, -1).join('/') + '/';
@@ -19,10 +19,10 @@ const addPixels = (value, delta) => {
 };
 
 const defaultIconOptions = {
-  show: true,
+  show: true
 };
 
-function objectAssign(dst, src) {
+function objectAssign (dst, src) {
   if (dst === null) {
     throw new TypeError('Cannot convert undefined or null to object');
   }
@@ -38,7 +38,7 @@ function objectAssign(dst, src) {
   return to;
 }
 
-function cleanIconOptions(iconOptions) {
+function cleanIconOptions (iconOptions) {
   let show = iconOptions.show !== undefined ? iconOptions.show : defaultIconOptions.show;
 
   let style = {};
@@ -54,12 +54,12 @@ function cleanIconOptions(iconOptions) {
 
   return {
     show: show,
-    style: style,
-  }
+    style: style
+  };
 }
 
 class IQChannelsWidget extends EventEmitter {
-  constructor({
+  constructor ({
     url = null,
     channel = 'support',
     credentials,
@@ -242,8 +242,8 @@ class IQChannelsWidget extends EventEmitter {
   };
 
   setIPhonePushToken = (token) => {
-    const data = { type: "apns", token: token };
-    const event = newChatEvent("push_token", data);
+    const data = { type: 'apns', token: token };
+    const event = newChatEvent('push_token', data);
 
     if (this.frameWindow) {
       this.frameWindow.postMessage(JSON.stringify(event), '*');
@@ -253,8 +253,8 @@ class IQChannelsWidget extends EventEmitter {
   };
 
   setAndroidPushToken = (token) => {
-    const data = { type: "fcm", token: token };
-    const event = newChatEvent("push_token", data);
+    const data = { type: 'fcm', token: token };
+    const event = newChatEvent('push_token', data);
 
     if (this.frameWindow) {
       this.frameWindow.postMessage(JSON.stringify(event), '*');
@@ -274,11 +274,11 @@ class IQChannelsWidget extends EventEmitter {
   }
 }
 
-function newChatEvent(type, data) {
+function newChatEvent (type, data) {
   return {
     type: type,
     data: data
-  }
+  };
 }
 
 window.IQChannelsWidget = IQChannelsWidget;

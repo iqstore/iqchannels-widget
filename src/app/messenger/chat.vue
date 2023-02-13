@@ -348,7 +348,7 @@
                       div(v-if="msg.Payload === 'carousel' && !msg.File")
                         pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
                         button.img-button(
-                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload)" ) {{ action.Title }}
+                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                       div(v-else-if="msg.File && msg.File.Type == 'image'")
                         a.image(
                         v-bind:href="msg.File.URL",

@@ -63,7 +63,7 @@ const app = new Vue({
         </div>`,
 
   computed: {
-    'stylesURL': function() {
+    'stylesURL': function () {
       return config.apiUrl('/widget/styles.css?channel=' + this.channel);
     }
   },
@@ -85,7 +85,7 @@ const app = new Vue({
     };
   },
 
-  created() {
+  created () {
     jquery(window).on('message', (e) => {
       const { type, data } = e.originalEvent;
 
@@ -171,12 +171,12 @@ const app = new Vue({
     onLongTap: (msg) => parent.postMessage({ type: 'iqchannels-widget-longtap', data: msg }, '*'),
     onRating: (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*'),
 
-    onLogin(client) {
+    onLogin (client) {
       this.client = client;
       this.maybeSendPushToken();
     },
 
-    onLogout() {
+    onLogout () {
       clearCookie(config.CLIENT_SESSION_COOKIE);
       this.credentials = null;
       this.project = null;
@@ -185,7 +185,7 @@ const app = new Vue({
       client.clearAuth();
     },
 
-    maybeSendPushToken() {
+    maybeSendPushToken () {
       if (!this.client) {
         return;
       }
@@ -197,7 +197,7 @@ const app = new Vue({
       client.channelPushToken(this.channel, tdata.type, tdata.token);
     },
 
-    refreshClient() {
+    refreshClient () {
       if (!this.client) {
         return;
       }

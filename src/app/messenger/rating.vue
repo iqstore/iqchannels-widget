@@ -208,7 +208,6 @@ export default {
       this.rating.Comment = '';
       this.$emit("rate-rating", this.rating);
 
-      console.log("SEND", this.rating);
     },
 
     ignoreRating() {
