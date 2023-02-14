@@ -18,7 +18,7 @@
 </style>
 
 <template lang="pug">
-    .circle(v-bind:style="{ backgroundColor: color }")
+    .circle(:style="styleObject")
         span(v-if="!url") {{ initials }}
         .img(v-else v-bind:style="{ 'background-image': 'url(' + url + ')' }")
 
@@ -61,9 +61,15 @@
   ];
 
   export default {
-
+    data () {
+      return {
+        styleObject: {
+          backgroundColor: COLORS[this.user.Id % COLORS.length],
+        }
+      }
+    },
     props: {
-      user: Object
+      user: Object,
     },
 
     computed: {
