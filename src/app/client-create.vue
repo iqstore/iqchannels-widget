@@ -5,9 +5,8 @@
     }
 
     input[type="text"] {
-        height: 32px;
+        height: 42px;
         border: 1px solid #d8d8d8;
-        border-radius: 3px;
         outline: none;
         padding-left: 8px;
         padding-right: 8px;
@@ -24,10 +23,16 @@
         background-color: #ee5c13;
         color: white;
         width: 246px;
-        margin: 20px 0 5px 0;
+        margin: 16px 0 5px 0;
         display: inline-block;
     }
-
+    .close-button{
+      position: absolute;
+      top: 16px;
+      font-size: 1.8 rem;
+      cursor: pointer;
+      right: 16px;
+    }
     .loader {
         margin-top: 4px;
     }
@@ -35,7 +40,8 @@
 
 <template lang="pug">
     .full-screen
-
+        div.close-button(href="#" @click.prevent="onCloseClicked()" title="Закрыть")
+          icon(name="close")
         .center(v-if="checking")
             p.text Подключение
                 scale-loader(color="#ee5c13")
@@ -105,6 +111,9 @@ export default {
           this.creating = null;
           this.error = error.text;
         });
+    },
+    onCloseClicked () {
+      this.$emit("on-close-clicked");
     }
   }
 };

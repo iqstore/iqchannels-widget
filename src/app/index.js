@@ -42,7 +42,7 @@ const app = new Vue({
         <div v-if="initialized">
           <link type="text/css" rel="stylesheet" :href="stylesURL" />
           
-          <client-create v-if="!client && !credentials" @on-client-created='onLogin' :channel="channel" :requireName="requireName"/>
+          <client-create v-if="!client && !credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :channel="channel" :requireName="requireName"/>
           <client-auth v-if="!client && credentials" @on-client-authorized='onLogin' :credentials="credentials" :channel="channel"/>
           <messenger v-if="client" ref="messenger"
               @on-unread-changed='onUnreadChanged'
@@ -156,7 +156,6 @@ const app = new Vue({
           break;
 
         case 'close-system-chat':
-          console.log('bebras');
           this.closeSystemChat = true;
           break;
       }
