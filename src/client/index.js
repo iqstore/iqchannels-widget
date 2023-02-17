@@ -209,6 +209,9 @@ class Client {
     return this._enqueueRequest(`/chats/channel/system_chats/send/${channel}`);
   }
 
+  getWidgetGreetings (channel) {
+    return this._enqueueRequest(`/widget/greetings/${channel}`);
+  }
 
   channelMessagesRead (messagesIds) {
     return this._enqueueRequest(`/chats/messages/read`, messagesIds);

@@ -42,8 +42,8 @@ const app = new Vue({
         <div v-if="initialized">
           <link type="text/css" rel="stylesheet" :href="stylesURL" />
           
-          <client-create v-if="!client && !credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :channel="channel" :requireName="requireName"/>
-          <client-auth v-if="!client && credentials" @on-client-authorized='onLogin' :credentials="credentials" :channel="channel"/>
+          <client-create v-if="!client && !credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :channel="channel" :requireName="requireName"/>
+          <client-auth v-if="!client && credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel"/>
           <messenger v-if="client" ref="messenger"
               @on-unread-changed='onUnreadChanged'
               @on-message-received='onMessageReceived'
@@ -76,6 +76,7 @@ const app = new Vue({
       closeSystemChat: false,
       channel: null,
       credentials: null,
+      greetings: null,
       project: null,
       requireName: true,
       client: null,
@@ -105,6 +106,7 @@ const app = new Vue({
           this.pushToken = event.data.pushToken;
 
           this.maybeSendPushToken();
+          this.getGreetings();
           break;
 
         case 'close':
@@ -205,6 +207,11 @@ const app = new Vue({
       }
 
       client.refreshClient(this.credentials);
+    },
+    getGreetings () {
+      client.getWidgetGreetings(this.channel).then(res => {
+        this.greetings = res.Data;
+      });
     }
   }
 });

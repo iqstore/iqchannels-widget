@@ -33,7 +33,6 @@ export default {
         this.$emit("on-client-authorized", client);
       })
       .catch(error => {
-        console.log(error);
         this.error = error;
         this.authorizing = null;
       });

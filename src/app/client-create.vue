@@ -49,10 +49,10 @@
         .center(v-else="checking")
             div(v-if="requireName")
               p.text
-                strong Представьтесь пожалуйста,
+                strong {{ greetings.GreetingBold  ? greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
                 br
-                | желательно указать
-                br
+                | {{ greetings.Greeting ? greetings.Greeting : "желательно указать" }}
+                br(v-if="!greetings.Greeting" )
                 | фамилию и имя:
               input(type="text" placeholder="Ваше имя" ref="name" v-bind:disabled="creating" @keydown.enter="create")
             a.button(v-if="!creating" @click.prevent="create" href="#") Начать чат
@@ -68,6 +68,7 @@ import client from "../client";
 export default {
   props: {
     channel: String,
+    greetings: Object,
     requireName: true
   },
 
@@ -115,6 +116,6 @@ export default {
     onCloseClicked () {
       this.$emit("on-close-clicked");
     }
-  }
+  },
 };
 </script>
