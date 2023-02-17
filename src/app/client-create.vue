@@ -49,11 +49,11 @@
         .center(v-else="checking")
             div(v-if="requireName")
               p.text
-                strong {{ greetings.GreetingBold  ? greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
+                strong {{ this.greetings.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
                 br
-                | {{ greetings.Greeting ? greetings.Greeting : "желательно указать" }}
-                br(v-if="!greetings.Greeting" )
-                | фамилию и имя:
+                | {{ this.greetings.Greeting ? this.greetings.Greeting : "желательно указать" }}
+                br()
+                | {{ !this.greetings.Greeting ? "фамилию и имя:" : "" }}
               input(type="text" placeholder="Ваше имя" ref="name" v-bind:disabled="creating" @keydown.enter="create")
             a.button(v-if="!creating" @click.prevent="create" href="#") Начать чат
             a.button(v-if="creating" @click.prevent="" href="#")
