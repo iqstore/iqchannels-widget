@@ -10,6 +10,7 @@
         &-inputs {
           display: flex;
           width: 100%;
+          align-items: center;
         }
 
         textarea {
@@ -30,7 +31,7 @@
 
         .textarea {
           background: #F2F3F5;
-          width: 100%;
+          width: 80%;
           position: relative;
           border: 2px solid #EBEBEB;
           border-radius: 10px;
@@ -64,7 +65,7 @@
         display: flex;
         min-width: 32px;
         height: 32px;
-        margin: auto 8px 3px;
+        margin-right: 3px;
         align-self: end;
 
         &.button-active {
@@ -146,6 +147,75 @@
       margin-bottom: 5px;
     }
 
+    .csm-btn{
+      margin-left: 5px;
+      height: 35px;
+      min-width: 35px;
+
+    }
+
+    .audio-msg-track{
+        float: none;
+      overflow: hidden;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      align-items: center;
+      padding: 6px 14px 6px 6px;
+      height: 36px;
+      margin-left: 5px;
+      border-radius: 18px;
+      background-color: #aeb7c2;
+    }
+
+    .audio-msg-track--btn {
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+      -webkit-box-ordinal-group: 2;
+      -ms-flex-order: 1;
+      order: 1;
+      border: 0;
+      padding: 0;
+      border-radius: 50%;
+      display: block;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      float: left;
+      background: url(data:image/svg+xml;charset=utf-8,%3Csvg%20height%3D%2211%22%20viewBox%3D%220%200%2010%2011%22%20width%3D%2210%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22m2.5.5v9l7-4.5z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E) no-repeat center;
+}
+  .audio-msg-track-btn-stop {
+    -ms-flex-negative: 0;
+      flex-shrink: 0;
+      -webkit-box-ordinal-group: 2;
+      -ms-flex-order: 1;
+      order: 1;
+      border: 0;
+      padding: 0;
+      border-radius: 50%;
+      display: block;
+      cursor: pointer;
+      margin-right: 5px;
+      width: 24px;
+      height: 24px;
+      float: left;
+      background: white url(data:image/svg+xml;charset=utf-8,%3Csvg%20height%3D%2224%22%20viewBox%3D%2262%200%2024%2024%22%20width%3D%2224%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%3E%3Cpath%20d%3D%22m74%2024c6.6%200%2012-5.4%2012-12s-5.4-12-12-12-12%205.4-12%2012%205.4%2012%2012%2012z%22%20fill%3D%22none%22%2F%3E%3Crect%20fill%3D%22%23e2593e%22%20height%3D%228%22%20rx%3D%221%22%20width%3D%228%22%20x%3D%2270%22%20y%3D%228%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E) no-repeat center;
+  }
+
+  .audio-msg-player{
+    color: inherit;
+  }
+
+  .audio-msg-track--wave-wrapper {
+    width: 250px;
+  }
+
+  .audio-msg-track--wave {
+    }
+  .waveform{
+    margin-left: 5px;
+  }
+
+
 </style>
 
 <template lang="pug">
@@ -162,20 +232,26 @@
 
         .composer-inputs
             input.hidden(type="file" ref="uploadInput" @change="uploadFile")
-
-            a.button.upload(href="#" @click.prevent="$refs.uploadInput.click()" title="Загрузить файл")
+            a.button.csm-btn(v-if="recording || recordingStopped" @click="cancelRecording()", style="cursor:pointer")
+              icon(name="close")
+            a.button.upload(v-if="!recording && !recordingStopped", href="#" @click.prevent="$refs.uploadInput.click()" title="Загрузить файл")
               span.icon
-
-            .textarea
-              textarea(ref="text" placeholder="Сообщение..." @keydown.enter="handleEnterPressed" @input="handleChange")
-
-            a.button(href="#" @click.prevent="trySendMessage" title="Отправить сообщение" v-bind:class="getClass()")
+            .d-flex.audio-msg-track(style="width:100%;" v-show="recording || recordingStopped")
+              button.audio-msg-track--btn(aria-label="Воспроизвести" v-if="recordingStopped" @click="playAudio()")
+              button.audio-msg-track-btn-stop(aria-label="Стоп", v-if="recording && !recordingStopped" @click="stopRecording()")
+              div(id="waveform")
+            .textarea(v-if="!recording && !recordingStopped")
+              textarea(ref="text", placeholder="Сообщение..." @keydown.enter="handleEnterPressed" @input="handleChange")
+            a.button.csm-btn(href="#", v-if="!recording || textTyped || recordingStopped" @click.prevent="trySendMessage" title="Отправить сообщение" v-bind:class="getClass()")
                 icon(name="long-arrow-up")
-
+            a.button.csm-btn(v-if="textTyped === '' && !recording && !recordingStopped" @click="startRecording()")
+              icon(name="microphone")
 
 </template>
-
 <script>
+import WaveSurfer from "wavesurfer.js";
+import MicrophonePlugin from "wavesurfer.js/dist/plugin/wavesurfer.microphone.js";
+import lamejs from "lamejs";
 const TYPING_INTERVAL = 2000;
 const TEXTAREA_HEIGHT = '32px';
 
@@ -185,6 +261,13 @@ export default {
       lastTypingEventAt: 0,
       lastTypedAt: 0,
       typing: false,
+      playRecordedAudio: false,
+      audioChunks: [],
+      ws: null,
+      textTyped: "",
+      recordingStopped: false,
+      mediaRecorder: null,
+      recording: false,
       titleVisible: true,
       msgVisible: false,
       typingVisible: false,
@@ -236,7 +319,6 @@ export default {
 
   mounted() {
     this.timer = setInterval(this.tryStopTyping, TYPING_INTERVAL);
-
     $('.textarea-field').keypress(x => {
       if (x.keyCode === 13 && !x.shiftKey) {
         x.preventDefault();
@@ -269,7 +351,180 @@ export default {
       field.value = v;
       this.handleChange();
     },
+    loadWs() {
+       this.ws = WaveSurfer.create({
+        container: "#waveform",
+        waveColor: "#FFFFFF",
+         cursorWidth: 0,
+        barWidth: 5,
+        barGap: 2,
+         barMinHeight: 2,
+         barHeight: 3,
+        height: 25,
+        normalize: true,
+         hideScrollbar: true,
+        plugins: [
+          MicrophonePlugin.create(),
+        ]
+      });
 
+      this.ws.microphone.on("deviceReady", (stream) => {
+
+        this.mediaRecorder = new MediaRecorder(stream);
+
+        this.mediaRecorder.ondataavailable = (e) => {
+          this.audioChunks.push(e.data);
+          this.ws.loadBlob(new Blob(this.audioBitsPerSecond));
+        };
+
+        this.mediaRecorder.onstop = () => {
+          this.ws.loadBlob(new Blob(this.audioChunks));
+        };
+
+        this.mediaRecorder.start(250);
+        //ws.load(URL.createObjectURL(stream));
+      });
+
+      this.ws.microphone.on("deviceError", (code) => {
+        console.warn("Device error: " + code);
+      });
+
+    },
+    startRecording() {
+      this.recording = true;
+      this.audioChunks = [];
+      if (this.ws){
+       this.ws.destroy();
+      }
+      setTimeout(() => {
+        this.loadWs();
+        this.ws.microphone.start();
+        this.ws.microphone.play();
+      }, 100);
+
+    },
+    stopRecording() {
+      if (!this.ws) {
+        return;
+      }
+      this.ws.microphone.stop();
+      this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
+      this.recording = false;
+      this.recordingStopped = true;
+    },
+    cancelRecording() {
+      if (!this.ws) {
+        return;
+      }
+      this.ws.microphone.stop();
+      this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
+      this.recording = false;
+      this.recordingStopped = false;
+    },
+    playAudio() {
+      if (!this.ws) {
+        return;
+      }
+      this.ws.play();
+      this.ws.setVolume(1);
+    },
+    analyzeAudioBuffer(aBuffer) {
+      let numOfChan = aBuffer.numberOfChannels,
+          btwLength = aBuffer.length * numOfChan * 2 + 44,
+          btwArrBuff = new ArrayBuffer(btwLength),
+          btwView = new DataView(btwArrBuff),
+          btwChnls = [],
+          btwIndex,
+          btwSample,
+          btwOffset = 0,
+          btwPos = 0;
+      setUint32(0x46464952); // "RIFF"
+      setUint32(btwLength - 8); // file length - 8
+      setUint32(0x45564157); // "WAVE"
+      setUint32(0x20746d66); // "fmt " chunk
+      setUint32(16); // length = 16
+      setUint16(1); // PCM (uncompressed)
+      setUint16(numOfChan);
+      setUint32(aBuffer.sampleRate);
+      setUint32(aBuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+      setUint16(numOfChan * 2); // block-align
+      setUint16(16); // 16-bit
+      setUint32(0x61746164); // "data" - chunk
+      setUint32(btwLength - btwPos - 4); // chunk length
+
+      for (btwIndex = 0; btwIndex < aBuffer.numberOfChannels; btwIndex++)
+        btwChnls.push(aBuffer.getChannelData(btwIndex));
+
+      while (btwPos < btwLength) {
+        for (btwIndex = 0; btwIndex < numOfChan; btwIndex++) {
+          // interleave btwChnls
+          btwSample = Math.max(-1, Math.min(1, btwChnls[btwIndex][btwOffset])); // clamp
+          btwSample =
+              (0.5 + btwSample < 0 ? btwSample * 32768 : btwSample * 32767) | 0; // scale to 16-bit signed int
+          btwView.setInt16(btwPos, btwSample, true); // write 16-bit sample
+          btwPos += 2;
+        }
+        btwOffset++; // next source sample
+      }
+
+      let wavHdr = lamejs.WavHeader.readHeader(new DataView(btwArrBuff));
+
+      //Stereo
+      let data = new Int16Array(btwArrBuff, wavHdr.dataOffset, wavHdr.dataLen / 2);
+      let leftData = [];
+      let rightData = [];
+      for (let i = 0; i < data.length; i += 2) {
+        leftData.push(data[i]);
+        rightData.push(data[i + 1]);
+      }
+      const left = new Int16Array(leftData);
+      const right = new Int16Array(rightData);
+
+      //STEREO
+      if (wavHdr.channels === 2)
+        return this.bufferToMp3(wavHdr.channels, wavHdr.sampleRate, left, right);
+      //MONO
+      else if (wavHdr.channels === 1)
+        return this.bufferToMp3(wavHdr.channels, wavHdr.sampleRate, data);
+
+      function setUint16(data) {
+        btwView.setUint16(btwPos, data, true);
+        btwPos += 2;
+      }
+
+      function setUint32(data) {
+        btwView.setUint32(btwPos, data, true);
+        btwPos += 4;
+      }
+    },
+    bufferToMp3(channels, sampleRate, left, right = null) {
+      const buffer = [];
+      const samplesPerFrame = 1152;
+      const mp3enc = new lamejs.Mp3Encoder(channels, sampleRate, 128);
+      let remaining = left.length;
+      let mp3buf = [];
+
+      for (let i = 0; remaining >= samplesPerFrame; i += samplesPerFrame) {
+        if (!right) {
+          let mono = left.subarray(i, i + samplesPerFrame);
+          mp3buf = mp3enc.encodeBuffer(mono);
+        } else {
+          let leftChunk = left.subarray(i, i + samplesPerFrame);
+          let rightChunk = right.subarray(i, i + samplesPerFrame);
+          mp3buf = mp3enc.encodeBuffer(leftChunk, rightChunk);
+        }
+        if (mp3buf.length > 0) {
+          buffer.push(mp3buf); //new Int8Array(mp3buf));
+        }
+        remaining -= samplesPerFrame;
+      }
+      const d = mp3enc.flush();
+      if (d.length > 0) {
+        buffer.push(new Int8Array(d));
+      }
+
+      return new Blob(buffer, { type: 'audio/mpeg' });
+    },
     getClass() {
       return {
         'button-active': !this.titleVisible
@@ -298,6 +553,10 @@ export default {
     },
 
     trySendMessage() {
+      if (this.audioChunks.length > 0) {
+        this.sendAudioMessage();
+        return;
+      }
       const messageText = this.$refs.text.value
         .replace(/[\r\n]{2,}/g, "\n")
         .replace(/^[\s]+|[\s]+$/gm, "");
@@ -315,12 +574,19 @@ export default {
       this.titleVisible = true;
     },
 
+    sendAudioMessage() {
+      const mp3Blob = this.analyzeAudioBuffer(this.ws.backend.buffer);
+      this.$emit("file-selected", mp3Blob);
+      this.recording = false;
+      this.recordingStopped = false;
+    },
+
     handleChange(event) {
       const messageText = this.$refs.text.value
           .replace(/[\r\n]{2,}/g, "\n")
           .replace(/^[\s]+|[\s]+$/gm, "");
       this.titleVisible = !(this.$refs.text.value && messageText);
-
+      this.textTyped = messageText;
       const target = this.$refs.text;
 
       target.style.height = TEXTAREA_HEIGHT;

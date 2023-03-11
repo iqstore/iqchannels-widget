@@ -298,6 +298,11 @@
       transition: border 0.3s, background 0.3s, color 0.3s;
     }
 
+    audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel {
+      background-color: #dcf5c0;
+    }
+
+
 </style>
 
 <template lang="pug">
@@ -365,6 +370,9 @@
                         @click="clickFile(msg, $event)")
                         .filename {{ msg.File.Name }}
                         .filesize {{ msg.File.Size | humanSize }}
+                      audio(v-else-if="msg.File && msg.File.Type === 'audio'" controls="true"
+                        :src="msg.File.URL")
+                      div
                       .time
                         span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
                         span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено")
@@ -392,6 +400,7 @@
 import avatar from './avatar.vue';
 import rating from './rating.vue';
 import linkifyString from 'linkify-string';
+import client from '../../client';
 
 export default {
   components: { avatar, rating },
