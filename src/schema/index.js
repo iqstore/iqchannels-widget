@@ -13,6 +13,7 @@ export const ChatPayloadRating = 'rating';
 export const ChatEventMessageCreated = 'message_created';
 export const ChatEventMessageReceived = 'message_received';
 export const ChatEventMessageRead = 'message_read';
+export const ChatEventMessageListed = 'message-listened';
 export const ChatEventChatClosed = 'chat_closed';
 export const ChatEventMessagesDeleted = 'delete-messages';
 export const ChatEventCloseSystemChat = 'close-system-chat';

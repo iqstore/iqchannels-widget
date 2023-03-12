@@ -213,6 +213,10 @@ class Client {
     return this._enqueueRequest(`/chats/messages/read`, messagesIds);
   }
 
+  channelMessagesListen (messageId) {
+    return this._enqueueRequest(`/chats/messages/listen`, messageId);
+  }
+
   channelMessagesReceived (messagesIds) {
     return this._enqueueRequest(`/chats/messages/received`, messagesIds);
   }
