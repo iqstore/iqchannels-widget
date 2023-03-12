@@ -419,6 +419,7 @@ export default {
       this.ws.microphone.stop();
       this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
       this.recording = false;
+      this.audioChunks = [];
       this.recordingStopped = false;
     },
     playAudio() {
@@ -578,6 +579,7 @@ export default {
       const mp3Blob = this.analyzeAudioBuffer(this.ws.backend.buffer);
       this.$emit("file-selected", mp3Blob);
       this.recording = false;
+      this.audioChunks = [];
       this.recordingStopped = false;
     },
 

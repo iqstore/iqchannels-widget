@@ -146,6 +146,9 @@
             .group-wrapper {
               justify-content: flex-end;
             }
+          audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel {
+          background-color: #dcf5c0;
+            }
         }
     }
 
@@ -298,9 +301,6 @@
       transition: border 0.3s, background 0.3s, color 0.3s;
     }
 
-    audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel {
-      background-color: #dcf5c0;
-    }
 
 
 </style>
@@ -370,7 +370,7 @@
                         @click="clickFile(msg, $event)")
                         .filename {{ msg.File.Name }}
                         .filesize {{ msg.File.Size | humanSize }}
-                      audio(v-else-if="msg.File && msg.File.Type === 'audio'" controls="true"
+                      audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true"
                         :src="msg.File.URL")
                       div
                       .time

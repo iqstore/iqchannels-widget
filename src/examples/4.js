@@ -1,4 +1,4 @@
-import "normalize.css";
+import 'normalize.css';
 
 /* globals IQChannelsWidget */
 window.widget = new IQChannelsWidget({
