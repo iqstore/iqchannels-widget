@@ -244,14 +244,16 @@
               textarea(ref="text", placeholder="Сообщение..." @keydown.enter="handleEnterPressed" @input="handleChange")
             a.button.csm-btn(href="#", v-if="!recording || textTyped || recordingStopped" @click.prevent="trySendMessage" title="Отправить сообщение" v-bind:class="getClass()")
                 icon(name="long-arrow-up")
-            a.button.csm-btn(v-if="textTyped === '' && !recording && !recordingStopped" @click="startRecording()")
-              icon(name="microphone")
+            div(v-if="audioMsgEnabled")
+              a.button.csm-btn(v-if="textTyped === '' && !recording && !recordingStopped" @click="startRecording()")
+                icon(name="microphone")
 
 </template>
 <script>
 import WaveSurfer from "wavesurfer.js";
 import MicrophonePlugin from "wavesurfer.js/dist/plugin/wavesurfer.microphone.js";
 import lamejs from "lamejs";
+import client from '../../client';
 const TYPING_INTERVAL = 2000;
 const TEXTAREA_HEIGHT = '32px';
 
@@ -265,6 +267,7 @@ export default {
       audioChunks: [],
       ws: null,
       textTyped: "",
+      audioMsgEnabled: true,
       recordingStopped: false,
       mediaRecorder: null,
       recording: false,
@@ -277,7 +280,8 @@ export default {
 
   props: {
     replayedMsg: Object,
-    operatorTyping: Object
+    operatorTyping: Object,
+    channel: String
   },
 
   computed: {
@@ -319,6 +323,9 @@ export default {
 
   mounted() {
     this.timer = setInterval(this.tryStopTyping, TYPING_INTERVAL);
+    client.checkIfAudioMsgEnabled(this.channel).then(r => {
+      this.audioMsgEnabled = r.Data;
+    });
     $('.textarea-field').keypress(x => {
       if (x.keyCode === 13 && !x.shiftKey) {
         x.preventDefault();

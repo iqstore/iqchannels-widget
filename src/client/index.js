@@ -209,6 +209,10 @@ class Client {
     return this._enqueueRequest(`/chats/channel/system_chats/send/${channel}`);
   }
 
+  checkIfAudioMsgEnabled (channel) {
+    return this._enqueueRequest(`/chats/channel/audio_messages_enabled/${channel}`);
+  }
+
   channelMessagesRead (messagesIds) {
     return this._enqueueRequest(`/chats/messages/read`, messagesIds);
   }

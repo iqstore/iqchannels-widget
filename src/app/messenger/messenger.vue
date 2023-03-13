@@ -184,7 +184,9 @@
             v-bind:operatorTyping="inputTyping"
             @message-composed="onMessageComposed"
             @file-selected="onFileSelected"
-            @start-typing="onStartTyping")
+            @start-typing="onStartTyping"
+            v-bind:channel="this.channel"
+            )
 </template>
 
 <script>
