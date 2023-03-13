@@ -8,6 +8,7 @@ import 'vue-awesome/icons/paperclip';
 import 'vue-awesome/icons/send';
 import 'vue-awesome/icons/long-arrow-up';
 import 'vue-awesome/icons/check';
+import 'vue-awesome/icons/microphone';
 import ScaleLoader from 'vue-spinner/src/ScaleLoader.vue';
 import client from '../client';
 import config from '../config';

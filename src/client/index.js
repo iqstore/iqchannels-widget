@@ -209,12 +209,19 @@ class Client {
     return this._enqueueRequest(`/chats/channel/system_chats/send/${channel}`);
   }
 
+  checkIfAudioMsgEnabled (channel) {
+    return this._enqueueRequest(`/chats/channel/audio_messages_enabled/${channel}`);
+  }
   getWidgetGreetings (channel) {
     return this._enqueueRequest(`/widget/greetings/${channel}`);
   }
 
   channelMessagesRead (messagesIds) {
     return this._enqueueRequest(`/chats/messages/read`, messagesIds);
+  }
+
+  channelMessagesListen (messageId) {
+    return this._enqueueRequest(`/chats/messages/listen`, messageId);
   }
 
   channelMessagesReceived (messagesIds) {
@@ -291,6 +298,9 @@ class Client {
       type = 'image';
     }
 
+    if (file.toString().startsWith('audio')) {
+      type = 'audio';
+    }
     const data = new FormData();
     data.append('Type', type);
     data.append('File', file);
@@ -431,7 +441,7 @@ class Client {
       Token: text,
       Sign: sign
     };
-    let json = JSON.stringify(signed); ;
+    let json = JSON.stringify(signed);
 
     // Base64 encode the result.
     let b64 = btoa(json);

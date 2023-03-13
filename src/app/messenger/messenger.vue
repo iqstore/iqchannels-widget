@@ -183,7 +183,9 @@
             v-bind:operatorTyping="inputTyping"
             @message-composed="onMessageComposed"
             @file-selected="onFileSelected"
-            @start-typing="onStartTyping")
+            @start-typing="onStartTyping"
+            v-bind:channel="this.channel"
+            )
 </template>
 
 <script>
@@ -690,6 +692,7 @@ export default {
           message.FileId = file.Id;
           client.channelSend(this.channel, message);
           this.replaceMessage(message);
+          this.scrollToLastMessage();
         },
         error => {
           message.UploadError = error.http() ? "Ошибка загрузки" : error.text;
@@ -832,6 +835,9 @@ export default {
           case schema.ChatEventMessageRead:
             this.handleIncomingRead(event);
             break;
+          case schema.ChatEventMessageListened:
+            this.handleIncomingListened(event);
+            break;
           case schema.ChatEventMessageReceived:
             this.handleIncomingReceived(event);
             break;
@@ -892,6 +898,16 @@ export default {
       }
       message.Read = message.Received = true;
       message.ReadAt = message.ReceivedAt = event.CreatedAt;
+      this.replaceMessage(message);
+    },
+
+    handleIncomingListened(event) {
+      const message = this.getMessageById(event.MessageId);
+      if (!message) {
+        return;
+      }
+      message.Listened = message.Received = true;
+      message.ListenedAt = message.ReceivedAt = event.CreatedAt;
       this.replaceMessage(message);
     },
 

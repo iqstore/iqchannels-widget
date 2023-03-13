@@ -146,6 +146,9 @@
             .group-wrapper {
               justify-content: flex-end;
             }
+          audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel {
+          background-color: #dcf5c0;
+            }
         }
     }
 
@@ -298,6 +301,12 @@
       transition: border 0.3s, background 0.3s, color 0.3s;
     }
 
+    .blue{
+      color: cornflowerblue;
+    }
+
+
+
 </style>
 
 <template lang="pug">
@@ -365,14 +374,15 @@
                         @click="clickFile(msg, $event)")
                         .filename {{ msg.File.Name }}
                         .filesize {{ msg.File.Size | humanSize }}
+                      audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
+                        :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
+                      div
                       .time
                         span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
-                        span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено")
-                          svg(width='11' height='8' viewbox='0 0 11 8' fill='none' xmlns='http://www.w3.org/2000/svg')
-                            path(d='M10 0.132222C9.73665 -0.131102 9.31774 0.0454488 9.10537 0.257795L3.43208 5.93122L0.92819 3.42733C0.715865 3.21499 0.371626 3.21501 0.159259 3.42733C-0.0530865 3.63966 -0.0530865 3.9839 0.159259 4.19624L3.04761 7.08455C3.25987 7.29688 3.60437 7.29673 3.81654 7.08455L10 0.901097C10.2123 0.688772 10.2123 0.344568 10 0.132222Z' fill='#5F814A')
-                        span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано")
-                          svg(width='13' height='8' viewbox='0 0 13 8' fill='none' xmlns='http://www.w3.org/2000/svg' class="svg-read")
-                            path(d='M12 0.302282C11.7304 0.0352342 11.2403 0.287629 11.026 0.499975L5.39909 6.24939C5.12983 6.56509 5.39862 6.85352 5.39862 6.85352C5.61285 7.06584 5.96621 7.03873 6.18036 6.82656L12 1.07104C12.2143 0.85872 12.2143 0.514628 12 0.302282Z' fill='#5F814A')
+                        span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
+                        span.read(v-if="group.LastMessage.Id && group.LastMessage.Read && !group.LastMessage.Listened" title="Прочитано") ✓
+                        span.read(v-if="group.LastMessage.Id && group.LastMessage.Listened" title="Прослушано" :class="{'blue': group.LastMessage.Listened}") ✓
+
                         scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
                 div(v-if="group.LastMessage.Payload === 'single-choice' && !group.LastMessage.IsDropDown", style="margin-top:5px")
                   div.choice_box_dropdown
@@ -392,6 +402,7 @@
 import avatar from './avatar.vue';
 import rating from './rating.vue';
 import linkifyString from 'linkify-string';
+import client from '../../client';
 
 export default {
   components: { avatar, rating },
@@ -406,6 +417,7 @@ export default {
   data: function () {
     return {
       swipeRange: 100,
+      audioMessagePlayingId: null
     }
   },
 
@@ -469,6 +481,26 @@ export default {
       return (event) => {
         this.$emit("long-tap", msg);
       }
+    },
+
+    listenForAudioEvents (msg) {
+      if (msg.My) {
+        return;
+      }
+      if (this.audioMessagePlayingId) {
+        const playing = document.getElementById(this.audioMessagePlayingId);
+        playing.pause();
+      }
+      const elId = "audio-track-" + msg.Id;
+      this.audioMessagePlayingId = elId;
+      const track = document.getElementById(elId);
+      // listen for ended event and set listened flag
+      track.onended = () => {
+        if (!msg.Listened) {
+          msg.Listened = true;
+          client.channelMessagesListen(msg.Id)
+        }
+      };
     },
 
     swipeRight(event, item){
