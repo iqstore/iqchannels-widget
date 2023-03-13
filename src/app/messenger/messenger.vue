@@ -691,6 +691,7 @@ export default {
           message.FileId = file.Id;
           client.channelSend(this.channel, message);
           this.replaceMessage(message);
+          this.scrollToLastMessage();
         },
         error => {
           message.UploadError = error.http() ? "Ошибка загрузки" : error.text;
@@ -833,7 +834,7 @@ export default {
           case schema.ChatEventMessageRead:
             this.handleIncomingRead(event);
             break;
-          case schema.ChatEventMessageListed:
+          case schema.ChatEventMessageListened:
             this.handleIncomingListened(event);
             break;
           case schema.ChatEventMessageReceived:
