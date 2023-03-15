@@ -242,7 +242,7 @@
               div(id="waveform")
             .textarea(v-if="!recording && !recordingStopped")
               textarea(ref="text", placeholder="Сообщение..." @keydown.enter="handleEnterPressed" @input="handleChange")
-            a.button.csm-btn(href="#", v-if="!recording || textTyped || recordingStopped" @click.prevent="trySendMessage" title="Отправить сообщение" v-bind:class="getClass()")
+            a.button.csm-btn(href="#" @click.prevent="trySendMessage" title="Отправить сообщение" v-bind:class="getClass()")
                 icon(name="long-arrow-up")
             div(v-if="audioMsgEnabled")
               a.button.csm-btn(v-if="textTyped === '' && !recording && !recordingStopped" @click="startRecording()")
@@ -583,11 +583,18 @@ export default {
     },
 
     sendAudioMessage() {
-      const mp3Blob = this.analyzeAudioBuffer(this.ws.backend.buffer);
-      this.$emit("file-selected", mp3Blob);
+      if (!this.ws) {
+        return;
+      }
+      this.ws.microphone.stop();
+      this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
       this.recording = false;
-      this.audioChunks = [];
       this.recordingStopped = false;
+      setTimeout(() => {
+        const mp3Blob = this.analyzeAudioBuffer(this.ws.backend.buffer);
+        this.$emit("file-selected", mp3Blob);
+        this.audioChunks = [];
+      }, 100);
     },
 
     handleChange(event) {
