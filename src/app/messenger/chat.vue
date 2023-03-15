@@ -305,6 +305,14 @@
       color: cornflowerblue;
     }
 
+    .listened-flag{
+        position: absolute;
+        top: -40px;
+        left: 25px;
+        cursor: pointer;
+        color: #2EB8FE;
+    }
+
 
 
 </style>
@@ -342,6 +350,7 @@
                       .reply-text {{ getAuthorAndText(msg).text }}
 
                     .message-data
+
                       pre.text(v-if="msg.Payload === 'text' || msg.Payload === 'single-choice'" v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
                       .file.text(v-if="msg.Upload")
                         div(v-if="msg.Uploading")
@@ -377,11 +386,14 @@
                       audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
                         :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
                       div
+
                       .time
+                        span.listened-flag(v-if="msg.Listened" title="Прослушано")
+                          icon(name="headphones")
                         span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
                         span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
-                        span.read(v-if="group.LastMessage.Id && group.LastMessage.Read && !group.LastMessage.Listened" title="Прочитано") ✓
-                        span.read(v-if="group.LastMessage.Id && group.LastMessage.Listened" title="Прослушано" :class="{'blue': group.LastMessage.Listened}") ✓
+                        span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
+
 
                         scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
                 div(v-if="group.LastMessage.Payload === 'single-choice' && !group.LastMessage.IsDropDown", style="margin-top:5px")
