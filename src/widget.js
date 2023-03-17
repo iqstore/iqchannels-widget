@@ -268,6 +268,11 @@ class IQChannelsWidget extends EventEmitter {
     this.frameWindow.postMessage(JSON.stringify(event), '*');
   };
 
+  scrollToMessage = (msg) => {
+    const event = newChatEvent('scroll-to-message', msg);
+    this.frameWindow.postMessage(JSON.stringify(event), '*');
+  };
+
   sendRatingData = (rating) => {
     const event = newChatEvent('get-rating', rating);
     this.frameWindow.postMessage(JSON.stringify(event), '*');

@@ -59,6 +59,7 @@ const app = new Vue({
               :opened='opened'
               :channel='channel'
               :replayed-msg="replayedMsg"
+              :scrollToMsg="scrollToMsg"       
               :rating="rating"
               :closeSystemChat="closeSystemChat"       
           />
@@ -84,6 +85,7 @@ const app = new Vue({
       client: null,
       pushToken: null,
       replayedMsg: null,
+      scrollToMsg: null,
       rating: null
     };
   },
@@ -154,7 +156,9 @@ const app = new Vue({
         case 'reply-message':
           this.replayedMsg = event.data;
           break;
-
+        case 'scroll-to-message':
+          this.scrollToMsg = event.data;
+          break;
         case 'get-rating':
           this.rating = event.data;
           break;

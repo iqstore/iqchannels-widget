@@ -206,6 +206,7 @@ export default {
     opened: Boolean,
     channel: String,
     replayedMsg: Object,
+    scrollToMsg: Object,
     closeSystemChat: Boolean,
     typing: Object,
     rating: Number,
@@ -307,6 +308,7 @@ export default {
           .hide()
           .show(0);
         this.setScrollPositionToBottom();
+        this.scrollToLastMessage();
       }
     },
     unreadCount: function(newValue, oldValue) {
@@ -314,6 +316,9 @@ export default {
     },
     replayedMsg: function (newValue) {
       this.inputMsg = JSON.parse(JSON.stringify(newValue));
+    },
+    scrollToMsg: function (newValue) {
+      this.scrollToLastMessage()
     },
     rating: function (newRating) {
       if (newRating === 0) {
