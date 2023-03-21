@@ -209,11 +209,19 @@ class Client {
     return this._enqueueRequest(`/chats/channel/system_chats/send/${channel}`);
   }
 
-  checkIfAudioMsgEnabled (channel) {
-    return this._enqueueRequest(`/chats/channel/audio_messages_enabled/${channel}`);
-  }
+  // checkIfAudioMsgEnabled (channel) {
+  //   return this._enqueueRequest(`/chats/channel/audio_messages_enabled/${channel}`);
+  // }
   getWidgetGreetings (channel) {
     return this._enqueueRequest(`/widget/greetings/${channel}`);
+  }
+
+  acceptProductMessage (messageId, productId) {
+    return this._enqueueRequest(`/chats/messages/accept_product`, { MessageId: messageId, ProductId: productId });
+  }
+
+  declineProductMessage (messageId, productId) {
+    return this._enqueueRequest(`/chats/messages/decline_product`, { MessageId: messageId, ProductId: productId });
   }
 
   channelMessagesRead (messagesIds) {
