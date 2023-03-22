@@ -351,7 +351,7 @@
 
                     .message-data
 
-                      pre.text(v-if="msg.Payload === 'text' || msg.Payload === 'single-choice'" v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
+                      pre.text(v-if="msg.Payload === 'text' || msg.Payload === 'single-choice' || msg.Payload === 'product'" v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
                       .file.text(v-if="msg.Upload")
                         div(v-if="msg.Uploading")
                           .filename {{ msg.Upload.name }}
@@ -402,6 +402,10 @@
                     button.choice_button(type="button"
                     v-for="choice in group.LastMessage.SingleChoices",
                     @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
+                div.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
+                  button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
+                    span {{ getProductMsgText(group.LastMessage) }}
+                  button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
             rating(
                 v-if="group.Rating",
                 v-bind:rating="group.Rating",
@@ -487,6 +491,51 @@ export default {
         behavior: 'smooth',
         block: 'center'
       })
+    },
+
+    getProductMsgText(message) {
+        const product = message.Product;
+        let res = "";
+        if (!product) {
+          return "";
+        }
+        if (product.Type === 'product') {
+          res = "Подключить продукт "
+        } else {
+          res = "Подключить услугу "
+        }
+        if (product.PeriodicPayment === 'free'){
+          res = res + "бесплатно";
+          return res;
+        }
+      switch (product.PeriodicPaymentType) {
+        case "day":
+          res = res + "за " + product.PeriodicPaymentPrice + " руб/день";
+          return res;
+        case "week":
+          res = res + "за " + product.PeriodicPaymentPrice + " руб/неделю";
+          return res;
+        case "month":
+          res = res + "за " + product.PeriodicPaymentPrice + " руб/месяц";
+          return res;
+        case "year":
+          res = res + "за " + product.PeriodicPaymentPrice + "/год";
+          return res;
+      }
+    },
+
+    acceptProduct(msg) {
+      const product = msg.Product;
+      if (product) {
+        client.acceptProductMessage(msg.Id, product.Id);
+      }
+    },
+
+    declineProduct(msg) {
+      const product = msg.Product;
+      if (product) {
+        client.declineProductMessage(msg.Id, product.Id);
+      }
     },
 
     longtapEvent(msg) {
