@@ -323,10 +323,9 @@ export default {
 
   mounted() {
     this.timer = setInterval(this.tryStopTyping, TYPING_INTERVAL);
-    // client.checkIfAudioMsgEnabled(this.channel).then(r => {
-    //   this.audioMsgEnabled = r.Data;
-    // });
-    this.audioMsgEnabled = false;
+    client.checkIfAudioMsgEnabled(this.channel).then(r => {
+      this.audioMsgEnabled = r.Data;
+    });
     $('.textarea-field').keypress(x => {
       if (x.keyCode === 13 && !x.shiftKey) {
         x.preventDefault();
