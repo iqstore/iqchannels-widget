@@ -135,6 +135,32 @@
       transition: border 0.3s, background 0.3s, color 0.3s;
     }
 
+    .search-icon{
+      margin-left: 5px;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 30px;
+    }
+
+    .comment-icon {
+      margin-left: 5px;
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    .search-input{
+      width: 100%;
+      color: gray;
+      background-color: #FFFFFF;
+      border-radius: 0.25rem;
+      border: 1px solid #ced4da;
+      padding: .375rem 3rem .375rem .75rem;
+
+      &:focus{
+        outline: none;
+      }
+    }
+
 </style>
 
 <template lang="pug">
@@ -148,10 +174,18 @@
                 a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
               a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
                 icon(name="close")
-            div.chat-type-container(v-if="hasPersonalManager")
-              select(name="chat-type" @change="onChatTypeSelected").chat-type-select
-                option(selected value="regular") Общий чат
-                option(value="personal_manager") Чат с персональным менеджером
+            div(style="display:flex")
+              span.search-icon(title="Поиск по чату", @click.prevent="searchMsg()")
+                icon(name="search")
+              div.chat-type-container(v-if="searching", style="display:flex; width:100%" )
+                input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
+                span.comment-icon(title="Назад", @click.prevent="cancelSearch()")
+                  icon(name="arrow-right")
+              div.chat-type-container(v-if="hasPersonalManager && !searching")
+                select(name="chat-type" @change="onChatTypeSelected").chat-type-select
+                  option(selected value="regular") Общий чат
+                  option(value="personal_manager") Чат с персональным менеджером
+
         #chat
           chat(
             v-bind:mode="mode",
@@ -159,6 +193,7 @@
             v-bind:groups="groups",
             v-bind:rating="rating",
             v-bind:singleChoices="singleChoices",
+            v-bind:searching="searching",
             @cancel-upload="cancelUpload",
             @retry-upload="retryUpload",
             @rate-rating="rateRating",
@@ -167,8 +202,9 @@
             @mobile-rating="mobileRating",
             @long-tap="longTap",
             @reply-msg="reply",
+            @scrollToMessage="(id) => scrollToFoundMessage(id)",
             @click-file="clickFile")
-          .scrollBottom(v-if="!isBottom" @click="scrollToLastMessage(false)")
+          .scrollBottom(v-if="!isBottom && !this.searching" @click="scrollToLastMessage(false)")
             svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
               path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
           .div(v-if="groups.length && groups[groups.length -1].LastMessage.Payload === 'single-choice'")
@@ -261,6 +297,9 @@ export default {
     return {
       // reactive props
       groups: [],
+      searching: false,
+      cashedGroups: [],
+      search: "",
       inputMsg: {},
       inputTyping: {},
       isBottom: true,
@@ -311,6 +350,12 @@ export default {
         this.scrollToLastMessage();
       }
     },
+    search: function (newValue, oldValue) {
+      if (newValue === "") {
+        return;
+      }
+      this.queryMessages(newValue);
+    },
     unreadCount: function(newValue, oldValue) {
       this.$emit("on-unread-changed", newValue);
     },
@@ -341,6 +386,43 @@ export default {
     setScrollPositionToBottom() {
       const chatElement = $('#chat');
       chatElement[0].scrollTop = chatElement[0].scrollHeight - chatElement[0].clientHeight;
+    },
+
+    searchMsg() {
+      this.searching = true;
+      this.cashedGroups = this.groups;
+    },
+
+    scrollToFoundMessage(id) {
+      this.searching = false;
+      this.search = "";
+      client.channelMessages(this.channel, this.chatType, null, id ).then(messages => {
+        this.groups = this.cashedGroups;
+        this.appendMessages(messages);
+        this.cashedGroups = [];
+      });
+      setTimeout(() => {
+
+        document.getElementById(id).scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        })
+      }, 1000)
+    },
+
+    queryMessages(value) {
+      client.channelMessages(this.channel, this.chatType, value).then(messages => {
+            this.lastEventId = messages.length
+                ? messages[messages.length - 1].EventId
+                : null;
+            this.groups = [];
+            this.appendMessages(messages);
+    })
+    },
+
+    cancelSearch() {
+      this.cashedGroups = [];
+      this.searching = false;
     },
 
     // Public

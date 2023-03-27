@@ -182,8 +182,8 @@ class Client {
       .then(response => response.Result.Client);
   }
 
-  channelMessages (channel, chatType) {
-    const data = { ChatType: chatType, Limit: config.REQUEST_MESSAGES_LIMIT };
+  channelMessages (channel, chatType, searchTerm, fromId) {
+    const data = { ChatType: chatType, Limit: config.REQUEST_MESSAGES_LIMIT, Q: searchTerm, FromId: fromId };
     return this._enqueueRequest(`/chats/channel/messages/${channel}`, data)
       .then(response => new Relations(config, response.Rels).messages(response.Result));
   }

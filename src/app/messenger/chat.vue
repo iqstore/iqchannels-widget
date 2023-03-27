@@ -313,6 +313,10 @@
         color: #2EB8FE;
     }
 
+    .scroll{
+      cursor: pointer;
+    }
+
 
 
 </style>
@@ -338,8 +342,9 @@
 
                   .message.bubble(
                     v-touch:longtap="longtapEvent(msg)",
-
-                    :class="{ sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
+                    :title="getTitle()",
+                    @click.prevent="scrollToMessage(msg)"
+                    :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
 
                     .reply-icon
                       svg(width='14' height='12' viewbox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg')
@@ -425,6 +430,7 @@ export default {
 
   props: {
     mode: String,
+    searching: Boolean,
     opened: Boolean,
     groups: Array,
     rating: Object,
@@ -487,10 +493,17 @@ export default {
     },
 
     goToMessage(msg) {
+      if (!this.searching) {
+        return
+      }
       document.getElementById(msg.ReplyToMessageId).scrollIntoView({
         behavior: 'smooth',
         block: 'center'
       })
+    },
+
+    scrollToMessage(msg) {
+      this.$emit("scrollToMessage", msg.Id);
     },
 
     getProductMsgText(message) {
@@ -585,6 +598,13 @@ export default {
           this.resetSwipeRight(closest);
         }
       }
+    },
+
+    getTitle() {
+      if (this.searching) {
+        return "Перейти к сообщению"
+      }
+      return "Сообщение"
     },
 
     resetSwipeRight(closest) {

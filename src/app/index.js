@@ -10,6 +10,8 @@ import 'vue-awesome/icons/long-arrow-up';
 import 'vue-awesome/icons/check';
 import 'vue-awesome/icons/microphone';
 import 'vue-awesome/icons/headphones';
+import 'vue-awesome/icons/search';
+import 'vue-awesome/icons/arrow-right';
 import ScaleLoader from 'vue-spinner/src/ScaleLoader.vue';
 import client from '../client';
 import config from '../config';
