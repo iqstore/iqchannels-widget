@@ -351,10 +351,13 @@ export default {
       }
     },
     search: function (newValue, oldValue) {
-      if (newValue === "") {
-        return;
-      }
       this.queryMessages(newValue);
+      if (newValue === "") {
+        setTimeout(() => {
+        this.scrollToLastMessage();
+
+        }, 1000)
+      }
     },
     unreadCount: function(newValue, oldValue) {
       this.$emit("on-unread-changed", newValue);
