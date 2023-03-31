@@ -177,9 +177,9 @@
             div(style="display:flex")
               span.search-icon(title="Поиск по чату", @click.prevent="searchMsg()")
                 icon(name="search")
-              div.chat-type-container(v-if="searching", style="display:flex; width:100%" )
+              div.chat-type-container(v-if="searching || !hasPersonalManager", style="display:flex; width:100%" )
                 input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
-                span.comment-icon(title="Назад", @click.prevent="cancelSearch()")
+                span.comment-icon(v-if="hasPersonalManager" title="Назад", @click.prevent="cancelSearch()")
                   icon(name="arrow-right")
               div.chat-type-container(v-if="hasPersonalManager && !searching")
                 select(name="chat-type" @change="onChatTypeSelected").chat-type-select
@@ -351,6 +351,9 @@ export default {
       }
     },
     search: function (newValue, oldValue) {
+      if (!this.searching) {
+        this.searching = true;
+      }
       this.queryMessages(newValue);
       if (newValue === "") {
         setTimeout(() => {
