@@ -356,7 +356,7 @@
 
                     .message-data
 
-                      pre.text(v-if="msg.Payload === 'text' || msg.Payload === 'single-choice' || msg.Payload === 'product'" v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
+                      pre.text(v-if="isTextPayload(msg.Payload)" v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
                       .file.text(v-if="msg.Upload")
                         div(v-if="msg.Uploading")
                           .filename {{ msg.Upload.name }}
@@ -401,7 +401,7 @@
 
 
                         scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
-                div(v-if="group.LastMessage.Payload === 'single-choice' && !group.LastMessage.IsDropDown", style="margin-top:5px")
+                div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
                   div.choice_box_dropdown
                     div(style="display:flex;justify-content:flex-end")
                     button.choice_button(type="button"
@@ -490,6 +490,10 @@ export default {
         author: '',
         text: ''
       };
+    },
+
+    isTextPayload(payload): boolean {
+      return payload === 'text' || payload === 'single-choice' || payload === 'product' || payload === 'link'
     },
 
     goToMessage(msg) {
