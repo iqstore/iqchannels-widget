@@ -492,7 +492,7 @@ export default {
       };
     },
 
-    isTextPayload(payload): boolean {
+    isTextPayload(payload) {
       return payload === 'text' || payload === 'single-choice' || payload === 'product' || payload === 'link'
     },
 
