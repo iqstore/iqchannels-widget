@@ -403,9 +403,7 @@ export default {
       this.searching = false;
       this.search = "";
       client.channelMessages(this.channel, this.chatType, null, id ).then(messages => {
-        this.groups = this.cashedGroups;
         this.appendMessages(messages);
-        this.cashedGroups = [];
       });
       setTimeout(() => {
 
@@ -684,8 +682,11 @@ export default {
       if (this.systemChat === true){
         return;
       }
-      if(this.groups[this.groups.length -1].Rating && !this.groups[this.groups.length -1].LastMessage.RatingId){
+      if(this.groups[this.groups.length -1] && !this.groups[this.groups.length -1]){
+        const lastGroup = this.groups[this.groups.length -1]
+        if (lastGroup.Rating && !lastGroup.LastMessage.RatingId){
         return;
+        }
       }
       client.getChatSettings(this.channel).then(result => {
         const settings = result.Data

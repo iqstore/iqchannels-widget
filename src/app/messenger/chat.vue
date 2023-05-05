@@ -343,7 +343,7 @@
                   .message.bubble(
                     v-touch:longtap="longtapEvent(msg)",
                     :title="getTitle()",
-                    @click.prevent="scrollToMessage(msg)"
+                    @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))"
                     :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
 
                     .reply-icon
@@ -506,7 +506,14 @@ export default {
       })
     },
 
-    scrollToMessage(msg) {
+    scrollToMessage(msg, event, link) {
+      if (event.target.href) {
+        window.open(event.target.href, "_blank")
+        return;
+      }
+      if (!this.searching){
+        return;
+      }
       this.$emit("scrollToMessage", msg.Id);
     },
 
