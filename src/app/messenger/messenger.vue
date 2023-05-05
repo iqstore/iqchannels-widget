@@ -682,7 +682,10 @@ export default {
 
     sendGreeting() {
       if (this.systemChat === true){
-        return
+        return;
+      }
+      if(this.groups[this.groups.length -1].Rating && !this.groups[this.groups.length -1].LastMessage.RatingId){
+        return;
       }
       client.getChatSettings(this.channel).then(result => {
         const settings = result.Data
