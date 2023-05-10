@@ -343,7 +343,7 @@
                   .message.bubble(
                     v-touch:longtap="longtapEvent(msg)",
                     :title="getTitle()",
-                    @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))"
+
                     :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
 
                     .reply-icon
@@ -356,7 +356,7 @@
 
                     .message-data
 
-                      pre.text(v-if="isTextPayload(msg.Payload)" v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
+                      pre.text(v-if="isTextPayload(msg.Payload)" v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
                       .file.text(v-if="msg.Upload")
                         div(v-if="msg.Uploading")
                           .filename {{ msg.Upload.name }}
@@ -382,12 +382,13 @@
                           b {{ msg.Text }}
                         button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
                           v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-                      a.file(v-else-if="msg.File && msg.File.Type == 'file'"
-                        v-bind:href="msg.File.URL"
-                        target="_blank"
-                        @click="clickFile(msg, $event)")
-                        .filename {{ msg.File.Name }}
-                        .filesize {{ msg.File.Size | humanSize }}
+                      div(v-else-if="msg.File && msg.File.Type == 'file'")
+                        a.file(
+                          v-bind:href="msg.File.URL"
+                          target="_blank"
+                          @click="clickFile(msg, $event)")
+                          .filename {{ msg.File.Name }}
+                          .filesize {{ msg.File.Size | humanSize }}
                       audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
                         :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
                       div
