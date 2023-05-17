@@ -13,6 +13,10 @@
         display: flex;
         flex-direction: column;
 
+        .text {
+            width: 85%;
+        }
+
         .text, a {
             white-space: pre-wrap;       /* css-3 */
             white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
