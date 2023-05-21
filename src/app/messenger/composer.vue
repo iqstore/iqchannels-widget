@@ -241,7 +241,7 @@
               button.audio-msg-track-btn-stop(aria-label="Стоп", v-if="recording && !recordingStopped" @click="stopRecording()")
               div(id="waveform")
             .textarea(v-if="!recording && !recordingStopped")
-              textarea(ref="text", placeholder="Сообщение..." @keydown.enter="handleEnterPressed" @input="handleChange")
+              textarea(ref="text", placeholder="Сообщение..." style="resize: none;" @keydown.enter="handleEnterPressed" @input="handleChange")
             a.button.csm-btn(href="#" @click.prevent="trySendMessage" title="Отправить сообщение" v-bind:class="getClass()")
                 icon(name="long-arrow-up")
             div(v-if="audioMsgEnabled")
