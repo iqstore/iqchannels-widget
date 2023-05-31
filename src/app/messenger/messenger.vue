@@ -369,7 +369,7 @@ export default {
       this.inputMsg = JSON.parse(JSON.stringify(newValue));
     },
     scrollToMsg: function (newValue) {
-      this.scrollToLastMessage()
+      this.scrollToPushMessage(newValue)
     },
     rating: function (newRating) {
       if (newRating === 0) {
@@ -412,6 +412,12 @@ export default {
           block: 'center'
         })
       }, 1000)
+    },
+    scrollToPushMessage(msg) {
+      document.getElementById(msg).scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      })
     },
 
     queryMessages(value) {
