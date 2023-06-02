@@ -338,7 +338,7 @@
 
               .body(v-if="!group.Rating")
                 .author
-                  span(v-if="group.User") {{ group.User.Pseudonym ? group.User.Pseudonym : group.User.Name }}
+                  span(v-if="group.User") {{ group.User.DisplayName }}
                   span(v-if="group.Client") {{ group.Client.Name }}
                 .message-wrapper(v-for="(msg, index) in group.Messages",
                   v-hammer:pan="(event)=> swipeRight(event, msg)",

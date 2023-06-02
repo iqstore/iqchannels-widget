@@ -221,7 +221,7 @@
 <template lang="pug">
     .composer
 
-        .operator-typing(v-if="typingDisplay") {{ inputTyping.User.Pseudonym ? inputTyping.User.Pseudonym : inputTyping.User.DisplayName }} печатает...
+        .operator-typing(v-if="typingDisplay") {{inputTyping.User.DisplayName }} печатает...
 
         .replayed(v-if="msg && msgVisible")
           .replayed__data
