@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const commonConfig = require('./common.js');
+const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = webpackMerge(commonConfig, {
   devtool: 'cheap-module-source-map',
@@ -37,6 +38,7 @@ module.exports = webpackMerge(commonConfig, {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
+    new webpack.NoErrorsPlugin(),
+    new CompressionPlugin()
   ]
 });

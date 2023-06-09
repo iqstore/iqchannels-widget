@@ -3,6 +3,7 @@ const webpackMerge = require('webpack-merge');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const commonConfig = require('./common.js');
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
+const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = webpackMerge(commonConfig, {
   devtool: 'source-map',
@@ -30,6 +31,7 @@ module.exports = webpackMerge(commonConfig, {
         warnings: false,
         screw_ie8: true /* eslint camelcase: 0 */
       }
-    })
+    }),
+    new CompressionPlugin()
   ]
 });
