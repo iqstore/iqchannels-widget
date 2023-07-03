@@ -11,7 +11,7 @@ clean:
 	rm -rf build/*
 
 install:
-	npm install
+	npm install --legacy-peer-deps
 	npm rebuild node-sass
 
 run:
