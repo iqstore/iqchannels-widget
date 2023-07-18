@@ -192,6 +192,8 @@
             v-bind:opened="opened",
             v-bind:groups="groups",
             v-bind:rating="rating",
+            v-bind:client="client",
+            v-bind:channel="channel",
             v-bind:singleChoices="singleChoices",
             v-bind:searching="searching",
             @cancel-upload="cancelUpload",

@@ -202,6 +202,18 @@ class Client {
     return this._enqueueRequest(`/chats/channel/tickets/existing/${channel}`, { ClientId: clientId, Query: query });
   }
 
+  getPoll (query) {
+    return this._enqueueRequest(`/ratings/query_poll`, { Query: query });
+  }
+
+  sendPoll (input) {
+    return this._enqueueRequest(`/ratings/send_poll`, { RatingPollClientAnswerInput: input });
+  }
+
+  finishPoll (ratingId, pollId) {
+    return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId });
+  }
+
   getChatSettings (channel) {
     return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`);
   }
