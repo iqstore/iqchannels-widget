@@ -283,6 +283,25 @@ class Client {
       .then(response => new Relations(config, response.Rels).rating(response.Result));
   }
 
+  sendInfo (info) {
+    const request = {
+      RequestId: info.Id,
+      Email: info.Email,
+      Name: info.Name,
+      Phone: info.Phone,
+      ClientId: info.ClientId,
+      ClientConsent: info.ClientConsent
+    };
+    return this._enqueueRequest(`/info_requests/respond`, request)
+      .then(response => new Relations(config, response.Rels).infoRequest(response.Result));
+  }
+
+  ignoreInfo (requestId) {
+    const request = { RequestId: requestId };
+    return this._enqueueRequest(`/info_requests/ignore`, request)
+      .then(response => new Relations(config, response.Rels).infoRequest(response.Result));
+  }
+
   fileToken (fileId) {
     const request = { FileId: fileId };
     return this.post(`/files/token`, request).then(response => {

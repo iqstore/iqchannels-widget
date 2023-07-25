@@ -200,6 +200,8 @@
             @message-composed="onMessageComposed",
             @ignore-rating="ignoreRating",
             @mobile-rating="mobileRating",
+            @send-info="sendInfo",
+            @ignore-info="ignoreInfo",
             @long-tap="longTap",
             @reply-msg="reply",
             @scrollToMessage="(id) => scrollToFoundMessage(id)",
@@ -680,7 +682,9 @@ export default {
 
         IsNewDay: isNewDay
       };
-
+      if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
+        group.InfoRequest = message.InfoRequest;
+      }
       groups.push(group);
     },
 
@@ -875,6 +879,43 @@ export default {
 
     mobileRating(rating) {
       this.$emit("on-rating", rating);
+    },
+
+
+    sendInfo(info) {
+      if (info.Sending) {
+        return;
+      }
+
+      info.Sending = client
+          .sendInfo(info)
+          .then(
+              rated => {
+                info.Sending = null;
+                info.State = 'finished';
+              },
+              error => {
+                info.Sending = null;
+                info.Error = error;
+              }
+          );
+    },
+
+    ignoreInfo(info) {
+      if (info.Sending) {
+        return;
+      }
+
+      info.Sending = client.ignoreInfo(info.Id).then(
+          ignored => {
+            info.Sending = null;
+            info.State = ignored.State;
+          },
+          error => {
+            info.Sending = null;
+            info.Error = error;
+          }
+      );
     },
 
     clickFile(file) {

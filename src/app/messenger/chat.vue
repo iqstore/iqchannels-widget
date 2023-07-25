@@ -327,16 +327,16 @@
 
 <template lang="pug">
     .messages#list
-        .group(v-for="group in groups" v-bind:class="{ client: group.ClientId, user: group.UserId }")
+        .group(v-for="group in groups" v-bind:class="{ client: group.ClientId, user: group.UserId }" )
             .date(v-if="group.IsNewDay")
                 span.title {{ group.LastMessage.CreatedAt | humanDate }}
 
-            .group-wrapper
+            .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
 
               .avatar(v-if="group.User")
                 avatar(v-bind:user="group.User")
 
-              .body(v-if="!group.Rating")
+              .body()
                 .author
                   span(v-if="group.User") {{ group.User.DisplayName }}
                   span(v-if="group.Client") {{ group.Client.Name }}
@@ -421,6 +421,12 @@
                 v-bind:rating="group.Rating",
                 @rate-rating="rateRating",
                 @ignore-rating="ignoreRating")
+            inforequest(
+                v-if="group.InfoRequest",
+                v-bind:request="group.InfoRequest",
+                @send-info="sendInfo",
+                @ignore-info="ignoreInfo"
+            )
 
 </template>
 
@@ -429,9 +435,10 @@ import avatar from './avatar.vue';
 import rating from './rating.vue';
 import linkifyString from 'linkify-string';
 import client from '../../client';
+import inforequest from './info-request.vue';
 
 export default {
-  components: { avatar, rating },
+  components: { inforequest, avatar, rating },
 
   props: {
     mode: String,
@@ -643,6 +650,14 @@ export default {
 
     ignoreRating(rating) {
       this.$emit("ignore-rating", rating);
+    },
+
+    sendInfo(info) {
+      this.$emit("send-info", info)
+    },
+
+    ignoreInfo(info) {
+      this.$emit('ignore-info', info)
     },
 
     mobileRating(rating) {

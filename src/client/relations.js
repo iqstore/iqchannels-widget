@@ -13,7 +13,8 @@ export default class Relations {
             Users: {},
             ChatMessages: {},
             Files: {},
-            Ratings: {}
+            Ratings: {},
+            InfoRequests: {},
         };
 
         if (rels.Clients) {
@@ -37,6 +38,11 @@ export default class Relations {
         if (rels.Ratings) {
             this.ratings(rels.Ratings).forEach(rating => {
                 this.rels.Ratings[rating.Id] = rating;
+            });
+        }
+        if (rels.InfoRequests) {
+            this.infoRequests(rels.InfoRequests).forEach(request => {
+              this.rels.InfoRequests[request.Id] = request;
             });
         }
 
@@ -64,16 +70,23 @@ export default class Relations {
 
     message(message) {
         if (message.ClientId) {
-            message.Client = this.rels.Clients[message.ClientId];
+          message.Client = this.rels.Clients[message.ClientId];
         }
         if (message.UserId) {
-            message.User = this.rels.Users[message.UserId];
+          message.User = this.rels.Users[message.UserId];
         }
         if (message.FileId) {
             message.File = this.rels.Files[message.FileId];
         }
         if (message.RatingId) {
             message.Rating = this.rels.Ratings[message.RatingId];
+        }
+
+        if (message.InfoRequestId) {
+            const infoReq =  this.rels.InfoRequests[message.InfoRequestId];
+            if (infoReq && infoReq.State === 'pending') {
+                message.InfoRequest = infoReq;
+            };
         }
 
         message.CreatedAt = new Date(message.CreatedAt);
@@ -116,5 +129,13 @@ export default class Relations {
 
     rating(rating) {
         return rating;
+    }
+
+    infoRequests(requests) {
+        return requests.map(r => this.infoRequest(r));
+    }
+
+    infoRequest(request) {
+        return request;
     }
 }
