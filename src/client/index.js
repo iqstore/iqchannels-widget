@@ -302,6 +302,22 @@ class Client {
       .then(response => new Relations(config, response.Rels).infoRequest(response.Result));
   }
 
+  sendIdentification (info) {
+    const request = {
+      RequestId: info.Id,
+      ClientInfo: info.ClientInfo,
+      ClientId: info.ClientId
+    };
+    return this._enqueueRequest(`/client_identifications/respond`, request)
+      .then(response => new Relations(config, response.Rels).clientIdentification(response.Result));
+  }
+
+  ignoreIdentification (requestId) {
+    const request = { RequestId: requestId };
+    return this._enqueueRequest(`/client_identifications/ignore`, request)
+      .then(response => new Relations(config, response.Rels).clientIdentification(response.Result));
+  }
+
   fileToken (fileId) {
     const request = { FileId: fileId };
     return this.post(`/files/token`, request).then(response => {

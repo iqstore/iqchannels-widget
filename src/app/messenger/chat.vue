@@ -429,6 +429,12 @@
                 @send-info="sendInfo",
                 @ignore-info="ignoreInfo"
             )
+            clientIdentification(
+              v-if="group.ClientIdentification",
+              v-bind:request="group.ClientIdentification",
+              @send-identification="sendIdentification",
+              @ignore-identification="ignoreIdentification"
+            )
 
 </template>
 
@@ -438,9 +444,10 @@ import rating from './rating.vue';
 import linkifyString from 'linkify-string';
 import client from '../../client';
 import inforequest from './info-request.vue';
+import clientIdentification from './client-identification.vue';
 
 export default {
-  components: { inforequest, avatar, rating },
+  components: { inforequest, avatar, rating, clientIdentification },
 
   props: {
     mode: String,
@@ -660,6 +667,14 @@ export default {
 
     ignoreInfo(info) {
       this.$emit('ignore-info', info)
+    },
+
+    sendIdentification(info) {
+      this.$emit("send-identification", info)
+    },
+
+    ignoreIdentification(info) {
+      this.$emit('ignore-identification', info)
     },
 
     mobileRating(rating) {

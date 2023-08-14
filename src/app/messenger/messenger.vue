@@ -202,6 +202,8 @@
             @mobile-rating="mobileRating",
             @send-info="sendInfo",
             @ignore-info="ignoreInfo",
+            @send-identification="sendIdentification",
+            @ignore-identification="ignoreIdentification",
             @long-tap="longTap",
             @reply-msg="reply",
             @scrollToMessage="(id) => scrollToFoundMessage(id)",
@@ -917,6 +919,42 @@ export default {
           error => {
             info.Sending = null;
             info.Error = error;
+          }
+      );
+    },
+
+    sendIdentification(identification) {
+      if (identification.Sending) {
+        return;
+      }
+
+      identification.Sending = client
+          .sendIdentification(identification)
+          .then(
+              rated => {
+                identification.Sending = null;
+                identification.State = 'pending';
+              },
+              error => {
+                identification.Sending = null;
+                identification.Error = error;
+              }
+          );
+    },
+
+    ignoreIdentification(identification) {
+      if (identification.Sending) {
+        return;
+      }
+
+      identification.Sending = client.ignoreIdentification(identification.Id).then(
+          ignored => {
+            identification.Sending = null;
+            identification.State = ignored.State;
+          },
+          error => {
+            identification.Sending = null;
+            identification.Error = error;
           }
       );
     },
