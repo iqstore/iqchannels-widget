@@ -685,6 +685,9 @@ export default {
       if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
         group.InfoRequest = message.InfoRequest;
       }
+      if (message.ClientIdentification && message.ClientIdentification.State !== 'finished') {
+        group.ClientIdentification = message.ClientIdentification;
+      }
       groups.push(group);
     },
 
