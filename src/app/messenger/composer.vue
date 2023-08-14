@@ -205,6 +205,17 @@
     color: inherit;
   }
 
+  .image {
+    text-decoration: none;
+    color: black;
+      img {
+        vertical-align: middle;
+        width: 100%;
+        height: 200px;
+        object-fit: contain;
+    }
+  }
+
   .audio-msg-track--wave-wrapper {
     width: 250px;
   }
@@ -225,6 +236,27 @@
 
         .replayed(v-if="msg && msgVisible")
           .replayed__data
+            div(v-if="msg.Payload === 'carousel' && !msg.File")
+              pre.text()
+              button.img-button(
+                v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+            div(v-else-if="msg.File && msg.File.Type == 'image'")
+              a.image(
+                v-bind:href="msg.File.URL",
+                target="_blank",
+                @click="clickFile(msg, $event)")
+                img.bubble(:src="msg.File.ThumbnailURL")
+              button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
+                v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+            div(v-else-if="msg.File && msg.File.Type == 'file'")
+              a.file(
+                v-bind:href="msg.File.URL"
+                target="_blank"
+                @click="clickFile(msg, $event)")
+                .filename {{ msg.File.Name }}
+                .filesize {{ msg.File.Size | humanSize }}
+            audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
+              :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
             .replayed-author {{ author }}
             .replayed-text {{ msg.Text }}
           svg(width='9' height='9' viewbox='0 0 9 9' fill='none' xmlns='http://www.w3.org/2000/svg' @click="resetReplayedMsg()")
