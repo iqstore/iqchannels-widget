@@ -448,6 +448,8 @@
             rating(
                 v-if="group.Rating",
                 v-bind:rating="group.Rating",
+                v-bind:client="client",
+                v-bind:channel="channel",
                 @rate-rating="rateRating",
                 @ignore-rating="ignoreRating")
             inforequest(
@@ -475,6 +477,8 @@ export default {
     opened: Boolean,
     groups: Array,
     rating: Object,
+    client: Object,
+    channel: String,
   },
 
   data: function () {
