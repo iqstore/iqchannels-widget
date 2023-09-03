@@ -224,26 +224,26 @@
         .backdrop(v-if="(rating.State === 'poll' || thanksFeedback) && loaded")
         .backdrop(v-if="(rating.State === 'pending')")
         .pending(v-if="rating.State === 'pending'")
-          .title Пожалуйста, оцените качество консультации
-          .stars(@mouseout="onMouseOut()")
-              .star(v-for="n in 5",
-                  :class="{'star-selected': n <= rating.Value}",
-                  @mouseover="onMouseOver(n)",
-                  @click.prevent="setRating(n)")
-                  svg.star-background(aria-hidden="true" focusable="false"
-                      class="svg-inline--fa fa-star fa-w-18" role="img"
-                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
-                      path(fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z")
+            .title Пожалуйста, оцените качество консультации
+            .stars(@mouseout="onMouseOut()")
+                .star(v-for="n in 5",
+                    :class="{'star-selected': n <= rating.Value}",
+                    @mouseover="onMouseOver(n)",
+                    @click.prevent="setRating(n)")
+                    svg.star-background(aria-hidden="true" focusable="false"
+                        class="svg-inline--fa fa-star fa-w-18" role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
+                        path(fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z")
 
-                  svg.star-outline(aria-hidden="true" focusable="false"
-                      class="svg-inline--fa fa-star fa-w-18" role="img"
-                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
-                      path(fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM405.8 317.9l27.8 162L288 403.5 142.5 480l27.8-162L52.5 203.1l162.7-23.6L288 32l72.8 147.5 162.7 23.6-117.7 114.8z")
-          .buttons
-              .ignore(@click="ignoreRating")
-                  | Отмена
-              .submit(@click="sendRating", :class="{'disabled': !value}")
-                  | Отправить
+                    svg.star-outline(aria-hidden="true" focusable="false"
+                        class="svg-inline--fa fa-star fa-w-18" role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
+                        path(fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM405.8 317.9l27.8 162L288 403.5 142.5 480l27.8-162L52.5 203.1l162.7-23.6L288 32l72.8 147.5 162.7 23.6-117.7 114.8z")
+            .buttons
+                .ignore(@click="ignoreRating")
+                    | Отмена
+                .submit(@click="sendRating", :class="{'disabled': !value}")
+                    | Отправить
 
         .pending(v-if="rating.State === 'poll' && !start && loaded")
             .title.mt Желаете пройти опрос?
@@ -284,10 +284,9 @@
 
         .pending(v-if="thanksFeedback")
             .thanks-feedback
-              svg(xmlns="http://www.w3.org/2000/svg" height="3em" fill="#2D98F4" viewBox="0 0 512 512")
-                path(d="M190.5 68.8L225.3 128H224 152c-22.1 0-40-17.9-40-40s17.9-40 40-40h2.2c14.9 0 28.8 7.9 36.3 20.8zM64 88c0 14.4 3.5 28 9.6 40H32c-17.7 0-32 14.3-32 32v64c0 17.7 14.3 32 32 32H480c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32H438.4c6.1-12 9.6-25.6 9.6-40c0-48.6-39.4-88-88-88h-2.2c-31.9 0-61.5 16.9-77.7 44.4L256 85.5l-24.1-41C215.7 16.9 186.1 0 154.2 0H152C103.4 0 64 39.4 64 88zm336 0c0 22.1-17.9 40-40 40H288h-1.3l34.8-59.2C329.1 55.9 342.9 48 357.8 48H360c22.1 0 40 17.9 40 40zM32 288V464c0 26.5 21.5 48 48 48H224V288H32zM288 512H432c26.5 0 48-21.5 48-48V288H288V512z")
-              .title.color-thanks {{ thanksFeedbackText }}
-
+                svg(xmlns="http://www.w3.org/2000/svg" height="3em" fill="#2D98F4" viewBox="0 0 512 512")
+                    path(d="M190.5 68.8L225.3 128H224 152c-22.1 0-40-17.9-40-40s17.9-40 40-40h2.2c14.9 0 28.8 7.9 36.3 20.8zM64 88c0 14.4 3.5 28 9.6 40H32c-17.7 0-32 14.3-32 32v64c0 17.7 14.3 32 32 32H480c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32H438.4c6.1-12 9.6-25.6 9.6-40c0-48.6-39.4-88-88-88h-2.2c-31.9 0-61.5 16.9-77.7 44.4L256 85.5l-24.1-41C215.7 16.9 186.1 0 154.2 0H152C103.4 0 64 39.4 64 88zm336 0c0 22.1-17.9 40-40 40H288h-1.3l34.8-59.2C329.1 55.9 342.9 48 357.8 48H360c22.1 0 40 17.9 40 40zM32 288V464c0 26.5 21.5 48 48 48H224V288H32zM288 512H432c26.5 0 48-21.5 48-48V288H288V512z")
+                .title.color-thanks {{ thanksFeedbackText }}
 
 
 </template>
@@ -303,8 +302,10 @@ export default {
         ticket: Object,
     },
 
-    created() {
-        this.getPoll();
+    mounted() {
+        this.$nextTick(function () {
+            this.getPoll();
+        });
     },
 
     data: function () {
@@ -330,9 +331,12 @@ export default {
                 Enabled: true,
                 ClientId: this.client.Id,
                 RatingId: this.rating.Id,
+                Desc: true,
+                Limit: 1
             }
             client.getPoll(query).then(data => {
                 this.poll = data.Data.Poll;
+                console.log(this.rating, this.start);
                 if (!data.Data.Poll) {
                     this.loaded = !!data.Data.Poll;
                 } else {
@@ -346,7 +350,7 @@ export default {
         },
 
         setPollStars(value) {
-            this.value = value;
+            this.setRating(value);
             this.pollResult = {
                 Type: "stars",
                 AnswerStars: value,
@@ -381,24 +385,18 @@ export default {
 
         sendRatingPoll() {
             if (this.index === this.poll.Questions.length - 1) {
-                if (this.poll.FeedbackThanks) {
-                    client.sendPoll(this.pollResult);
-                    client.finishPoll(this.rating.Id, this.poll.Id).then(res => {
-                        if (res.OK) {
-                            this.rating.State = "finished";
-                            if (this.poll.FeedbackThanks) {
-                                this.thanksFeedback = true;
-                                this.thanksFeedbackText = this.poll.FeedbackThanksText;
-                            }
-                            this.start = false;
-                            const bye = setTimeout(() => {
-                                this.thanksFeedback = false;
-                                clearTimeout(bye);
-                            }, 3000)
-                        }
-                    });
+                if (this.poll.Questions[this.index].AsTicketRating) {
+                    this.sendRating();
+                    this.finishPoll();
+                    return;
                 }
+                client.sendPoll(this.pollResult);
+                this.finishPoll();
             } else {
+                if (this.poll.Questions[this.index].AsTicketRating) {
+                    this.sendRating();
+                    return;
+                }
                 client.sendPoll(this.pollResult);
                 this.index++;
             }
@@ -407,6 +405,25 @@ export default {
         setRating(value) {
             this.rating.Value = value;
             this.value = value;
+        },
+
+        finishPoll() {
+            client.finishPoll(this.rating.Id, this.poll.Id).then(res => {
+                if (res.OK) {
+                    this.rating.State = "finished";
+                    if (this.poll.FeedbackThanks) {
+                        this.thanksFeedback = true;
+                        this.thanksFeedbackText = this.poll.FeedbackThanksText;
+                    }
+                    this.start = false;
+                    if (this.poll.FeedbackThanks) {
+                        const bye = setTimeout(() => {
+                            this.thanksFeedback = false;
+                            clearTimeout(bye);
+                        }, 3000)
+                    }
+                }
+            });
         },
 
         sendRating() {
