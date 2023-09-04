@@ -395,6 +395,7 @@ export default {
             } else {
                 if (this.poll.Questions[this.index].AsTicketRating) {
                     this.sendRating();
+                    this.index++;
                     return;
                 }
                 client.sendPoll(this.pollResult);
