@@ -335,6 +335,7 @@ export default {
                 Limit: 1
             }
             client.getPoll(query).then(data => {
+                console.log("ещё грузится");
                 this.poll = data.Data.Poll;
                 if (!data.Data.Poll) {
                     this.loaded = !!data.Data.Poll;
