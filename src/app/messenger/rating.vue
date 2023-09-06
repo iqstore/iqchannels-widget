@@ -336,7 +336,6 @@ export default {
             }
             client.getPoll(query).then(data => {
                 this.poll = data.Data.Poll;
-                console.log(this.poll);
                 if (!data.Data.Poll) {
                     this.loaded = !!data.Data.Poll;
                 } else {
