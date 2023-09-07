@@ -276,8 +276,7 @@
                     input(type="radio", :name="i", :id="i", :value="answer.Id", v-model="pollResult.RatingPollAnswerId")
                     label.check-label(:for="i") {{ answer.Text }}
             .input(v-if="poll.Questions[index].Type === 'input'")
-                textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", rows="5")
-
+                textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
             .buttons.mt
                 .submit(@click="sendRatingPoll")
                     | Отправить ответ
