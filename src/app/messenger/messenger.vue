@@ -221,6 +221,7 @@
             ref="composer"
             v-bind:replayedMsg="inputMsg"
             v-bind:operatorTyping="inputTyping"
+            v-bind:disableFreeText="disableFreeText"
             @message-composed="onMessageComposed"
             @file-selected="onFileSelected"
             @start-typing="onStartTyping"
@@ -309,6 +310,7 @@ export default {
       isBottom: true,
       systemChat: false,
       singleChoices: [],
+      disableFreeText: false,
     };
   },
 
@@ -523,6 +525,12 @@ export default {
     },
 
     appendMessages(messages) {
+      const last = messages[messages.length - 1]
+      if (last.DisableFreeText) {
+        this.disableFreeText = true;
+      } else{
+        this.disableFreeText = false;
+      }
       for (let message of messages) {
         this.appendMessage(message);
       }
@@ -611,6 +619,11 @@ export default {
             if (i === group.Messages.length - 1) {
               group.LastMessage = message;
               this.singleChoices = group.LastMessage.SingleChoices
+              if (group.LastMessage.DisableFreeText) {
+                this.disableFreeText = true
+              } else {
+                this.disableFreeText = false
+              }
             }
             return true;
           }
@@ -634,6 +647,11 @@ export default {
             } else {
               group.LastMessage = group.Messages[group.Messages.length - 1];
               this.singleChoices = group.Messages[group.Messages.length - 1].SingleChoices;
+              if (group.LastMessage.DisableFreeText) {
+                this.disableFreeText = true
+              } else {
+                this.disableFreeText = false
+              }
             }
             return true;
           }
@@ -657,6 +675,11 @@ export default {
           group.Messages.push(message);
           group.LastMessage = message;
           this.singleChoices = group.LastMessage.SingleChoices
+          if (group.LastMessage.DisableFreeText) {
+            this.disableFreeText = true
+          } else {
+            this.disableFreeText = false
+          }
           return;
         }
       }
