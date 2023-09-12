@@ -525,11 +525,13 @@ export default {
     },
 
     appendMessages(messages) {
-      const last = messages[messages.length - 1]
-      if (last.DisableFreeText) {
-        this.disableFreeText = true;
-      } else{
-        this.disableFreeText = false;
+      if (messages.length > 0) {
+        const last = messages[messages.length - 1]
+        if (last.DisableFreeText) {
+          this.disableFreeText = true;
+        } else{
+          this.disableFreeText = false;
+        }
       }
       for (let message of messages) {
         this.appendMessage(message);
