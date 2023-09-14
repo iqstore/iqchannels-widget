@@ -47,7 +47,7 @@
                 scale-loader(color="#ee5c13")
 
         .center(v-else="checking")
-            div(v-if="requireName")
+            div
               p.text
                 strong {{ this.greetings.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
                 br
