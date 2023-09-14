@@ -410,7 +410,7 @@
                         @click="clickFile(msg, $event)")
                           img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                         div.img-caption
-                          b {{ msg.Text }}
+                          span {{ msg.Text }}
                         button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
                           v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                       div(v-else-if="msg.File && msg.File.Type == 'file'")
@@ -421,7 +421,7 @@
                           .filename {{ msg.File.Name }}
                           .filesize {{ msg.File.Size | humanSize }}
                         div.img-caption
-                          b {{ msg.Text }}
+                          span {{ msg.Text }}
                       audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
                         :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
                       div

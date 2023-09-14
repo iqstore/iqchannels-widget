@@ -791,21 +791,21 @@ export default {
       }
     },
 
-    newFileMessage(file) {
+    newFileMessage(file, text) {
       return {
         LocalId: this.getNextLocalId(),
         Payload: schema.ChatPayloadFile,
-        Text: "",
+        Text: text,
         Upload: file,
         ChatType: this.chatType
       };
     },
 
-    newFileMessageWithReply(file, id) {
+    newFileMessageWithReply(file, id, text) {
       return {
         LocalId: this.getNextLocalId(),
         Payload: schema.ChatPayloadFile,
-        Text: "",
+        Text: text,
         Upload: file,
         ReplyToMessageId: id,
         ChatType: this.chatType
@@ -1113,8 +1113,13 @@ export default {
       });
     },
 
-    onFileSelected(file) {
-      const messageForm = this.newFileMessage(file);
+    onFileSelected(file, text, id) {
+      let messageForm;
+      if (id) {
+          messageForm = this.newFileMessageWithReply(file, id, text);
+      } else {
+          messageForm = this.newFileMessage(file, text);
+      }
       const message = this.appendLocalMessage(messageForm);
       this.uploadMessage(message);
     },
