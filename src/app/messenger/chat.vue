@@ -43,16 +43,28 @@
         }
 
         .filename {
-            color: #488445;
             display: block;
-            font-weight: 400;
+            font-weight: 700;
+
+            &-client {
+              color: #488445;
+            }
+            &-user {
+              color: #656565;
+            }
         }
 
         .filesize {
-            color: #488445;
-            margin-top: 8px;
+            margin-top: 6px;
             display: block;
             font-weight: 200;
+            font-size: 12px;
+            &-client {
+              color: #84B074;
+            }
+            &-user {
+              color: #979797;
+            }
         }
 
         .error {
@@ -239,6 +251,10 @@
         text-overflow: ellipsis;
         overflow: hidden;
       }
+
+      .message_file {
+        align-items: center;
+      }
     }
 
     .reply-icon {
@@ -328,7 +344,32 @@
         font-size: 14px;
     }
 
+    .message_file {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
 
+      &-client {
+        fill: #92BD83;
+      }
+      &-user {
+        fill: #ABB8C0;
+      }
+
+      svg {
+        margin-right: 5px !important;
+      }
+
+      svg.reply-message-file {
+        width: 24px !important;
+        height: 24px !important;
+      }
+
+      svg.message-file {
+        width: 32px !important;
+        height: 32px !important;
+      }
+    }
 
 </style>
 
@@ -374,12 +415,14 @@
                           img.bubble(:src="replyMsg.File.ThumbnailURL")
                         button.img-button(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'",
                           v-for="action of replyMsg.Actions") {{ action.Title }}
-                      div(v-else-if="replyMsg.File && replyMsg.File.Type == 'file'")
-                        a.file(
+                      a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type == 'file'"
                           v-bind:href="replyMsg.File.URL"
                           target="_blank"
                           @click="clickFile(replyMsg, $event)")
-                          .filename {{ replyMsg.File.Name }}
+                        svg.reply-message-file(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" v-bind:class="{ 'message_file-client': replyMsg.Author === 'client', 'message_file-user': replyMsg.Author === 'user' }")
+                          path(d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z")
+                        span.file
+                          .filename(v-bind:class="{ 'filename-client': replyMsg.Author === 'client', 'filename-user': replyMsg.Author === 'user' }") {{ replyMsg.File.Name }}
                       audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
                         :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
                       .reply-author {{ getAuthorAndText(msg).author }}
@@ -414,13 +457,16 @@
                         button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
                           v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                       div(v-else-if="msg.File && msg.File.Type == 'file'")
-                        a.file(
-                          v-bind:href="msg.File.URL"
-                          target="_blank"
-                          @click="clickFile(msg, $event)")
-                          .filename {{ msg.File.Name }}
-                          .filesize {{ msg.File.Size | humanSize }}
-                        div.img-caption
+                        a.message_file(
+                            v-bind:href="msg.File.URL"
+                            target="_blank"
+                            @click="clickFile(msg, $event)")
+                          svg.message-file(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" v-bind:class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
+                            path(d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z")
+                          span.file
+                            .filename(v-bind:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
+                            .filesize(v-bind:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ msg.File.Size | humanSize }}
+                        div.img-caption(v-if="msg.Text")
                           span {{ msg.Text }}
                       audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
                         :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
