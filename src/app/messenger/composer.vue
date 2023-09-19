@@ -620,7 +620,7 @@ export default {
     },
     getClass() {
       return {
-        'button-active': !this.titleVisible
+        'button-active': !this.titleVisible || this.currentFile
       }
     },
 
@@ -653,7 +653,7 @@ export default {
       const messageText = this.$refs.text.value
         .replace(/[\r\n]{2,}/g, "\n")
         .replace(/^[\s]+|[\s]+$/gm, "");
-      if (messageText) {
+      if (messageText || this.currentFile) {
         this.stopTyping();
         this.scrollToLastMessage();
         if (this.currentFile) {
