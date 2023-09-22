@@ -94,14 +94,8 @@ export default {
   methods: {
     create() {
       this.error = null;
-      var name = "";
-      if (this.requireName) {
-        name = this.$refs.name.value.trim();
-        if (name.length < 1) {
-          this.error = "Не менее 3-х букв, пожалуйста.";
-          return;
-        }
-      }
+      let name = '';
+      name = this.$refs.name.value.trim();
 
       this.creating = client
         .anonymousSignup(name, this.channel)
