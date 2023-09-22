@@ -1,520 +1,521 @@
-<style lang="sass" scoped>
-    .messages {
-        padding: 0 8px;
-        height: inherit;
+<style lang="scss" scoped>
+.messages {
+  padding: 0 8px;
+  height: inherit;
+}
+
+.message {
+  margin-bottom: 4px;
+  padding: 0.7rem 1rem 0.7rem 1rem;
+  clear: both;
+  max-width: 75%;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+
+  .text {
+      width: 85%;
+  }
+
+  .text, a {
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    font-family: inherit;
+    font-size: inherit;
+    margin: 0;
+  }
+
+  .image {
+    text-decoration: none;
+    color: black;
+      img {
+        vertical-align: middle;
+        width: 100%;
+      }
+  }
+
+  .file {
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .filename {
+    display: block;
+    font-weight: 700;
+
+    &-client {
+      color: #488445;
+    }
+    &-user {
+      color: #656565;
+    }
+  }
+
+  .filesize {
+    margin-top: 6px;
+    display: block;
+    font-weight: 200;
+    font-size: 12px;
+    &-client {
+      color: #84B074;
+    }
+    &-user {
+      color: #979797;
+    }
+  }
+
+  .error {
+    margin-top: 8px;
+  }
+}
+
+.date {
+  margin: 8px 0 18px 0;
+  text-align: center;
+
+  .title {
+    padding:  8px 12px;
+    border-radius: 16px;
+    background-color: #EBEBEB;
+    color: #666666;
+    font-size: 12px;
+  }
+}
+
+.author {
+  font-size: 13px;
+  color: #333333;
+  margin-bottom: 5px;
+  white-space: nowrap;
+}
+
+.received, .read {
+  color: #5F814A;
+}
+
+.read {
+  margin-left: -4px;
+  position: absolute;
+}
+
+.received {
+  margin-left: 4px;
+}
+
+.group {
+  margin-top: 8px;
+  margin-bottom: 0;
+  padding: 1px 0;
+  clear: both;
+  width: 100%;
+
+  &.user {
+    float: left;
+
+    .author {
+      float: left;
+      margin-top: 8px;
     }
 
     .message {
-        margin-bottom: 4px;
-        padding: 0.7rem 1rem 0.7rem 1rem;
-        clear: both;
-        max-width: 75%;
-        border-radius: 10px;
-        display: flex;
-        flex-direction: column;
-
-        .text {
-            width: 85%;
-        }
-
-        .text, a {
-            white-space: pre-wrap;       /* css-3 */
-            white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-            white-space: -pre-wrap;      /* Opera 4-6 */
-            white-space: -o-pre-wrap;    /* Opera 7 */
-            word-wrap: break-word;       /* Internet Explorer 5.5+ */
-            font-family: inherit;
-            font-size: inherit;
-            margin: 0;
-        }
-
-        .image {
-          text-decoration: none;
-          color: black;
-            img {
-                vertical-align: middle;
-                width: 100%;
-            }
-        }
-
-        .file {
-            font-size: 13px;
-            text-decoration: none;
-        }
-
-        .filename {
-            display: block;
-            font-weight: 700;
-
-            &-client {
-              color: #488445;
-            }
-            &-user {
-              color: #656565;
-            }
-        }
-
-        .filesize {
-            margin-top: 6px;
-            display: block;
-            font-weight: 200;
-            font-size: 12px;
-            &-client {
-              color: #84B074;
-            }
-            &-user {
-              color: #979797;
-            }
-        }
-
-        .error {
-            margin-top: 8px;
-        }
+      float: left;
+      background-color: #f3f3f3;
+      color: #656565;
     }
 
-    .date {
-        margin: 8px 0 18px 0;
-        text-align: center;
+    .bubble {
 
-        .title {
-            padding:  8px 12px;
-            border-radius: 16px;
-            background-color: #EBEBEB;
-            color: #666666;
-            font-size: 12px;
-        }
-    }
-
-    .author {
-        font-size: 13px;
-        color: #333333;
-        margin-bottom: 5px;
-        white-space: nowrap;
+      &.last {
+        margin-bottom: 0;
+      }
     }
 
     .received, .read {
-        color: #5F814A;
+      display: none;
+    }
+  }
+
+  &.client {
+    float: right;
+
+    .author {
+      display: none;
     }
 
-    .read {
-        margin-left: -4px;
-        position: absolute;
+    .message {
+      float: right;
+      margin-left: auto;
+      margin-right: 0;
+      background-color: #DCF5C0;
+      color: #488445;
     }
 
-    .received {
-        margin-left: 4px;
-    }
-
-    .group {
-        margin-top: 8px;
+    .bubble {
+      &.last {
         margin-bottom: 0;
-        padding: 1px 0;
-        clear: both;
-        width: 100%;
-
-        &.user {
-            float: left;
-
-            .author {
-                float: left;
-                margin-top: 8px;
-            }
-
-            .message {
-                float: left;
-                background-color: #f3f3f3;
-                color: #656565;
-            }
-
-            .bubble {
-
-                &.last {
-                  margin-bottom: 0;
-                }
-            }
-
-            .received, .read {
-                display: none;
-            }
-        }
-
-        &.client {
-            float: right;
-
-            .author {
-                display: none;
-            }
-
-            .message {
-                float: right;
-                margin-left: auto;
-                margin-right: 0;
-                background-color: #DCF5C0;
-                color: #488445;
-            }
-
-            .bubble {
-                &.last {
-                  margin-bottom: 0;
-                }
-            }
-
-            .group-wrapper {
-              justify-content: flex-end;
-            }
-          audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel {
-          background-color: #dcf5c0;
-            }
-        }
+      }
     }
 
     .group-wrapper {
-      display: flex
+      justify-content: flex-end;
     }
-
-    .time {
-        font-size: 10px;
-        color: #5F814A;
-        white-space: nowrap;
-        clear: both;
-        margin: auto 0 0 12px;
-        position: relative;
+    audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel {
+      background-color: #dcf5c0;
     }
+  }
+}
 
-    .sending {
-        background-color: rgba(212, 248, 186, 0.4) !important;
-    }
+.group-wrapper {
+  display: flex
+}
 
-    .loader {
-        display: inline-block;
-        float: right;
-    }
+.time {
+  font-size: 10px;
+  color: #5F814A;
+  white-space: nowrap;
+  clear: both;
+  margin: auto 0 0 12px;
+  position: relative;
+}
 
-    .button {
-        display: block;
-        border-radius: 4px;
-        padding: 4px;
-        text-align: center;
-        text-decoration: none;
-        font-size: 13px;
-        color: white;
-        margin-top: 8px !important;
-        margin-right: 8px !important;
-        float: left;
-        width: 35%;
-        white-space: nowrap;
-        word-break: keep-all;
-    }
+.sending {
+  background-color: rgba(212, 248, 186, 0.4) !important;
+}
 
-    .cancel {
-        background-color: rgba(255, 0, 0, 0.4);
-    }
+.loader {
+  display: inline-block;
+  float: right;
+}
 
-    .retry {
-        background-color: rgba(1, 138, 43, 0.4);
-    }
+.button {
+  display: block;
+  border-radius: 4px;
+  padding: 4px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 13px;
+  color: white;
+  margin-top: 8px !important;
+  margin-right: 8px !important;
+  float: left;
+  width: 35%;
+  white-space: nowrap;
+  word-break: keep-all;
+}
 
-    .avatar {
-      margin:auto auto 0;
-    }
+.cancel {
+  background-color: rgba(255, 0, 0, 0.4);
+}
 
-    .body {
-      width: 100%;
-      margin-left: 10px;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-    }
+.retry {
+  background-color: rgba(1, 138, 43, 0.4);
+}
 
-    .svg-read {
-      left: -6px;
-      position: absolute;
-      top: 1px;
-    }
+.avatar {
+  margin:auto auto 0;
+}
 
-    .message-data {
-      display: flex;
-      justify-content: space-between;
-    }
+.body {
+  width: 100%;
+  margin-left: 10px;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
-    .reply {
-      flex-direction: column;
-      display: flex;
-      white-space: nowrap;
-      padding-left: 5px;
-      margin-bottom: 5px;
-      font-size: 13px;
+.svg-read {
+  left: -6px;
+  position: absolute;
+  top: 1px;
+}
 
-      &-client {
-        border-left: 2px solid #5F814A;
-      }
-      &-user {
-        border-left: 2px solid black;
-      }
+.message-data {
+  display: flex;
+  justify-content: space-between;
+}
 
-      &-text {
-        -ms-text-overflow: ellipsis;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
+.reply {
+  flex-direction: column;
+  display: flex;
+  white-space: nowrap;
+  padding-left: 5px;
+  margin-bottom: 5px;
+  font-size: 13px;
 
-      .message_file {
-        align-items: center;
-      }
-    }
+  &-client {
+    border-left: 2px solid #5F814A;
+  }
+  &-user {
+    border-left: 2px solid black;
+  }
 
-    .reply-icon {
-      position: absolute;
-      left: -25px;
-    }
+  &-text {
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 
-    .message-wrapper {
-      display: flex;
-      transition: all 0.3s;
-      font-size: 14px;
-    }
-    .img-caption{
-      font-size: 14px;
-      color: black;
-      font-family: sans-serif;
-      pointer-events: none !important;
-      padding-top: 10px;
-      padding-bottom: 4px;
-    }
-    .img-button{
-      width: 100%;
-      border-radius: 4px;
-      height: 32px;
-      background-color: #E3E3E3;
-      border-width: 1px;
-      border-color: #CCCCCC;
-      }
-    .choice_box_dropdown{
-    display: flex;
-    font-size: 14px;
-    justify-content: flex-start;
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 1;
-    display: flex;
-    flex-wrap: wrap;
-    text-transform: none;
-    visibility: visible;
-    text-align: left;
-    border-radius: 3px;
-    }
-    .choice_button{
-      white-space: pre-wrap;       /* css-3 */
-      white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-      white-space: -pre-wrap;      /* Opera 4-6 */
-      white-space: -o-pre-wrap;    /* Opera 7 */
-      word-wrap: break-word;       /* Internet Explorer 5.5+ */
-      font-family: inherit;
-      font-size: inherit;
-      --font-family: Roboto;
-      -webkit-box-direction: normal;
-      outline: none !important;
-      width: 84%;
-      margin-right: 5px;
-      border-radius: 4px;
-      color: #fff;
-      background-color: #ABB8C0;
-      border: 1px solid #98A8B2;
-      margin-bottom: 5px;
-      line-height: 1;
-      height: 36px;
-      cursor: pointer;
-      transition: border 0.3s, background 0.3s, color 0.3s;
-    }
+  .message_file {
+    align-items: center;
+  }
+}
 
-    .blue{
-      color: cornflowerblue;
-    }
+.reply-icon {
+  position: absolute;
+  left: -25px;
+}
 
-    .listened-flag{
-        position: absolute;
-        top: -40px;
-        left: 25px;
-        cursor: pointer;
-        color: #2EB8FE;
-    }
+.message-wrapper {
+  display: flex;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+.img-caption{
+  font-size: 14px;
+  color: black;
+  font-family: sans-serif;
+  pointer-events: none !important;
+  padding-top: 10px;
+  padding-bottom: 4px;
+}
+.img-button{
+  width: 100%;
+  border-radius: 4px;
+  height: 32px;
+  background-color: #E3E3E3;
+  border-width: 1px;
+  border-color: #CCCCCC;
+  }
+.choice_box_dropdown{
+  display: flex;
+  font-size: 14px;
+  justify-content: flex-start;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+  display: flex;
+  flex-wrap: wrap;
+  text-transform: none;
+  visibility: visible;
+  text-align: left;
+  border-radius: 3px;
+}
+.choice_button{
+  white-space: pre-wrap;       /* css-3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  font-family: inherit;
+  font-size: inherit;
+  --font-family: Roboto;
+  -webkit-box-direction: normal;
+  outline: none !important;
+  width: 84%;
+  margin-right: 5px;
+  border-radius: 4px;
+  color: #fff;
+  background-color: #ABB8C0;
+  border: 1px solid #98A8B2;
+  margin-bottom: 5px;
+  line-height: 1;
+  height: 36px;
+  cursor: pointer;
+  transition: border 0.3s, background 0.3s, color 0.3s;
+}
 
-    .scroll{
-      cursor: pointer;
-    }
+.blue{
+  color: cornflowerblue;
+}
 
-    .reply-author{
-        margin-bottom: 5px;
-        margin-top: 5px;
-        font-size: 12px;
-        font-weight: 600;
+.listened-flag{
+  position: absolute;
+  top: -40px;
+  left: 25px;
+  cursor: pointer;
+  color: #2EB8FE;
+}
 
-        &-user {
-          color: black;
-        }
-        &-client {
-          color: #488445;
-        }
-    }
+.scroll{
+  cursor: pointer;
+}
 
-    .message_file {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
+.reply-author{
+  margin-bottom: 5px;
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 600;
 
-      &-client {
-        fill: #92BD83;
-      }
-      &-user {
-        fill: #ABB8C0;
-      }
+  &-user {
+    color: black;
+  }
+  &-client {
+    color: #488445;
+  }
+}
 
-      svg {
-        margin-right: 5px !important;
-      }
+.message_file {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
 
-      svg.reply-message-file {
-        width: 24px !important;
-        height: 24px !important;
-      }
+  &-client {
+    fill: #92BD83;
+  }
+  &-user {
+    fill: #ABB8C0;
+  }
 
-      svg.message-file {
-        width: 32px !important;
-        height: 32px !important;
-      }
-    }
+  svg {
+    margin-right: 5px !important;
+  }
+
+  svg.reply-message-file {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  svg.message-file {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
 
 </style>
 
 <template lang="pug">
-    .messages#list
-        .group(v-for="group in groups" v-bind:class="{ client: group.ClientId, user: group.UserId }" )
-            .date(v-if="group.IsNewDay")
-                span.title {{ group.LastMessage.CreatedAt | humanDate }}
+.messages#list
+  .group(v-for="group in groups" :class="{ client: group.ClientId, user: group.UserId }" )
+    .date(v-if="group.IsNewDay")
+      span.title {{ humanDate(group.LastMessage.CreatedAt) }}
 
-            .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
+    .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
 
-              .avatar(v-if="group.User")
-                avatar(v-bind:user="group.User")
+      .avatar(v-if="group.User")
+        avatar(:user="group.User")
 
-              .body()
-                .author
-                  span(v-if="group.User") {{ group.User.DisplayName }}
-                  span(v-if="group.Client") {{ group.Client.Name }}
-                .message-wrapper(v-for="(msg, index) in group.Messages",
-                  v-hammer:pan="(event)=> swipeRight(event, msg)",
-                  :id="msg.Id")
+      .body()
+        .author
+          span(v-if="group.User") {{ group.User.DisplayName }}
+          span(v-if="group.Client") {{ group.Client.Name }}
+        .message-wrapper(v-for="(msg, index) in group.Messages",
+          v-hammer:pan="(event)=> swipeRight(event, msg)",
+          :id="msg.Id")
 
-                  .message.bubble(
-                    v-touch:longtap="longtapEvent(msg)",
-                    :title="getTitle()",
+          .message.bubble(
+            v-touch:longtap="longtapEvent(msg)",
+            :title="getTitle()",
 
-                    :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
+            :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
 
-                    .reply-icon
-                      svg(width='14' height='12' viewbox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg')
-                        path(d='M0.168205 5.31043L5.31015 0.16848C5.67006 -0.191429 6.28546 0.0634719 6.28546 0.572471V2.8604C9.55786 2.99642 12.4442 5.22457 13.359 8.39557C13.6644 9.45406 13.7406 10.3252 13.7166 11.2627C13.7135 11.3728 13.7128 11.4046 13.7128 11.4277C13.7128 12.0082 12.9474 12.2187 12.6505 11.7199C12.014 10.6504 11.291 9.82404 10.4991 9.21322C9.06731 8.10896 7.57668 7.78917 6.28549 7.91831V10.8564C6.28549 11.3654 5.67009 11.6203 5.31018 11.2604L0.168232 6.11841C-0.0549068 5.8953 -0.0549078 5.53354 0.168205 5.31043ZM5.14283 9.47707V7.4284C5.14283 7.16667 5.32068 6.93842 5.57446 6.87441C5.64398 6.85687 5.75946 6.83389 5.91613 6.81198C7.5345 6.58555 9.41461 6.93378 11.1969 8.3084C11.6353 8.64653 12.0529 9.03949 12.4473 9.48957L12.4385 9.44383C12.393 9.20926 12.3346 8.96702 12.2611 8.71231C11.4456 5.88536 8.77869 3.93434 5.82534 3.998C5.77542 3.99888 5.75699 3.99928 5.73388 4.00009C5.41082 4.01123 5.14285 3.75236 5.14285 3.42909V1.95177L1.38021 5.71442L5.14283 9.47707Z' fill='#C6E39F')
+            .reply-icon
+              svg(width='14' height='12' viewbox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg')
+                path(d='M0.168205 5.31043L5.31015 0.16848C5.67006 -0.191429 6.28546 0.0634719 6.28546 0.572471V2.8604C9.55786 2.99642 12.4442 5.22457 13.359 8.39557C13.6644 9.45406 13.7406 10.3252 13.7166 11.2627C13.7135 11.3728 13.7128 11.4046 13.7128 11.4277C13.7128 12.0082 12.9474 12.2187 12.6505 11.7199C12.014 10.6504 11.291 9.82404 10.4991 9.21322C9.06731 8.10896 7.57668 7.78917 6.28549 7.91831V10.8564C6.28549 11.3654 5.67009 11.6203 5.31018 11.2604L0.168232 6.11841C-0.0549068 5.8953 -0.0549078 5.53354 0.168205 5.31043ZM5.14283 9.47707V7.4284C5.14283 7.16667 5.32068 6.93842 5.57446 6.87441C5.64398 6.85687 5.75946 6.83389 5.91613 6.81198C7.5345 6.58555 9.41461 6.93378 11.1969 8.3084C11.6353 8.64653 12.0529 9.03949 12.4473 9.48957L12.4385 9.44383C12.393 9.20926 12.3346 8.96702 12.2611 8.71231C11.4456 5.88536 8.77869 3.93434 5.82534 3.998C5.77542 3.99888 5.75699 3.99928 5.73388 4.00009C5.41082 4.01123 5.14285 3.75236 5.14285 3.42909V1.95177L1.38021 5.71442L5.14283 9.47707Z' fill='#C6E39F')
 
-                    .reply(v-if="msg.ReplyToMessageId", @click="goToMessage(msg)", v-for="replyMsg of getReplyMsg(msg)" v-bind:class="{ 'reply-client': msg.Author === 'client', 'reply-user': msg.Author === 'user' }" )
-                      .reply-author(v-bind:class="{ 'reply-author-client': msg.Author === 'client', 'reply-author-user': msg.Author === 'user' }") {{ getAuthorAndText(msg).author }}
-                      div(v-if="replyMsg.Payload === 'carousel' && !replyMsg.File")
-                        pre.text()
-                        button.img-button(
-                          v-for="action of replyMsg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-                      div(v-else-if="replyMsg.File && replyMsg.File.Type == 'image'")
-                        a.image(
-                          v-bind:href="replyMsg.File.URL",
-                          target="_blank",
-                          @click="clickFile(replyMsg, $event)")
-                          img.bubble(:src="replyMsg.File.ThumbnailURL")
-                        button.img-button(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'",
-                          v-for="action of replyMsg.Actions") {{ action.Title }}
-                      a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type == 'file'"
-                          v-bind:href="replyMsg.File.URL"
-                          target="_blank"
-                          @click="clickFile(replyMsg, $event)")
-                        span.file
-                          .filename(v-bind:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
-                      audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
-                        :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
-                      .reply-text {{ getAuthorAndText(msg).text }}
+            div(v-if="msg.ReplyToMessageId")
+              .reply(@click="goToMessage(msg)", v-for="replyMsg of getReplyMsg(msg)" :class="{ 'reply-client': msg.Author === 'client', 'reply-user': msg.Author === 'user' }" )
+                .reply-author(:class="{ 'reply-author-client': msg.Author === 'client', 'reply-author-user': msg.Author === 'user' }") {{ getAuthorAndText(msg).author }}
+                div(v-if="replyMsg.Payload === 'carousel' && !replyMsg.File")
+                  pre.text()
+                  button.img-button(
+                    v-for="action of replyMsg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+                div(v-else-if="replyMsg.File && replyMsg.File.Type == 'image'")
+                  a.image(
+                    :href="replyMsg.File.URL",
+                    target="_blank",
+                    @click="clickFile(replyMsg, $event)")
+                    img.bubble(:src="replyMsg.File.ThumbnailURL")
+                  div(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'")
+                    button.img-button(v-for="action of replyMsg.Actions") {{ action.Title }}
+                a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type == 'file'"
+                    :href="replyMsg.File.URL"
+                    target="_blank"
+                    @click="clickFile(replyMsg, $event)")
+                  span.file
+                    .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
+                audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
+                  :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
+                .reply-text {{ getAuthorAndText(msg).text }}
 
-                    .message-data
+            .message-data
 
-                      pre.text(v-if="isTextPayload(msg.Payload)" v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
-                      .file.text(v-if="msg.Upload")
-                        div(v-if="msg.Uploading")
-                          .filename {{ msg.Upload.name }}
-                          .filesize {{ msg.Upload.size | humanSize }} - Загружено {{ msg.UploadProgress }}%
-                          a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
-                        div(v-if="msg.UploadError")
-                          .filename {{ msg.Upload.name }}
-                          .filesize {{ msg.Upload.size | humanSize }}
-                          .error {{ msg.UploadError }}
-                          a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
-                          a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
-                      div(v-if="msg.Payload === 'carousel' && !msg.File")
-                        pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
-                        button.img-button(
-                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-                      div(v-else-if="msg.File && msg.File.Type == 'image'")
-                        a.image(
-                        v-bind:href="msg.File.URL",
-                        target="_blank",
-                        @click="clickFile(msg, $event)")
-                          img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                        div.img-caption
-                          span {{ msg.Text }}
-                        button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
-                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-                      div(v-else-if="msg.File && msg.File.Type == 'file'")
-                        a.message_file(
-                            v-bind:href="msg.File.URL"
-                            target="_blank"
-                            @click="clickFile(msg, $event)")
-                          svg.message-file(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" v-bind:class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
-                            path(d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z")
-                          span.file
-                            .filename(v-bind:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
-                            .filesize(v-bind:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ msg.File.Size | humanSize }}
-                        div.img-caption(v-if="msg.Text")
-                          span {{ msg.Text }}
-                      audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
-                        :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
-                      div
+              pre.text(v-if="isTextPayload(msg.Payload)" v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
+              .file.text(v-if="msg.Upload")
+                div(v-if="msg.Uploading")
+                  .filename {{ msg.Upload.name }}
+                  .filesize {{ humanSize(msg.Upload.size) }} - Загружено {{ msg.UploadProgress }}%
+                  a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
+                div(v-if="msg.UploadError")
+                  .filename {{ msg.Upload.name }}
+                  .filesize {{ humanSize(msg.Upload.size) }}
+                  .error {{ msg.UploadError }}
+                  a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
+                  a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
+              div(v-if="msg.Payload === 'carousel' && !msg.File")
+                pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
+                button.img-button(
+                  v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+              div(v-else-if="msg.File && msg.File.Type == 'image'")
+                a.image(
+                :href="msg.File.URL",
+                target="_blank",
+                @click="clickFile(msg, $event)")
+                  img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                div.img-caption
+                  span {{ msg.Text }}
+                div(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")
+                  button.img-button(v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+              div(v-else-if="msg.File && msg.File.Type == 'file'")
+                a.message_file(
+                    :href="msg.File.URL"
+                    target="_blank"
+                    @click="clickFile(msg, $event)")
+                  svg.message-file(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" :class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
+                    path(d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z")
+                  span.file
+                    .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
+                    .filesize(:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ humanSize(msg.File.Size) }}
+                div.img-caption(v-if="msg.Text")
+                  span {{ msg.Text }}
+              audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
+                :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
+              div
 
-                      .time
-                        span.listened-flag(v-if="msg.Listened" title="Прослушано")
-                          icon(name="headphones")
-                        span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
-                        span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
-                        span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
+              .time
+                span.listened-flag(v-if="msg.Listened" title="Прослушано")
+                  icon(name="headphones")
+                span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
+                span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
+                span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
 
 
-                        scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
-                div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
-                  div.choice_box_dropdown
-                    div(style="display:flex;justify-content:flex-end")
-                    button.choice_button(type="button"
-                    v-for="choice in group.LastMessage.SingleChoices",
-                    @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
-                div.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
-                  button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
-                    span {{ getProductMsgText(group.LastMessage) }}
-                  button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
-            rating(
-                v-if="group.Rating",
-                v-bind:rating="group.Rating",
-                v-bind:client="client",
-                v-bind:channel="channel",
-                @rate-rating="rateRating",
-                @ignore-rating="ignoreRating")
-            inforequest(
-                v-if="group.InfoRequest",
-                v-bind:request="group.InfoRequest",
-                @send-info="sendInfo",
-                @ignore-info="ignoreInfo"
-            )
+                scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
+        div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
+          div.choice_box_dropdown
+            div(style="display:flex;justify-content:flex-end")
+            button.choice_button(type="button"
+            v-for="choice in group.LastMessage.SingleChoices",
+            @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
+        div.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
+          button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
+            span {{ getProductMsgText(group.LastMessage) }}
+          button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
+    rating(
+        v-if="group.Rating",
+        :rating="group.Rating",
+        :client="client",
+        :channel="channel",
+        @rate-rating="rateRating",
+        @ignore-rating="ignoreRating")
+    inforequest(
+        v-if="group.InfoRequest",
+        :request="group.InfoRequest",
+        @send-info="sendInfo",
+        @ignore-info="ignoreInfo"
+    )
 
 </template>
 
@@ -524,6 +525,7 @@ import rating from './rating.vue';
 import linkifyString from 'linkify-string';
 import client from '../../client';
 import inforequest from './info-request.vue';
+import { humanDate, humanSize } from '../../lib/filters';
 
 export default {
   components: { inforequest, avatar, rating },
@@ -550,6 +552,8 @@ export default {
   },
 
   methods: {
+    humanSize,
+    humanDate,
     scrollToLastMessage() {
       const el = $('#chat');
 

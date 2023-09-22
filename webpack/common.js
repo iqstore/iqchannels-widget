@@ -1,6 +1,7 @@
-const path = require('path');
+// const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = {
   entry: {
@@ -19,55 +20,88 @@ module.exports = {
     'example10': './src/examples/10.js'
   },
 
-  debug: true,
+  // debug: true,
 
   resolve: {
-    root: path.resolve('../'),
+    // root: path.resolve('../'),
     alias: {
-      'vue$': 'vue/dist/vue.common.js'
+      vue: '@vue/compat'
+    }
+  },
+
+  optimization: {
+    splitChunks: {
+      automaticNameDelimiter: '-'
     }
   },
 
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
+        loader: 'vue-loader',
+        options: {
+          compilerOptions: {
+            compatConfig: {
+              MODE: 2
+            }
+          }
+        }
       }, {
         test: /\.pug$/,
-        loader: 'pug-html-loader'
-      }, {
-        test: /\.js?$/,
-        exclude: /node_modules(?![\\/]vue-awesome[\\/])/,
-        loader: 'babel'
-      }, {
+        oneOf: [
+          // this applies to `<template lang="pug">` in Vue components
+          {
+            resourceQuery: /^\?vue/,
+            use: ['pug-plain-loader']
+          },
+          // this applies to pug imports inside JavaScript
+          {
+            use: ['raw-loader', 'pug-plain-loader']
+          }
+        ]
+      },
+      // {
+      //   exclude: file => (
+      //     /node_modules/.test(file) && !/\.vue\.js/.test(file)
+      //   ),
+      //   test: /\.js$/,
+      //   use: {
+      //     loader: 'babel-loader'
+      //   }
+      // },
+      {
         test: /\.json?$/,
         loader: 'json'
       }, {
         test: /\.css$/,
-        loader: 'style-loader!css-loader'
+        use: ['style-loader', 'css-loader']
       }, {
         test: /\.less$/,
-        loader: 'style-loader!css-loader!less-loader'
+        use: ['style-loader', 'css-loader', 'less-loader']
       }, {
         test: /\.scss$/,
-        loader: 'style-loader!css-loader!sass-loader'
+        use: ['style-loader', 'css-loader', 'sass-loader']
       }, {
         test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+        use: 'file-loader'
       }, {
         test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: 'file-loader'
       }, {
-        test: /\.(jpg|png)$/,
-        loader: 'file-loader'
+        test: /\.(png|jpe?g|gif|svg|woff2?|eot|ttf)$/,
+        loader: 'url-loader',
+        options: {
+          name: '[name].[ext]?[hash]'
+        }
       }
     ]
   },
 
   plugins: [
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(),
+    // new webpack.optimize.DedupePlugin(),
+    // new webpack.optimize.OccurenceOrderPlugin(),
+    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       template: 'src/main.pug',
       inject: 'body',
@@ -166,7 +200,9 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         'ENV': JSON.stringify(process.env.NODE_ENV || process.env.ENV || 'development')
-      }
+      },
+      __VUE_OPTIONS_API__: false,
+      __VUE_PROD_DEVTOOLS__: false
     })
   ]
 };

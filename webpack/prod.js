@@ -5,9 +5,10 @@ const commonConfig = require('./common.js');
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const CompressionPlugin = require('compression-webpack-plugin');
 
-module.exports = webpackMerge(commonConfig, {
+module.exports = webpackMerge.merge(commonConfig, {
   devtool: 'source-map',
-  debug: false,
+  mode: 'production',
+  // debug: false,
   output: {
     path: 'build/',
     publicPath: '/widget/',
