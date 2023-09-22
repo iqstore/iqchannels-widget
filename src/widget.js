@@ -72,7 +72,7 @@ class IQChannelsWidget extends EventEmitter {
     DOMIdentifier
   }) {
     super();
-    url = url ? url : BASE_URL;
+    url = url || BASE_URL;
 
     this.mode = mode === 'mobile' ? mode : 'web';
     this.width = this.mode === 'mobile' ? window.innerWidth : width;

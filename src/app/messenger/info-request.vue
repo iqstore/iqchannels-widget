@@ -1,4 +1,4 @@
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 .request {}
 
 .rated {
@@ -194,31 +194,29 @@
 
 <template lang="pug">
 
-  .request
+.request
 
-    .backdrop(v-if="request.State === 'pending'")
-    .pending(v-if="request.State === 'pending'")
-      .title Пожалуйста, укажите Ваши данные
-      .data-error(v-if="dataError") {{ dataError }}
-      .div(style="margin-top:10px")
-        label(for="name").label-custom Введите имя и фамилию:
-        input.input-custom(name="name" id="name" v-model="request.Name" )
+  .backdrop(v-if="request.State === 'pending'")
+  .pending(v-if="request.State === 'pending'")
+    .title Пожалуйста, укажите Ваши данные
+    .data-error(v-if="dataError") {{ dataError }}
+    .div(style="margin-top:10px")
+      label(for="name").label-custom Введите имя и фамилию:
+      input.input-custom(name="name" id="name" v-model="request.Name" )
 
-        label(for="phone").label-custom Введите телефон:
-        input(name="phone", id="phone", type="tel", v-model="request.Phone", pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}").input-custom
+      label(for="phone").label-custom Введите телефон:
+      input(name="phone", id="phone", type="tel", v-model="request.Phone", pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}").input-custom
 
-        label(for="email").label-custom Введите email:
-        input(name="email", id="email", type="email", v-model="request.Email" ).input-custom
+      label(for="email").label-custom Введите email:
+      input(name="email", id="email", type="email", v-model="request.Email" ).input-custom
 
-        div.client-consent
-          input(type="checkbox" v-model="request.ClientConsent" ).checkbox-custom
-          label Согласие на обработку
-          a(style="text-decoration:underline" v-bind:href="request.ProcessingDataLink" target="_blank") &nbsp;персональных данных
-      .buttons
-        .ignore(@click="ignoreInfo")
-          | Отмена
-        .submit(@click="sendInfo", :class="{'disabled': !request.Name || !request.ClientConsent}")
-          | Отправить
+      div.client-consent
+        input(type="checkbox" v-model="request.ClientConsent" ).checkbox-custom
+        label Согласие на обработку
+        a(style="text-decoration:underline" :href="request.ProcessingDataLink" target="_blank") &nbsp;персональных данных
+    .buttons
+      .ignore(@click="ignoreInfo") Отмена
+      .submit(@click="sendInfo", :class="{'disabled': !request.Name || !request.ClientConsent}") Отправить
 
 </template>
 

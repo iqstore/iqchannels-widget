@@ -1,4 +1,4 @@
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 .rating {}
 
 .rated {
@@ -216,76 +216,70 @@
 </style>
 
 <template lang="pug">
+.rating
+    .rated(v-if="rating.State === 'rated' && rating.Value")
+        span Оценка оператора: {{ rating.Value }} из 5
 
-    .rating
-        .rated(v-if="rating.State === 'rated' && rating.Value")
-            span Оценка оператора: {{ rating.Value }} из 5
+    .backdrop(v-if="(rating.State === 'poll' || thanksFeedback) && loaded")
+    .backdrop(v-if="(rating.State === 'pending')")
+    .pending(v-if="rating.State === 'pending'")
+        .title Пожалуйста, оцените качество консультации
+        .stars(@mouseout="onMouseOut()")
+            .star(v-for="n in 5",
+                :class="{'star-selected': n <= rating.Value}",
+                @mouseover="onMouseOver(n)",
+                @click.prevent="setRating(n)")
+                svg.star-background(aria-hidden="true" focusable="false"
+                    class="svg-inline--fa fa-star fa-w-18" role="img"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
+                    path(fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z")
 
-        .backdrop(v-if="(rating.State === 'poll' || thanksFeedback) && loaded")
-        .backdrop(v-if="(rating.State === 'pending')")
-        .pending(v-if="rating.State === 'pending'")
-            .title Пожалуйста, оцените качество консультации
-            .stars(@mouseout="onMouseOut()")
-                .star(v-for="n in 5",
-                    :class="{'star-selected': n <= rating.Value}",
-                    @mouseover="onMouseOver(n)",
-                    @click.prevent="setRating(n)")
-                    svg.star-background(aria-hidden="true" focusable="false"
-                        class="svg-inline--fa fa-star fa-w-18" role="img"
-                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
-                        path(fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z")
+                svg.star-outline(aria-hidden="true" focusable="false"
+                    class="svg-inline--fa fa-star fa-w-18" role="img"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
+                    path(fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM405.8 317.9l27.8 162L288 403.5 142.5 480l27.8-162L52.5 203.1l162.7-23.6L288 32l72.8 147.5 162.7 23.6-117.7 114.8z")
+        .buttons
+            .ignore(@click="ignoreRating") Отмена
+            .submit(@click="sendRating", :class="{'disabled': !value}") Отправить
 
-                    svg.star-outline(aria-hidden="true" focusable="false"
-                        class="svg-inline--fa fa-star fa-w-18" role="img"
-                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
-                        path(fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM405.8 317.9l27.8 162L288 403.5 142.5 480l27.8-162L52.5 203.1l162.7-23.6L288 32l72.8 147.5 162.7 23.6-117.7 114.8z")
-            .buttons
-                .ignore(@click="ignoreRating")
-                    | Отмена
-                .submit(@click="sendRating", :class="{'disabled': !value}")
-                    | Отправить
+    .pending(v-if="rating.State === 'poll' && !start && loaded")
+        .title.mt Желаете пройти опрос?
+        .buttons.mt
+            .ignore(@click="finishRating") Нет
+            .submit(@click="startPoll") Да
 
-        .pending(v-if="rating.State === 'poll' && !start && loaded")
-            .title.mt Желаете пройти опрос?
-            .buttons.mt
-                .ignore(@click="finishRating")
-                    | Нет
-                .submit(@click="startPoll")
-                    | Да
+    .pending(v-if="start")
+        .title.mt {{ poll.Questions[index].Text }}
+        .stars(@mouseout="onMouseOutPoll()", v-if="poll.Questions[index].Type === 'stars'")
+            .star(v-for="n in 5",
+                :class="{'star-selected': n <= pollResult.AnswerStars}",
+                @mouseover="onMouseOverPoll(n)",
+                @click.prevent="setPollStars(n)")
+                svg.star-background(aria-hidden="true" focusable="false"
+                    class="svg-inline--fa fa-star fa-w-18" role="img"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
+                    path(fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z")
 
-        .pending(v-if="start")
-            .title.mt {{ poll.Questions[index].Text }}
-            .stars(@mouseout="onMouseOutPoll()", v-if="poll.Questions[index].Type === 'stars'")
-                .star(v-for="n in 5",
-                    :class="{'star-selected': n <= pollResult.AnswerStars}",
-                    @mouseover="onMouseOverPoll(n)",
-                    @click.prevent="setPollStars(n)")
-                    svg.star-background(aria-hidden="true" focusable="false"
-                        class="svg-inline--fa fa-star fa-w-18" role="img"
-                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
-                        path(fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z")
+                svg.star-outline(aria-hidden="true" focusable="false"
+                    class="svg-inline--fa fa-star fa-w-18" role="img"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
+                    path(fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM405.8 317.9l27.8 162L288 403.5 142.5 480l27.8-162L52.5 203.1l162.7-23.6L288 32l72.8 147.5 162.7 23.6-117.7 114.8z")
+        .one_of_list.mt(v-if="poll.Questions[index].Type === 'one_of_list'")
+            .box-check(v-for="(answer, i) in poll.Questions[index].Answers",
+                @click.prevent="setPollVariant(answer)"
+            )
+                input(type="radio", :name="i", :id="i", :value="answer.Id", v-model="pollResult.RatingPollAnswerId")
+                label.check-label(:for="i") {{ answer.Text }}
+        .input(v-if="poll.Questions[index].Type === 'input'")
+            textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
+        .buttons.mt
+            .submit(@click="sendRatingPoll") Отправить ответ
 
-                    svg.star-outline(aria-hidden="true" focusable="false"
-                        class="svg-inline--fa fa-star fa-w-18" role="img"
-                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
-                        path(fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM405.8 317.9l27.8 162L288 403.5 142.5 480l27.8-162L52.5 203.1l162.7-23.6L288 32l72.8 147.5 162.7 23.6-117.7 114.8z")
-            .one_of_list.mt(v-if="poll.Questions[index].Type === 'one_of_list'")
-                .box-check(v-for="(answer, i) in poll.Questions[index].Answers",
-                    @click.prevent="setPollVariant(answer)"
-                )
-                    input(type="radio", :name="i", :id="i", :value="answer.Id", v-model="pollResult.RatingPollAnswerId")
-                    label.check-label(:for="i") {{ answer.Text }}
-            .input(v-if="poll.Questions[index].Type === 'input'")
-                textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
-            .buttons.mt
-                .submit(@click="sendRatingPoll")
-                    | Отправить ответ
-
-        .pending(v-if="thanksFeedback")
-            .thanks-feedback
-                svg(xmlns="http://www.w3.org/2000/svg" height="3em" fill="#2D98F4" viewBox="0 0 512 512")
-                    path(d="M190.5 68.8L225.3 128H224 152c-22.1 0-40-17.9-40-40s17.9-40 40-40h2.2c14.9 0 28.8 7.9 36.3 20.8zM64 88c0 14.4 3.5 28 9.6 40H32c-17.7 0-32 14.3-32 32v64c0 17.7 14.3 32 32 32H480c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32H438.4c6.1-12 9.6-25.6 9.6-40c0-48.6-39.4-88-88-88h-2.2c-31.9 0-61.5 16.9-77.7 44.4L256 85.5l-24.1-41C215.7 16.9 186.1 0 154.2 0H152C103.4 0 64 39.4 64 88zm336 0c0 22.1-17.9 40-40 40H288h-1.3l34.8-59.2C329.1 55.9 342.9 48 357.8 48H360c22.1 0 40 17.9 40 40zM32 288V464c0 26.5 21.5 48 48 48H224V288H32zM288 512H432c26.5 0 48-21.5 48-48V288H288V512z")
-                .title.color-thanks {{ thanksFeedbackText }}
+    .pending(v-if="thanksFeedback")
+        .thanks-feedback
+            svg(xmlns="http://www.w3.org/2000/svg" height="3em" fill="#2D98F4" viewBox="0 0 512 512")
+                path(d="M190.5 68.8L225.3 128H224 152c-22.1 0-40-17.9-40-40s17.9-40 40-40h2.2c14.9 0 28.8 7.9 36.3 20.8zM64 88c0 14.4 3.5 28 9.6 40H32c-17.7 0-32 14.3-32 32v64c0 17.7 14.3 32 32 32H480c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32H438.4c6.1-12 9.6-25.6 9.6-40c0-48.6-39.4-88-88-88h-2.2c-31.9 0-61.5 16.9-77.7 44.4L256 85.5l-24.1-41C215.7 16.9 186.1 0 154.2 0H152C103.4 0 64 39.4 64 88zm336 0c0 22.1-17.9 40-40 40H288h-1.3l34.8-59.2C329.1 55.9 342.9 48 357.8 48H360c22.1 0 40 17.9 40 40zM32 288V464c0 26.5 21.5 48 48 48H224V288H32zM288 512H432c26.5 0 48-21.5 48-48V288H288V512z")
+            .title.color-thanks {{ thanksFeedbackText }}
 
 
 </template>

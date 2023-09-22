@@ -1,26 +1,26 @@
-<style lang="sass" scoped>
-    .circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
-        line-height: 40px;
-        font-size: 14px;
-        font-weight: bold;
-        text-align: center;
-        color: white;
-        .img {
-            border-radius: 500px;
-            width: 100%;
-            height: 100%;
-            background-size: 40px 40px;
-        }
+<style lang="scss" scoped>
+.circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    line-height: 40px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    .img {
+        border-radius: 500px;
+        width: 100%;
+        height: 100%;
+        background-size: 40px 40px;
     }
+}
 </style>
 
 <template lang="pug">
-    .circle(:style="styleObject")
-        span(v-if="!url") {{ initials }}
-        .img(v-else v-bind:style="{ 'background-image': 'url(' + url + ')' }")
+.circle(:style="styleObject")
+    span(v-if="!url") {{ initials }}
+    .img(v-else :style="{ 'background-image': 'url(' + url + ')' }")
 
 </template>
 

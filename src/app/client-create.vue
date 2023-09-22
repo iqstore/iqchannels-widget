@@ -1,65 +1,65 @@
-<style lang="sass" scoped>
-    .error {
-        color: #d92426;
-        font-size: 80%;
-    }
+<style lang="scss" scoped>
+.error {
+  color: #d92426;
+  font-size: 80%;
+}
 
-    input[type="text"] {
-        height: 42px;
-        border: 1px solid #d8d8d8;
-        outline: none;
-        padding-left: 8px;
-        padding-right: 8px;
-        width: 230px;
-        margin: 0;
-    }
+input[type="text"] {
+  height: 42px;
+  border: 1px solid #d8d8d8;
+  outline: none;
+  padding-left: 8px;
+  padding-right: 8px;
+  width: 230px;
+  margin: 0;
+}
 
-    .button {
-        height: 36px;
-        line-height: 36px;
-        text-decoration: none;
-        border: none;
-        border-radius: 3px;
-        background-color: #ee5c13;
-        color: white;
-        width: 246px;
-        margin: 16px 0 5px 0;
-        display: inline-block;
-    }
-    .close-button{
-      position: absolute;
-      top: 16px;
-      font-size: 1.8 rem;
-      cursor: pointer;
-      right: 16px;
-    }
-    .loader {
-        margin-top: 4px;
-    }
+.button {
+  height: 36px;
+  line-height: 36px;
+  text-decoration: none;
+  border: none;
+  border-radius: 3px;
+  background-color: #ee5c13;
+  color: white;
+  width: 246px;
+  margin: 16px 0 5px 0;
+  display: inline-block;
+}
+.close-button{
+  position: absolute;
+  top: 16px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  right: 16px;
+}
+.loader {
+  margin-top: 4px;
+}
 </style>
 
 <template lang="pug">
-    .full-screen
-        div.close-button(href="#" @click.prevent="onCloseClicked()" title="Закрыть")
-          icon(name="close")
-        .center(v-if="checking")
-            p.text Подключение
-                scale-loader(color="#ee5c13")
+.full-screen
+  div.close-button(href="#" @click.prevent="onCloseClicked()" title="Закрыть")
+    icon(name="close")
+  .center(v-if="checking")
+      p.text Подключение
+        scale-loader(color="#ee5c13")
 
-        .center(v-else="checking")
-            div
-              p.text
-                strong {{ this.greetings.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
-                br
-                | {{ this.greetings.Greeting ? this.greetings.Greeting : "желательно указать" }}
-                br()
-                | {{ !this.greetings.Greeting ? "фамилию и имя:" : "" }}
-              input(type="text" placeholder="Ваше имя" ref="name" v-bind:disabled="creating" @keydown.enter="create")
-            a.button(v-if="!creating" @click.prevent="create" href="#") Начать чат
-            a.button(v-if="creating" @click.prevent="" href="#")
-                scale-loader.loader(v-if="creating" color="#ffffff" height="24px")
+  .center(v-else="checking")
+    div
+      p.text
+        strong {{ this.greetings?.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
+        br
+        span {{ this.greetings?.Greeting ? this.greetings.Greeting : "желательно указать" }}
+        br()
+        span {{ !this.greetings?.Greeting ? "фамилию и имя:" : "" }}
+      input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create")
+    a.button(v-if="!creating" @click.prevent="create" href="#") Начать чат
+    a.button(v-if="creating" @click.prevent="" href="#")
+        scale-loader.loader(v-if="creating" color="#ffffff" height="24px")
 
-            p.error &nbsp;{{ error }}
+    p.error &nbsp;{{ error }}
 </template>
 
 <script>

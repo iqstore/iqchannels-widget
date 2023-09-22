@@ -1,12 +1,12 @@
 <template lang="pug">
-    .full-screen
-        .center(v-if="authorizing")
-            p Подключение
-            scale-loader(color="#ee5c13")
-        .center(v-if="error")
-            p
-                strong Извините, произошла ошибка.
-            p В настоящий момент, чат недоступен, попробуйте войти позже.
+.full-screen
+    .center(v-if="authorizing")
+        p Подключение
+        scale-loader(color="#ee5c13")
+    .center(v-if="error")
+        p
+            strong Извините, произошла ошибка.
+        p В настоящий момент, чат недоступен, попробуйте войти позже.
 </template>
 
 <script>
