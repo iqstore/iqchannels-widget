@@ -369,7 +369,14 @@ export default {
                 if (!data.Data.Poll) {
                     this.loaded = !!data.Data.Poll;
                 } else {
-                    this.loaded = true;
+                  if (this.poll.ShowOffer !== null) {
+                    if (!this.poll.ShowOffer && this.rating.State === 'poll') {
+                      this.startPoll();
+                    } else {
+                      this.start = false;
+                    }
+                  }
+                  this.loaded = true;
                 }
             });
         },
