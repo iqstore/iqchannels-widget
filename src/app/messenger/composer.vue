@@ -645,9 +645,13 @@ export default {
       });
     },
 
-    trySendMessage() {
+    trySendMessage(actionTitle, payload, url) {
       if (this.audioChunks.length > 0) {
         this.sendAudioMessage();
+        return;
+      }
+      if (url && url !== "") {
+        window.open(url, "_blank")
         return;
       }
       const messageText = this.$refs.text.value
@@ -663,9 +667,9 @@ export default {
             this.$emit("file-selected", this.currentFile, messageText, null);
           }
         } else if (this.msg && this.msgVisible) {
-          this.$emit("message-composed", { messageText, replyToMessageId: this.msg.Id });
+          this.$emit("message-composed", { messageText, replyToMessageId: this.msg.Id, payload: payload });
         } else {
-          this.$emit("message-composed", messageText);
+          this.$emit("message-composed", { messageText, payload: payload });
         }
         this.resetReplayedMsg();
         this.resetUploadFile();
