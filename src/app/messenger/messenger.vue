@@ -104,7 +104,7 @@
     }
 
     .choice_box{
-    float: left;
+    float: right;
     margin-top: 5px;
     line-height: 1.15;
     text-transform: none;
