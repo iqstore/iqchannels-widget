@@ -568,6 +568,7 @@ export default {
     trySendMessage(messageText, botpressPayload, url) {
       if (url){
         window.open(url, "_blank")
+        return;
       }
       if (messageText) {
         this.scrollToLastMessage();
