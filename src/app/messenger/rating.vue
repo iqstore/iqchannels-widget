@@ -213,6 +213,30 @@
   margin: 25px 0;
   text-align: center;
 }
+
+.buttons-fcr {
+  display: flex;
+  margin: 10px;
+  justify-content: center;
+}
+
+.button {
+  padding: 10px 15px;
+  background-color: #cccccc;
+  color: #000;
+  margin: 5px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 16px;
+  width: 100%;
+  cursor: pointer;
+  transition: 0.5s ease;
+
+  &:hover {
+    background-color: #dadada;
+  }
+}
+
 </style>
 
 <template lang="pug">
@@ -275,9 +299,16 @@
                 )
                     input(type="radio", :name="i", :id="i", :value="answer.Id", v-model="pollResult.RatingPollAnswerId")
                     label.check-label(:for="i") {{ answer.Text }}
+            .fcr.mt(v-if="poll.Questions[index].Type === 'fcr'")
+              .buttons-fcr.mt
+                .button(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])")
+                    | {{ poll.Questions[index].Answers[0].Text }}
+                .button(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[1])")
+                    | {{ poll.Questions[index].Answers[1].Text }}
+
             .input(v-if="poll.Questions[index].Type === 'input'")
                 textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
-            .buttons.mt
+            .buttons.mt(v-if="poll.Questions[index].Type !== 'fcr'")
                 .submit(@click="sendRatingPoll")
                     | Отправить ответ
 
@@ -338,7 +369,14 @@ export default {
                 if (!data.Data.Poll) {
                     this.loaded = !!data.Data.Poll;
                 } else {
-                    this.loaded = true;
+                  if (this.poll.ShowOffer !== null) {
+                    if (!this.poll.ShowOffer && this.rating.State === 'poll') {
+                      this.startPoll();
+                    } else {
+                      this.start = false;
+                    }
+                  }
+                  this.loaded = true;
                 }
             });
         },
@@ -379,6 +417,19 @@ export default {
                 ClientId: this.client.Id,
                 ProjectId: this.client.ProjectId,
             };
+        },
+
+        setPollVariantFCR(answer) {
+          this.pollResult = {
+            Type: "fcr",
+            RatingPollAnswerId: answer.Id,
+            RatingPollQuestionId: this.poll.Questions[this.index].Id,
+            FCR: answer.FCR,
+            RatingId: this.rating.Id,
+            ClientId: this.client.Id,
+            ProjectId: this.client.ProjectId,
+          };
+          this.sendRatingPoll();
         },
 
         sendRatingPoll() {
