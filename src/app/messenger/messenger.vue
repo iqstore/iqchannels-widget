@@ -1026,7 +1026,6 @@ export default {
             event.Messages.forEach(msg => this.removeMessage(msg))
             break;
           default:
-            console.log("Unhandled channel event", event);
         }
         this.lastEventId = event.Id;
       }
@@ -1098,6 +1097,11 @@ export default {
 
     onMessageComposed(text, botpressPayload) {
       let messageForm;
+      if (text.messageText === "/version") {
+        this.handleVersion();
+        return;
+      }
+
       if (typeof text !== 'object') {
         messageForm = this.newTextMessage(text, botpressPayload);
       } else {
@@ -1105,6 +1109,24 @@ export default {
       }
       this.appendLocalMessage(messageForm);
       client.channelSend(this.channel, messageForm);
+    },
+
+    handleVersion() {
+      client.version().then(res => {
+        const v = res.Data.Version;
+        const message = {
+          Id: new Date().getTime(),
+          Author: "user",
+          CreatedAt: new Date(),
+          Text: v,
+          Payload: 'text',
+          Read: true,
+          UserId: new Date().getTime(),
+          User: {DisplayName: "Система", Name:"Система", Active: true, Id: new Date().getTime()}
+        };
+        this.appendMessage(message);
+        this.scrollToLastMessage();
+      })
     },
 
     onStartTyping() {

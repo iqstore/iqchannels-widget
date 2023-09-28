@@ -333,9 +333,9 @@ export default {
     },
 
     mounted() {
-        // this.$nextTick(function () {
-        //     this.getPoll();
-        // });
+        this.$nextTick(function () {
+            this.getPoll();
+        });
     },
 
     data: function () {

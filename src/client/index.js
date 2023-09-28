@@ -203,7 +203,7 @@ class Client {
   }
 
   getPoll (query) {
-    return this._enqueueRequest(`/ratings/query_poll`, { Query: query });
+    return this._enqueueRequest(`/ratings/query_poll`, { Query: query }, { shouldRetry: (error) => !error });
   }
 
   sendPoll (input) {
@@ -215,17 +215,17 @@ class Client {
   }
 
   getChatSettings (channel) {
-    return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`);
+    return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`, {}, { shouldRetry: (error) => !error });
   }
   openSystemChat (channel) {
     return this._enqueueRequest(`/chats/channel/system_chats/send/${channel}`);
   }
 
   checkIfAudioMsgEnabled (channel) {
-    return this._enqueueRequest(`/chats/channel/audio_messages_enabled/${channel}`);
+    return this._enqueueRequest(`/chats/channel/audio_messages_enabled/${channel}`, {}, { shouldRetry: (error) => !error });
   }
   getWidgetGreetings (channel) {
-    return this._enqueueRequest(`/widget/greetings/${channel}`);
+    return this._enqueueRequest(`/widget/greetings/${channel}`, {}, { shouldRetry: (error) => !error });
   }
 
   acceptProductMessage (messageId, productId) {
@@ -246,6 +246,10 @@ class Client {
 
   channelMessagesReceived (messagesIds) {
     return this._enqueueRequest(`/chats/messages/received`, messagesIds);
+  }
+
+  version () {
+    return this._enqueueRequest(`/chats/version`, {}, { shouldRetry: (error) => !error });
   }
 
   channelPushToken (channel, type, token) {
