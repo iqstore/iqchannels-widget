@@ -361,8 +361,7 @@ export default {
                 Enabled: true,
                 ClientId: this.client.Id,
                 RatingId: this.rating.Id,
-                Desc: true,
-                Limit: 1
+                Desc: true
             }
             client.getPoll(query).then(data => {
                 this.poll = data.Data.Poll;
