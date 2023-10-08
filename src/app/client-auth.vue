@@ -2,7 +2,7 @@
 .full-screen
     .center(v-if="authorizing")
         p Подключение
-        scale-loader(color="#ee5c13")
+        //scale-loader(color="#ee5c13")
     .center(v-if="error")
         p
             strong Извините, произошла ошибка.

@@ -14,7 +14,7 @@
     "build": "rm -rf build/* && webpack --config webpack/prod.js --progress --profile --bail"
   },
   "dependencies": {
-    "core-js": "3.32.2",
+    "core-js": "^3.8.3",
     "es6-promise": "4.0.5",
     "event-emitter": "0.3.4",
     "event-source-polyfill": "0.0.16",
@@ -27,16 +27,13 @@
     "linkifyjs": "^3.0.5",
     "node-sass": "^8.0.0",
     "normalize.css": "5.0.0",
-    "vue": "^3.3.4",
-    "vue-awesome": "2.0.3",
-    "vue-linkify": "^1.0.1",
-    "vue2-hammer": "^2.1.2",
-    "vue2-touch-events": "^3.2.2",
+    "vue": "^3.2.13",
+    "vue-awesome": "4.5.0",
     "wavesurfer.js": "4.0.1"
   },
   "devDependencies": {
-    "@vue/compat": "^3.3.4",
-    "@vue/compiler-sfc": "^3.3.4",
+    "@vue/compat": "^3.2.13",
+    "@vue/cli-service": "~5.0.0",
     "autoprefixer": "6.5.3",
     "babel": "6.23.0",
     "babel-core": "6.26.3",

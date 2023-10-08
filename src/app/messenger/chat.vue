@@ -20,7 +20,7 @@
   .text, a {
     white-space: pre-wrap;       /* css-3 */
     white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: pre-wrap;      /* Opera 4-6 */
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
     font-family: inherit;
@@ -492,7 +492,7 @@
                 span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
 
 
-                scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
+                //scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
         div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
           div.choice_box_dropdown
             div(style="display:flex;justify-content:flex-end")

@@ -13,7 +13,7 @@
 
 .pending {
   border-radius: 15px;
-  box-shadow: 2px 2px 8px 0px rgba(0,0,0,0.2);
+  box-shadow: 2px 2px 8px 0 rgba(0,0,0,0.2);
   z-index: 5;
   background: white;
   position: fixed;
@@ -38,9 +38,8 @@
 
     .stars {
       text-align: center;
-      padding: 20px 0;
-      padding-top: 10px;
-  }
+      padding: 10px 0 20px;
+    }
 
     .star {
       display: inline-block;

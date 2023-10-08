@@ -71,9 +71,6 @@ module.exports = {
       //   }
       // },
       {
-        test: /\.json?$/,
-        loader: 'json'
-      }, {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
       }, {
@@ -200,9 +197,7 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         'ENV': JSON.stringify(process.env.NODE_ENV || process.env.ENV || 'development')
-      },
-      __VUE_OPTIONS_API__: false,
-      __VUE_PROD_DEVTOOLS__: false
+      }
     })
   ]
 };

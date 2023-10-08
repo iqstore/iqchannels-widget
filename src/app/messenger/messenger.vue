@@ -236,7 +236,6 @@ import client from '../../client';
 import * as schema from '../../schema';
 import { isSameDate } from '../../lib/datetime';
 import { retryTimeout } from '../../lib/timeout';
-import Vue from 'vue';
 
 
 export default {

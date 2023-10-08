@@ -34,128 +34,117 @@
     font-weight: 400;
     font-size: 16px;
     line-height: 19px;
-    text-align:center; }
+    text-align:center;
+  }
 
-    .stars {
-      text-align:center;
-      padding: 20px 0;
-      padding-top: 10px;
+  .stars {
+    text-align:center;
+    padding: 10px 0 20px;
 
   }
 
-    .star {
-      display:inline-block;
+  .star {
+    display:inline-block;
+    height: 34px;
+    width: 1.8rem;
+    line-height: 32px;
+    position:relative;
+    vertical-align:middle;
+    margin: 0 5px;
+
+    svg {
+      width: 28px;
       height: 34px;
-      width: 1.8rem;
-      line-height: 32px;
-      position:relative;
-      vertical-align:middle;
-      margin: 0 5px;
-
-      svg {
-        width: 28px;
-        height: 34px;
 
     }
 
-      .star-background, .star-outline {
-        left: 0;
-        position:absolute;
-        text-align:center;
-        width: 100%;
+    .star-background, .star-outline {
+      left: 0;
+      position:absolute;
+      text-align:center;
+      width: 100%;
 
     }
 
+    .star-background {
+      color: #ffffff;
+
+    }
+
+    .star-outline {
+      color: #2EB8FE;
+
+    }
+
+    &:hover {
+      cursor:pointer;
+
+    }
+
+    &:hover, &.star-selected {
       .star-background {
-        color: #ffffff;
-
-    }
+        color: #2EB8FE;
+      }
 
       .star-outline {
         color: #2EB8FE;
-
+      }
     }
+  }
+
+  .text {
+    margin: 10px 5px 0;
+
+    textarea {
+      border: 1px solid #f1f1f1;
+      width: 100%;
+      box-sizing:border-box;
+      margin: 0;
+      padding: 3px;
+      font-size: 14px;
+    }
+  }
+
+  .buttons {
+    text-align:center;
+    border-top: 1px solid #C8C7CC;
+    display:flex;
+    justify-content:space-between;
+
+    div {
+      color: #2EB8FE;
+      width: 100%;
+
+      font-weight: 400;
+      font-size: 1rem;
+      text-align:center;
+      text-decoration:none;
+      padding: 15px;
+
+      border:none;
+      background:none;
 
       &:hover {
         cursor:pointer;
-
-    }
-
-      &:hover, &.star-selected {
-
-        .star-background {
-          color: #2EB8FE;
-
-      }
-
-        .star-outline {
-          color: #2EB8FE;
-
-      }
-
-    }
-
-  }
-
-    .text {
-      margin: 10px 5px 0;
-
-      textarea {
-        border: 1px solid #f1f1f1;
-        width: 100%;
-        box-sizing:border-box;
-        margin: 0;
-        padding: 3px;
-        font-size: 14px;
-
-    }
-
-  }
-
-    .buttons {
-      text-align:center;
-      border-top: 1px solid #C8C7CC;
-      display:flex;
-      justify-content:space-between;
-
-      div {
         color: #2EB8FE;
-        width: 100%;
-
-        font-weight: 400;
-        font-size: 1rem;
-        text-align:center;
-        text-decoration:none;
-        padding: 15px;
-
-        border:none;
-        background:none;
-
-        &:hover {
-          cursor:pointer;
-          color: #2EB8FE;
-
       }
 
-        &:disabled {
-          color: #2EB8FE;
-
-      }
-
-    }
-
-      .ignore {
+      &:disabled {
         color: #2EB8FE;
-        border-right: 1px solid #C8C7CC;
-
-        &:hover {
-          cursor:pointer;
-          color: #2EB8FE; }
+      }
 
     }
 
-  }
+    .ignore {
+      color: #2EB8FE;
+      border-right: 1px solid #C8C7CC;
 
+      &:hover {
+        cursor:pointer;
+        color: #2EB8FE;
+      }
+    }
+  }
 }
 
 .backdrop {
@@ -333,7 +322,7 @@ export default {
         });
     },
 
-    data: function () {
+    data() {
         return {
             value: null,
             comment: null,

@@ -30,7 +30,7 @@ import { clearCookie } from '../lib/web';
 import client from '../client';
 
 export default {
-  name: 'App',
+  name: 'app',
 
   computed: {
     'stylesURL': function () {
@@ -58,10 +58,8 @@ export default {
   },
 
   created () {
-    console.log("created");
     jquery(window).on('message', (e) => {
       const { type, data } = e.originalEvent;
-      console.log(e);
       if (type !== 'message') {
         return;
       }

@@ -44,7 +44,7 @@ input[type="text"] {
     icon(name="close")
   .center(v-if="checking")
       p.text Подключение
-        scale-loader(color="#ee5c13")
+        //scale-loader(color="#ee5c13")
 
   .center(v-else="checking")
     div
@@ -57,7 +57,7 @@ input[type="text"] {
       input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create")
     a.button(v-if="!creating" @click.prevent="create" href="#") Начать чат
     a.button(v-if="creating" @click.prevent="" href="#")
-        scale-loader.loader(v-if="creating" color="#ffffff" height="24px")
+        //scale-loader.loader(v-if="creating" color="#ffffff" height="24px")
 
     p.error &nbsp;{{ error }}
 </template>

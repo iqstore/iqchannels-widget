@@ -6,18 +6,18 @@ const webpack = require('webpack');
 
 module.exports = webpackMerge.merge(commonConfig, {
   mode: 'development',
-  devtool: 'cheap-module-source-map',
+  devtool: 'source-map',
   output: {
     filename: '[name].js',
     publicPath: '/'
   },
+  stats: 'detailed',
   // historyApiFallback: {
   //   index: '/'
   // },
   devServer: {
     // contentBase: path.resolve(__dirname, 'public'),
     // historyApiFallback: true,
-    hot: true,
     // inline: true,
     // progress: true,
     // stats: {
@@ -28,6 +28,7 @@ module.exports = webpackMerge.merge(commonConfig, {
     //   chunkModules: false,
     //   modules: false
     // },
+    hot: true,
     open: true,
     compress: true,
     host: '0.0.0.0',
