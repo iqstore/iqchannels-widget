@@ -210,8 +210,8 @@ class Client {
     return this._enqueueRequest(`/ratings/send_poll`, { RatingPollClientAnswerInput: input });
   }
 
-  finishPoll (ratingId, pollId) {
-    return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId });
+  finishPoll (ratingId, pollId, rated) {
+    return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId, Rated: rated});
   }
 
   getChatSettings (channel) {

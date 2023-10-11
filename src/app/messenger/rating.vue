@@ -457,7 +457,7 @@ export default {
         },
 
         finishPoll() {
-            client.finishPoll(this.rating.Id, this.poll.Id).then(res => {
+            client.finishPoll(this.rating.Id, this.poll.Id, true).then(res => {
                 if (res.OK) {
                     this.rating.State = "finished";
                     if (this.poll.FeedbackThanks) {
@@ -481,7 +481,7 @@ export default {
         },
 
         finishRating() {
-            client.finishPoll(this.rating.Id, this.poll.Id).then(res => {
+            client.finishPoll(this.rating.Id, this.poll.Id, false).then(res => {
                 if (res.OK) {
                     this.rating.State = "finished";
                 }
