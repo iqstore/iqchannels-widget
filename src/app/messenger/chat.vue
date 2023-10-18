@@ -532,6 +532,7 @@ export default {
     mode: String,
     searching: Boolean,
     opened: Boolean,
+    isBottom: Boolean,
     groups: Array,
     rating: Object,
     client: Object,
@@ -546,19 +547,14 @@ export default {
   },
 
   mounted() {
+    setTimeout(() => {
     this.scrollToLastMessage();
+    }, 2500)
   },
 
   methods: {
     scrollToLastMessage() {
       const el = $('#chat');
-
-      el.on('scroll', () => {
-        setTimeout(() => {
-          const htmlMessages = [].slice.apply(document.getElementsByClassName('message-wrapper'));
-          htmlMessages.forEach(transform => transform.style.transform = 'none');
-        });
-      });
 
       el.stop().animate({
         scrollTop: el[0].scrollHeight
