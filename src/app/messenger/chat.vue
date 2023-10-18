@@ -549,7 +549,7 @@ export default {
   mounted() {
     setTimeout(() => {
     this.scrollToLastMessage();
-    }, 2500)
+    }, 1500)
   },
 
   methods: {
