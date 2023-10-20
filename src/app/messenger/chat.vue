@@ -273,14 +273,6 @@
       transition: all 0.3s;
       font-size: 14px;
     }
-    .img-caption{
-      font-size: 14px;
-      color: black;
-      font-family: sans-serif;
-      pointer-events: none !important;
-      padding-top: 10px;
-      padding-bottom: 4px;
-    }
     .img-button{
       width: 100%;
       border-radius: 4px;
@@ -464,7 +456,7 @@
                         @click="clickFile(msg, $event)")
                           img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                         div.img-caption
-                          span {{ msg.Text }}
+                          pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
                         button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
                           v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                       div(v-else-if="msg.File && msg.File.Type == 'file'")
@@ -478,7 +470,7 @@
                             .filename(v-bind:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
                             .filesize(v-bind:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ msg.File.Size | humanSize }}
                         div.img-caption(v-if="msg.Text")
-                          span {{ msg.Text }}
+                          pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
                       audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
                         :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
                       div
