@@ -913,7 +913,7 @@ export default {
       if (info.Sending) {
         return;
       }
-
+      this.client.Name = info.FirstName + " " + info.SurName;
       info.Sending = client
           .sendInfo(info)
           .then(

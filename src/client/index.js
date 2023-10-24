@@ -303,7 +303,8 @@ class Client {
     const request = {
       RequestId: info.Id,
       Email: info.Email,
-      Name: info.Name,
+      FirstName: info.FirstName,
+      SurName: info.SurName,
       Phone: info.Phone,
       ClientId: info.ClientId,
       ClientConsent: info.ClientConsent
