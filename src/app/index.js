@@ -15,7 +15,7 @@ import 'vue-awesome/icons/arrow-right';
 import ScaleLoader from 'vue-spinner/src/ScaleLoader.vue';
 import client from '../client';
 import config from '../config';
-import { humanDate, humanSize } from '../lib/filters';
+import { humanDate, humanDateTime, humanSize } from '../lib/filters';
 import { clearCookie } from '../lib/web';
 import clientAuth from './client-auth.vue';
 import clientCreate from './client-create.vue';
@@ -33,6 +33,7 @@ Vue.use(VueHammer);
 
 Vue.filter('humanDate', humanDate);
 Vue.filter('humanSize', humanSize);
+Vue.filter('humanDateTime', humanDateTime);
 
 Vue.component('icon', Icon);
 Vue.component('scale-loader', ScaleLoader);
@@ -63,7 +64,8 @@ const app = new Vue({
               :replayed-msg="replayedMsg"
               :scrollToMsg="scrollToMsg"       
               :rating="rating"
-              :closeSystemChat="closeSystemChat"       
+              :closeSystemChat="closeSystemChat"
+              :doc-width="docWidth"
           />
         </div>`,
 
@@ -88,7 +90,8 @@ const app = new Vue({
       pushToken: null,
       replayedMsg: null,
       scrollToMsg: null,
-      rating: null
+      rating: null,
+      docWidth: null
     };
   },
 
@@ -110,6 +113,7 @@ const app = new Vue({
           this.project = event.data.project;
           this.requireName = event.data.requireName;
           this.pushToken = event.data.pushToken;
+          this.docWidth = event.data.docWidth;
 
           this.maybeSendPushToken();
           this.getGreetings();
