@@ -196,6 +196,7 @@
             v-bind:channel="channel",
             v-bind:singleChoices="singleChoices",
             v-bind:searching="searching",
+            :docWidth="docWidth",
             @cancel-upload="cancelUpload",
             @retry-upload="retryUpload",
             @rate-rating="rateRating",
@@ -207,7 +208,9 @@
             @long-tap="longTap",
             @reply-msg="reply",
             @scrollToMessage="(id) => scrollToFoundMessage(id)",
-            @click-file="clickFile")
+            @click-file="clickFile",
+            @download-file="downloadFile",
+          )
           .scrollBottom(v-if="!isBottom && !this.searching" @click="scrollToLastMessage(false)")
             svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
               path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
@@ -252,7 +255,8 @@ export default {
     typing: Object,
     rating: Number,
     chatType: String,
-    client: Object
+    client: Object,
+    docWidth: Number,
   },
 
   created() {
@@ -942,6 +946,23 @@ export default {
             info.Sending = null;
             info.Error = error;
           }
+      );
+    },
+
+    downloadFile(file) {
+      client.fileSignedUrl(file.Id).then(
+        url => {
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = file.Name;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        },
+        error => {
+          console.log(error);
+        }
       );
     },
 
