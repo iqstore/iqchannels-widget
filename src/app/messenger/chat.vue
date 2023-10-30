@@ -427,11 +427,11 @@
         width: 30px;
         height: 30px;
         transition: 0.3s ease;
-        opacity: 60%;
+        opacity: 0.6;
         cursor: pointer;
 
         &:hover {
-          opacity: 100%;
+          opacity: 1;
         }
       }
     }
