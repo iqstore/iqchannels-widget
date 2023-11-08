@@ -245,7 +245,7 @@
         .rated(v-if="rating.State === 'rated' && rating.Value")
             span Оценка оператора: {{ rating.Value }} из 5
 
-        .backdrop(v-if="(rating.State === 'poll' || thanksFeedback) && loaded")
+        .backdrop(v-if="(rating.State === 'poll' || thanksFeedback) && this.poll")
         .backdrop(v-if="(rating.State === 'pending')")
         .pending(v-if="rating.State === 'pending'")
             .title Пожалуйста, оцените качество консультации
@@ -269,7 +269,7 @@
                 .submit(@click="sendRating", :class="{'disabled': !value}")
                     | Отправить
 
-        .pending(v-if="rating.State === 'poll' && !start && loaded")
+        .pending(v-if="rating.State === 'poll' && !start && this.poll")
             .title.mt Желаете пройти опрос?
             .buttons.mt
                 .ignore(@click="finishRating")
@@ -333,9 +333,7 @@ export default {
     },
 
     mounted() {
-        this.$nextTick(function () {
-            this.getPoll();
-        });
+      this.poll = this.rating.RatingPoll;
     },
 
     data: function () {
@@ -347,38 +345,12 @@ export default {
             index: 0,
             start: false,
             inputText: "",
-            loaded: false,
             thanksFeedback: false,
             thanksFeedbackText: "",
         };
     },
 
     methods: {
-        getPoll() {
-            let query = {
-                ProjectId: this.client.ProjectId,
-                ChannelId: this.client.ChannelId,
-                Enabled: true,
-                ClientId: this.client.Id,
-                RatingId: this.rating.Id,
-                Desc: true
-            }
-            client.getPoll(query).then(data => {
-                this.poll = data.Data.Poll;
-                if (!data.Data.Poll) {
-                    this.loaded = !!data.Data.Poll;
-                } else {
-                  if (this.poll.ShowOffer !== null) {
-                    if (!this.poll.ShowOffer && this.rating.State === 'poll') {
-                      this.startPoll();
-                    } else {
-                      this.start = false;
-                    }
-                  }
-                  this.loaded = true;
-                }
-            });
-        },
 
         startPoll() {
             this.start = true;
@@ -469,7 +441,7 @@ export default {
                         const bye = setTimeout(() => {
                             this.thanksFeedback = false;
                             clearTimeout(bye);
-                        }, 3000)
+                        }, 1000)
                     }
                 }
             });

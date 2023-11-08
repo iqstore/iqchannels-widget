@@ -13,6 +13,7 @@ export default class Relations {
             Users: {},
             ChatMessages: {},
             Files: {},
+            RatingPolls: {},
             Ratings: {},
             InfoRequests: {},
         };
@@ -32,6 +33,12 @@ export default class Relations {
         if (rels.Files) {
             this.files(rels.Files).forEach(file => {
                 this.rels.Files[file.Id] = file;
+            });
+        }
+
+        if (rels.RatingPolls) {
+            this.ratingPolls(rels.RatingPolls).forEach(poll => {
+                this.rels.RatingPolls[poll.Id] = poll;
             });
         }
 
@@ -128,7 +135,18 @@ export default class Relations {
     }
 
     rating(rating) {
-        return rating;
+      if (rating.RatingPollId) {
+        rating.RatingPoll = this.rels.RatingPolls[rating.RatingPollId];
+      }
+      return rating;
+    }
+
+    ratingPolls(polls) {
+        return polls.map(r => this.poll(r));
+    }
+
+    poll(poll) {
+        return poll;
     }
 
     infoRequests(requests) {
