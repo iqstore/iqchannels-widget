@@ -334,6 +334,9 @@ export default {
 
     mounted() {
       this.poll = this.rating.RatingPoll;
+      if (this.poll && this.rating.State === 'poll') {
+        this.start = !this.poll.ShowOffer;
+      }
     },
 
     data: function () {
