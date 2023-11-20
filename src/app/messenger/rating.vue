@@ -310,7 +310,7 @@
                     @click.prevent="setPollVariant(answer)"
                 )
                     .button(@click.prevent="setPollVariant(answer)")
-                      | {{ poll.Questions[index].Answers[0].Text }}
+                      | {{ answer.Text }}
             .fcr.mt(v-if="poll.Questions[index].Type === 'fcr'")
               .buttons-fcr.mt
                 .button(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])")
