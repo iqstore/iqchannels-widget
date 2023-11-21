@@ -189,6 +189,10 @@
   margin-top: 20px;
 }
 
+.m-b {
+  margin: 0 10px 10px 10px !important;
+}
+
 .poll_text {
   width: 85%;
   border: 1px solid #C8C7CC;
@@ -214,10 +218,18 @@
   text-align: center;
 }
 
-.buttons-fcr {
+.buttons-fcr, .buttons-one-of-list {
   display: flex;
   margin: 10px;
   justify-content: center;
+}
+
+.buttons-one-of-list {
+  flex-flow: column;
+  .button {
+    width: inherit;
+    margin: 0;
+  }
 }
 
 .button {
@@ -294,11 +306,11 @@
                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
                         path(fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM405.8 317.9l27.8 162L288 403.5 142.5 480l27.8-162L52.5 203.1l162.7-23.6L288 32l72.8 147.5 162.7 23.6-117.7 114.8z")
             .one_of_list.mt(v-if="poll.Questions[index].Type === 'one_of_list'")
-                .box-check(v-for="(answer, i) in poll.Questions[index].Answers",
+                .buttons-one-of-list.m-b(v-for="(answer, i) in poll.Questions[index].Answers",
                     @click.prevent="setPollVariant(answer)"
                 )
-                    input(type="radio", :name="i", :id="i", :value="answer.Id", v-model="pollResult.RatingPollAnswerId")
-                    label.check-label(:for="i") {{ answer.Text }}
+                    .button(@click.prevent="setPollVariant(answer)")
+                      | {{ answer.Text }}
             .fcr.mt(v-if="poll.Questions[index].Type === 'fcr'")
               .buttons-fcr.mt
                 .button(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])")
@@ -308,7 +320,7 @@
 
             .input(v-if="poll.Questions[index].Type === 'input'")
                 textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
-            .buttons.mt(v-if="poll.Questions[index].Type !== 'fcr'")
+            .buttons.mt(v-if="poll.Questions[index].Type !== 'fcr' && poll.Questions[index].Type !== 'one_of_list'")
                 .submit(@click="sendRatingPoll")
                     | Отправить ответ
 
@@ -334,6 +346,9 @@ export default {
 
     mounted() {
       this.poll = this.rating.RatingPoll;
+      if (this.poll && this.rating.State === 'poll') {
+        this.start = !this.poll.ShowOffer;
+      }
     },
 
     data: function () {
@@ -388,6 +403,7 @@ export default {
                 ClientId: this.client.Id,
                 ProjectId: this.client.ProjectId,
             };
+            this.sendRatingPoll();
         },
 
         setPollVariantFCR(answer) {
@@ -404,6 +420,9 @@ export default {
         },
 
         sendRatingPoll() {
+            if (Object.keys(this.pollResult).length <= 1) {
+              return;
+            }
             if (this.index === this.poll.Questions.length - 1) {
                 if (this.poll.Questions[this.index].AsTicketRating) {
                     this.sendRating();
@@ -421,6 +440,7 @@ export default {
                 client.sendPoll(this.pollResult);
                 this.index++;
             }
+            this.pollResult = {};
         },
 
         setRating(value) {
