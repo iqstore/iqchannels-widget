@@ -420,6 +420,9 @@ export default {
         },
 
         sendRatingPoll() {
+            if (Object.keys(this.pollResult).length <= 1) {
+              return;
+            }
             if (this.index === this.poll.Questions.length - 1) {
                 if (this.poll.Questions[this.index].AsTicketRating) {
                     this.sendRating();
@@ -437,6 +440,7 @@ export default {
                 client.sendPoll(this.pollResult);
                 this.index++;
             }
+            this.pollResult = {};
         },
 
         setRating(value) {
