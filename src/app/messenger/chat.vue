@@ -552,19 +552,19 @@
                         pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
                         button.img-button(
                           v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-                      div(v-else-if="msg.File && msg.File.Type == 'image'")
+                      div(v-else-if="(msg.File && msg.File.Type == 'image') || msg.Payload === 'card'")
                         a.image(
                           v-if="docWidth > 1024",
                           v-bind:href="msg.File.URL",
                           target="_blank",
                           @click="clickFile(msg, $event)"
                         )
-                          img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                          img.bubble(v-if="msg.File && msg.File.Type === 'image'" :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                         .image(
                           v-else-if="docWidth <= 1024",
                           @click="clickFileImage(msg, $event)"
                         )
-                          img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                          img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                         div.img-caption
                           pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
                         button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
