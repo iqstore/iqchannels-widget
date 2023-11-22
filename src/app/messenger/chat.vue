@@ -554,7 +554,7 @@
                           v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                       div(v-else-if="(msg.File && msg.File.Type == 'image') || msg.Payload === 'card'")
                         a.image(
-                          v-if="docWidth > 1024",
+                          v-if="docWidth > 1024 && msg.File",
                           v-bind:href="msg.File.URL",
                           target="_blank",
                           @click="clickFile(msg, $event)"
