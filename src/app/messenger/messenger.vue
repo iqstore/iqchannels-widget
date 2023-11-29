@@ -776,23 +776,31 @@ export default {
     },
 
     newTextMessage(text, botpressPayload) {
-      return {
+      const msg = {
         LocalId: this.getNextLocalId(),
         Payload: schema.ChatPayloadText,
         Text: text,
         BotpressPayload: botpressPayload,
         ChatType: this.chatType
       };
+      if (this.disableFreeText) {
+        msg.DisableFreeText = true;
+      }
+      return msg;
     },
 
     newTextMessageWithReply(text, id) {
-      return {
+      const msg =  {
         LocalId: this.getNextLocalId(),
         Payload: schema.ChatPayloadText,
         Text: text,
         ReplyToMessageId: id,
         ChatType: this.chatType
       }
+      if (this.disableFreeText) {
+        msg.DisableFreeText = true;
+      }
+      return msg;
     },
 
     newFileMessage(file, text) {
