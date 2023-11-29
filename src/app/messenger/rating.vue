@@ -218,7 +218,7 @@
   text-align: center;
 }
 
-.buttons-fcr, .buttons-one-of-list {
+.buttons-fcr, .buttons-one-of-list, .buttons-next-prev, .buttons-answer {
   display: flex;
   margin: 10px;
   justify-content: center;
@@ -237,6 +237,7 @@
   background-color: #cccccc;
   color: #000;
   margin: 5px;
+  border: 0;
   border-radius: 5px;
   text-align: center;
   font-size: 16px;
@@ -244,9 +245,26 @@
   cursor: pointer;
   transition: 0.5s ease;
 
+  &.button_active {
+    background-color: #2EB8FE;
+    color: white;
+  }
+
   &:hover {
     background-color: #dadada;
   }
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.button-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  opacity: 0.6;
 }
 
 </style>
@@ -260,7 +278,11 @@
         .backdrop(v-if="(rating.State === 'poll' || thanksFeedback) && this.poll")
         .backdrop(v-if="(rating.State === 'pending')")
         .pending(v-if="rating.State === 'pending'")
-            .title Пожалуйста, оцените качество консультации
+            .button-close(@click="ignoreRating")
+                svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
+                  path(d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z")
+
+            .title.mt Пожалуйста, оцените качество консультации
             .stars(@mouseout="onMouseOut()")
                 .star(v-for="n in 5",
                     :class="{'star-selected': n <= rating.Value}",
@@ -275,10 +297,8 @@
                         class="svg-inline--fa fa-star fa-w-18" role="img"
                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
                         path(fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM405.8 317.9l27.8 162L288 403.5 142.5 480l27.8-162L52.5 203.1l162.7-23.6L288 32l72.8 147.5 162.7 23.6-117.7 114.8z")
-            .buttons
-                .ignore(@click="ignoreRating")
-                    | Отмена
-                .submit(@click="sendRating", :class="{'disabled': !value}")
+            .buttons-answer.mt
+                button.button(@click="sendRating", :class="{'disabled': !value}")
                     | Отправить
 
         .pending(v-if="rating.State === 'poll' && !start && this.poll")
@@ -290,10 +310,14 @@
                     | Да
 
         .pending(v-if="start")
+            .button-close(@click="finishRating")
+                svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
+                    path(d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z")
+
             .title.mt {{ poll.Questions[index].Text }}
             .stars(@mouseout="onMouseOutPoll()", v-if="poll.Questions[index].Type === 'stars'")
                 .star(v-for="n in 5",
-                    :class="{'star-selected': n <= pollResult.AnswerStars}",
+                    :class="{'star-selected': n <= pollResult[index].AnswerStars}",
                     @mouseover="onMouseOverPoll(n)",
                     @click.prevent="setPollStars(n)")
                     svg.star-background(aria-hidden="true" focusable="false"
@@ -309,19 +333,26 @@
                 .buttons-one-of-list.m-b(v-for="(answer, i) in poll.Questions[index].Answers",
                     @click.prevent="setPollVariant(answer)"
                 )
-                    .button(@click.prevent="setPollVariant(answer)")
+                    button.button(@click.prevent="setPollVariant(answer)", :class="{'button_active': answer.Id === pollResult[index].RatingPollAnswerId }")
                       | {{ answer.Text }}
             .fcr.mt(v-if="poll.Questions[index].Type === 'fcr'")
               .buttons-fcr.mt
-                .button(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])")
+                button.button(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])", :class="{'button_active': poll.Questions[index].Answers[0].Id === pollResult[index].RatingPollAnswerId}")
                     | {{ poll.Questions[index].Answers[0].Text }}
-                .button(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[1])")
+                button.button(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[1])", :class="{'button_active': poll.Questions[index].Answers[1].Id === pollResult[index].RatingPollAnswerId}")
                     | {{ poll.Questions[index].Answers[1].Text }}
 
             .input(v-if="poll.Questions[index].Type === 'input'")
                 textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
-            .buttons.mt(v-if="poll.Questions[index].Type !== 'fcr' && poll.Questions[index].Type !== 'one_of_list'")
-                .submit(@click="sendRatingPoll")
+
+            .buttons-next-prev.mt(v-if="this.poll.Questions.length !== 1")
+                button.button(@click.prevent="prevQuestion()", :disabled="index === 0")
+                    | Назад
+                button.button(@click.prevent="nextQuestion()", :disabled="isRatingPollAnswerEmpty() && index === poll.Questions.length - 1")
+                    | Далее
+
+            .buttons-answer.mt(v-if="this.poll.Questions.length === 1")
+                button.button(@click="sendRatingPoll")
                     | Отправить ответ
 
         .pending(v-if="thanksFeedback")
@@ -346,6 +377,9 @@ export default {
 
     mounted() {
       this.poll = this.rating.RatingPoll;
+      if (this.poll) {
+        this.pollResult = new Array(this.poll.Questions.length).fill({});
+      }
       if (this.poll && this.rating.State === 'poll') {
         this.start = !this.poll.ShowOffer;
       }
@@ -356,7 +390,7 @@ export default {
             value: null,
             comment: null,
             poll: null,
-            pollResult: Object,
+            pollResult: [],
             index: 0,
             start: false,
             inputText: "",
@@ -373,18 +407,21 @@ export default {
 
         setPollStars(value) {
             this.setRating(value);
-            this.pollResult = {
-                Type: "stars",
-                AnswerStars: value,
-                RatingPollQuestionId: this.poll.Questions[this.index].Id,
-                RatingId: this.rating.Id,
-                ClientId: this.client.Id,
-                ProjectId: this.client.ProjectId,
+            let temp = [...this.pollResult];
+            temp[this.index] = {
+              Type: "stars",
+              AnswerStars: value,
+              RatingPollQuestionId: this.poll.Questions[this.index].Id,
+              RatingId: this.rating.Id,
+              ClientId: this.client.Id,
+              ProjectId: this.client.ProjectId,
             };
+            this.pollResult = temp;
         },
 
         changeText($event) {
-            this.pollResult = {
+            let temp = [...this.pollResult];
+            temp[this.index] = {
                 Type: "input",
                 AnswerInput: $event.target.value,
                 RatingPollQuestionId: this.poll.Questions[this.index].Id,
@@ -392,10 +429,12 @@ export default {
                 ClientId: this.client.Id,
                 ProjectId: this.client.ProjectId,
             };
+          this.pollResult = temp;
         },
 
         setPollVariant(answer) {
-            this.pollResult = {
+            let temp = [...this.pollResult];
+            temp[this.index] = {
                 Type: "one_of_list",
                 RatingPollAnswerId: answer.Id,
                 RatingPollQuestionId: this.poll.Questions[this.index].Id,
@@ -403,11 +442,12 @@ export default {
                 ClientId: this.client.Id,
                 ProjectId: this.client.ProjectId,
             };
-            this.sendRatingPoll();
+            this.pollResult = temp;
         },
 
         setPollVariantFCR(answer) {
-          this.pollResult = {
+          let temp = [...this.pollResult];
+          temp[this.index] = {
             Type: "fcr",
             RatingPollAnswerId: answer.Id,
             RatingPollQuestionId: this.poll.Questions[this.index].Id,
@@ -416,31 +456,45 @@ export default {
             ClientId: this.client.Id,
             ProjectId: this.client.ProjectId,
           };
-          this.sendRatingPoll();
+          this.pollResult = temp;
+        },
+
+        isRatingPollAnswerEmpty() {
+          for (const arg of this.pollResult) {
+            if (Object.keys(arg).length <= 1) {
+              return true;
+            }
+          }
+          return false;
         },
 
         sendRatingPoll() {
-            if (Object.keys(this.pollResult).length <= 1) {
+            for (const arg of this.pollResult) {
+              if (Object.keys(arg).length <= 1) {
+                return;
+              }
+            }
+
+            if (this.poll.Questions[this.index].AsTicketRating) {
+                this.sendRating();
+            }
+            client.sendPoll(this.pollResult);
+            this.finishPoll();
+        },
+
+        prevQuestion() {
+          if (this.index === 0) {
+            return;
+          }
+          this.index--;
+        },
+
+        nextQuestion() {
+            if (this.index === this.poll.Questions.length - 1) {
+              this.sendRatingPoll();
               return;
             }
-            if (this.index === this.poll.Questions.length - 1) {
-                if (this.poll.Questions[this.index].AsTicketRating) {
-                    this.sendRating();
-                    this.finishPoll();
-                    return;
-                }
-                client.sendPoll(this.pollResult);
-                this.finishPoll();
-            } else {
-                if (this.poll.Questions[this.index].AsTicketRating) {
-                    this.sendRating();
-                    this.index++;
-                    return;
-                }
-                client.sendPoll(this.pollResult);
-                this.index++;
-            }
-            this.pollResult = {};
+            this.index++;
         },
 
         setRating(value) {
@@ -476,6 +530,7 @@ export default {
             client.finishPoll(this.rating.Id, this.poll.Id, false).then(res => {
                 if (res.OK) {
                     this.rating.State = "finished";
+                    this.start = false;
                 }
             });
         },
@@ -490,7 +545,7 @@ export default {
         },
 
         onMouseOverPoll(value) {
-            this.pollResult.AnswerStars = value;
+            this.pollResult[this.index].AnswerStars = value;
         },
 
         onMouseOut() {
@@ -498,7 +553,7 @@ export default {
         },
 
         onMouseOutPoll() {
-            this.pollResult.AnswerStars = this.value;
+            this.pollResult[this.index].AnswerStars = this.value;
         },
 
         onEnterPressed(event) {
