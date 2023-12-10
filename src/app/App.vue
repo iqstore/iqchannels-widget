@@ -20,6 +20,7 @@ div(v-if="initialized")
        :scrollToMsg="scrollToMsg"
        :rating="rating"
        :closeSystemChat="closeSystemChat"
+       :doc-width=docWidth,
     )
 </template>
 
@@ -53,7 +54,8 @@ export default {
       pushToken: null,
       replayedMsg: null,
       scrollToMsg: null,
-      rating: null
+      rating: null,
+      docWidth: null
     };
   },
 
@@ -74,6 +76,7 @@ export default {
           this.project = event.data.project;
           this.requireName = event.data.requireName;
           this.pushToken = event.data.pushToken;
+          this.docWidth = event.data.docWidth;
 
           this.maybeSendPushToken();
           this.getGreetings();
