@@ -200,13 +200,13 @@
     .title Пожалуйста, укажите Ваши данные
     .data-error(v-if="dataError") {{ dataError }}
     .div(style="margin-top:10px")
-        label(for="firstname").label-custom Введите имя:
-        input.input-custom(name="firstname" id="firstname" v-model="request.FirstName" )
+      label(for="firstname").label-custom Введите имя:
+      input.input-custom(name="firstname" id="firstname" v-model="request.FirstName" )
 
-        label(for="surname").label-custom Введите фамилию
-        input.input-custom(name="surname" id="surname" v-model="request.SurName")
+      label(for="surname").label-custom Введите фамилию
+      input.input-custom(name="surname" id="surname" v-model="request.SurName")
 
-        label(for="phone").label-custom Введите телефон:
+      label(for="phone").label-custom Введите телефон:
       input(name="phone", id="phone", type="tel", v-model="request.Phone", pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}").input-custom
 
       label(for="email").label-custom Введите email:

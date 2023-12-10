@@ -128,7 +128,7 @@ class IQChannelsWidget extends EventEmitter {
       const frame = document.getElementById('iqchannels-widget-iframe');
       this.frameWindow = frame.contentWindow ? frame.contentWindow : frame.contentDocument.defaultView;
 
-      jquery(frame).load(() => {
+      jquery(frame).on('load', () => {
         const event = newChatEvent('init', {
           channel: this.channel,
           credentials: this.credentials,
