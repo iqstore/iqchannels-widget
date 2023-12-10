@@ -273,14 +273,6 @@
   transition: all 0.3s;
   font-size: 14px;
 }
-.img-caption{
-  font-size: 14px;
-  color: black;
-  font-family: sans-serif;
-  pointer-events: none !important;
-  padding-top: 10px;
-  padding-bottom: 4px;
-}
 .img-button{
   width: 100%;
   border-radius: 4px;
@@ -384,138 +376,247 @@
   }
 }
 
+.backdrop {
+  background: black;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 4;
+  opacity: 0.7;
+}
+
+.pending {
+  z-index: 5;
+  position: fixed;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 18px;
+  color: white;
+  height: 100%;
+
+  .modal_img {
+    height: 100%;
+    display: flex;
+
+    img {
+      object-fit: contain;
+    }
+  }
+
+  .modal_img_footer {
+    padding: 25px;
+  }
+
+  .modal_img_header {
+    padding: 15px;
+    display: flex;
+    border-bottom: 1px gray solid;
+
+    .modal_img_header-icon {
+      padding: 10px;
+
+      svg {
+        fill: white;
+        width: 30px;
+        height: 30px;
+        transition: 0.3s ease;
+        opacity: 0.6;
+        cursor: pointer;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+
+    .modal_img_header-title {
+      margin-left: 10px;
+      display: flex;
+      flex-flow: column;
+      justify-content: space-around;
+      width: 100%;
+
+      .modal_img_header-title_date {
+        opacity: 0.6;
+        font-size: 16px;
+      }
+    }
+  }
+}
 </style>
 
 <template lang="pug">
 .messages#list
-  .group(v-for="group in groups" :class="{ client: group.ClientId, user: group.UserId }" )
-    .date(v-if="group.IsNewDay")
-      span.title {{ humanDate(group.LastMessage.CreatedAt) }}
 
-    .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
+    .backdrop(v-if="showImageModal")
+    .pending(v-if="showImageModal")
+        .modal_img_header
+            .modal_img_header-icon
+                svg(@click="closeModalImg" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512")
+                  path(d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z")
+            .modal_img_header-title
+                span(v-if="modalImageMsg.Author === 'user'") {{ modalImageMsg.User.DisplayName }}
+                span(v-if="modalImageMsg.Author === 'client'") {{ modalImageMsg.Client.Name }}
+                span.modal_img_header-title_date {{ humanDateTime(modalImageMsg.CreatedAt) }}
+            a(:href="modalImageMsg.File.URL", target="_blank", @click="clickFile(modalImageMsg, $event)")
+              .modal_img_header-icon
+                svg(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512")
+                  path(d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z")
 
-      .avatar(v-if="group.User")
-        avatar(:user="group.User")
+        .modal_img
+            img(:src="modalImageMsg.File.ThumbnailURL")
 
-      .body()
-        .author
-          span(v-if="group.User") {{ group.User.DisplayName }}
-          span(v-if="group.Client") {{ group.Client.Name }}
-        .message-wrapper(v-for="(msg, index) in group.Messages",
-          v-hammer:pan="(event)=> swipeRight(event, msg)",
-          :id="msg.Id")
+        .modal_img_footer(v-if="modalImageMsg.Text")
+            span {{ modalImageMsg.Text }}
 
-          .message.bubble(
-            v-touch:longtap="longtapEvent(msg)",
-            :title="getTitle()",
+    .group(v-for="group in groups" :class="{ client: group.ClientId, user: group.UserId }" )
+        .date(v-if="group.IsNewDay")
+            span.title {{ humanDate(group.LastMessage.CreatedAt) }}
 
-            :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
+        .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
 
-            .reply-icon
-              svg(width='14' height='12' viewbox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg')
-                path(d='M0.168205 5.31043L5.31015 0.16848C5.67006 -0.191429 6.28546 0.0634719 6.28546 0.572471V2.8604C9.55786 2.99642 12.4442 5.22457 13.359 8.39557C13.6644 9.45406 13.7406 10.3252 13.7166 11.2627C13.7135 11.3728 13.7128 11.4046 13.7128 11.4277C13.7128 12.0082 12.9474 12.2187 12.6505 11.7199C12.014 10.6504 11.291 9.82404 10.4991 9.21322C9.06731 8.10896 7.57668 7.78917 6.28549 7.91831V10.8564C6.28549 11.3654 5.67009 11.6203 5.31018 11.2604L0.168232 6.11841C-0.0549068 5.8953 -0.0549078 5.53354 0.168205 5.31043ZM5.14283 9.47707V7.4284C5.14283 7.16667 5.32068 6.93842 5.57446 6.87441C5.64398 6.85687 5.75946 6.83389 5.91613 6.81198C7.5345 6.58555 9.41461 6.93378 11.1969 8.3084C11.6353 8.64653 12.0529 9.03949 12.4473 9.48957L12.4385 9.44383C12.393 9.20926 12.3346 8.96702 12.2611 8.71231C11.4456 5.88536 8.77869 3.93434 5.82534 3.998C5.77542 3.99888 5.75699 3.99928 5.73388 4.00009C5.41082 4.01123 5.14285 3.75236 5.14285 3.42909V1.95177L1.38021 5.71442L5.14283 9.47707Z' fill='#C6E39F')
+          .avatar(v-if="group.User")
+            avatar(v-bind:user="group.User")
 
-            div(v-if="msg.ReplyToMessageId")
-              .reply(@click="goToMessage(msg)", v-for="replyMsg of getReplyMsg(msg)" :class="{ 'reply-client': msg.Author === 'client', 'reply-user': msg.Author === 'user' }" )
-                .reply-author(:class="{ 'reply-author-client': msg.Author === 'client', 'reply-author-user': msg.Author === 'user' }") {{ getAuthorAndText(msg).author }}
-                div(v-if="replyMsg.Payload === 'carousel' && !replyMsg.File")
-                  pre.text()
-                  button.img-button(
-                    v-for="action of replyMsg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-                div(v-else-if="replyMsg.File && replyMsg.File.Type == 'image'")
-                  a.image(
-                    :href="replyMsg.File.URL",
-                    target="_blank",
-                    @click="clickFile(replyMsg, $event)")
-                    img.bubble(:src="replyMsg.File.ThumbnailURL")
-                  div(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'")
-                    button.img-button(v-for="action of replyMsg.Actions") {{ action.Title }}
-                a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type == 'file'"
-                    :href="replyMsg.File.URL"
-                    target="_blank"
-                    @click="clickFile(replyMsg, $event)")
-                  span.file
-                    .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
-                audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
-                  :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
-                .reply-text {{ getAuthorAndText(msg).text }}
+          .body()
+            .author
+              span(v-if="group.User") {{ group.User.DisplayName }}
+              span(v-if="group.Client") {{ group.Client.Name }}
+            .message-wrapper(v-for="(msg, index) in group.Messages",
+              v-hammer:pan="(event)=> swipeRight(event, msg)",
+              :id="msg.Id")
 
-            .message-data
+              .message.bubble(
+                v-touch:longtap="longtapEvent(msg)",
+                :title="getTitle()",
 
-              pre.text(v-if="isTextPayload(msg.Payload)" v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
-              .file.text(v-if="msg.Upload")
-                div(v-if="msg.Uploading")
-                  .filename {{ msg.Upload.name }}
-                  .filesize {{ humanSize(msg.Upload.size) }} - Загружено {{ msg.UploadProgress }}%
-                  a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
-                div(v-if="msg.UploadError")
-                  .filename {{ msg.Upload.name }}
-                  .filesize {{ humanSize(msg.Upload.size) }}
-                  .error {{ msg.UploadError }}
-                  a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
-                  a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
-              div(v-if="msg.Payload === 'carousel' && !msg.File")
-                pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
-                button.img-button(
-                  v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-              div(v-else-if="msg.File && msg.File.Type == 'image'")
-                a.image(
-                :href="msg.File.URL",
-                target="_blank",
-                @click="clickFile(msg, $event)")
-                  img.bubble(:src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                div.img-caption
-                  span {{ msg.Text }}
-                div(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")
-                  button.img-button(v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-              div(v-else-if="msg.File && msg.File.Type == 'file'")
-                a.message_file(
-                    :href="msg.File.URL"
-                    target="_blank"
-                    @click="clickFile(msg, $event)")
-                  svg.message-file(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" :class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
-                    path(d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z")
-                  span.file
-                    .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
-                    .filesize(:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ humanSize(msg.File.Size) }}
-                div.img-caption(v-if="msg.Text")
-                  span {{ msg.Text }}
-              audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
-                :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
-              div
+                :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
 
-              .time
-                span.listened-flag(v-if="msg.Listened" title="Прослушано")
-                  icon(name="headphones")
-                span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
-                span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
-                span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
+                .reply-icon
+                  svg(width='14' height='12' viewbox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg')
+                    path(d='M0.168205 5.31043L5.31015 0.16848C5.67006 -0.191429 6.28546 0.0634719 6.28546 0.572471V2.8604C9.55786 2.99642 12.4442 5.22457 13.359 8.39557C13.6644 9.45406 13.7406 10.3252 13.7166 11.2627C13.7135 11.3728 13.7128 11.4046 13.7128 11.4277C13.7128 12.0082 12.9474 12.2187 12.6505 11.7199C12.014 10.6504 11.291 9.82404 10.4991 9.21322C9.06731 8.10896 7.57668 7.78917 6.28549 7.91831V10.8564C6.28549 11.3654 5.67009 11.6203 5.31018 11.2604L0.168232 6.11841C-0.0549068 5.8953 -0.0549078 5.53354 0.168205 5.31043ZM5.14283 9.47707V7.4284C5.14283 7.16667 5.32068 6.93842 5.57446 6.87441C5.64398 6.85687 5.75946 6.83389 5.91613 6.81198C7.5345 6.58555 9.41461 6.93378 11.1969 8.3084C11.6353 8.64653 12.0529 9.03949 12.4473 9.48957L12.4385 9.44383C12.393 9.20926 12.3346 8.96702 12.2611 8.71231C11.4456 5.88536 8.77869 3.93434 5.82534 3.998C5.77542 3.99888 5.75699 3.99928 5.73388 4.00009C5.41082 4.01123 5.14285 3.75236 5.14285 3.42909V1.95177L1.38021 5.71442L5.14283 9.47707Z' fill='#C6E39F')
+
+                .reply(v-if="msg.ReplyToMessageId", @click="goToMessage(msg)", v-for="replyMsg of getReplyMsg(msg)" :class="{ 'reply-client': msg.Author === 'client', 'reply-user': msg.Author === 'user' }" )
+                  .reply-author(:class="{ 'reply-author-client': msg.Author === 'client', 'reply-author-user': msg.Author === 'user' }") {{ getAuthorAndText(msg).author }}
+                  div(v-if="replyMsg.Payload === 'carousel' && !replyMsg.File")
+                    pre.text()
+                    button.img-button(
+                      v-for="action of replyMsg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+                  div(v-else-if="replyMsg.File && replyMsg.File.Type == 'image'")
+                    a.image(
+                      v-if="docWidth > 1024",
+                      :href="replyMsg.File.URL",
+                      target="_blank",
+                      @click="clickFile(replyMsg, $event)"
+                    )
+                      img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                    .image(
+                      v-else-if="docWidth <= 1024",
+                      @click="clickFileImage(replyMsg, $event)"
+                    )
+                      img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                    button.img-button(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'",
+                      v-for="action of replyMsg.Actions") {{ action.Title }}
+                  a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type == 'file'"
+                      :href="replyMsg.File.URL"
+                      target="_blank"
+                      @click="clickFile(replyMsg, $event)")
+                    span.file
+                      .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
+                  audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
+                    :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
+                  .reply-text {{ getAuthorAndText(msg).text }}
+
+                .message-data
+
+                  pre.text(v-if="isTextPayload(msg.Payload)" v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
+                  .file.text(v-if="msg.Upload")
+                    div(v-if="msg.Uploading")
+                      .filename {{ msg.Upload.name }}
+                      .filesize {{ humanSize(msg.Upload.size) }} - Загружено {{ msg.UploadProgress }}%
+                      a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
+                    div(v-if="msg.UploadError")
+                      .filename {{ msg.Upload.name }}
+                      .filesize {{ humanSize(msg.Upload.size) }}
+                      .error {{ msg.UploadError }}
+                      a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
+                      a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
+                  div(v-if="msg.Payload === 'carousel' && !msg.File")
+                    pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
+                    button.img-button(
+                      v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+                  div(v-else-if="(msg.File && msg.File.Type == 'image') || msg.Payload === 'card'")
+                    a.image(
+                      v-if="docWidth > 1024 && msg.File",
+                      :href="msg.File.URL",
+                      target="_blank",
+                      @click="clickFile(msg, $event)"
+                    )
+                      img.bubble(v-if="msg.File && msg.File.Type === 'image'" :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                    .image(
+                      v-else-if="docWidth <= 1024",
+                      @click="clickFileImage(msg, $event)"
+                    )
+                      img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                    div.img-caption
+                      pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
+                    button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
+                      v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+                  div(v-else-if="msg.File && msg.File.Type == 'file'")
+                    a.message_file(
+                        :href="msg.File.URL"
+                        target="_blank"
+                        @click="clickFile(msg, $event)")
+                      svg.message-file(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" v-bind:class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
+                        path(d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z")
+                      span.file
+                        .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
+                        .filesize(:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ msg.File.Size | humanSize }}
+                    div.img-caption(v-if="msg.Text")
+                      pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
+                  audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
+                    :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
+                  div
+
+                  .time
+                    span.listened-flag(v-if="msg.Listened" title="Прослушано")
+                      icon(name="headphones")
+                    span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
+                    span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
+                    span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
 
 
-                //scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
-        div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
-          div.choice_box_dropdown
-            div(style="display:flex;justify-content:flex-end")
-            button.choice_button(type="button"
-            v-for="choice in group.LastMessage.SingleChoices",
-            @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
-        div.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
-          button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
-            span {{ getProductMsgText(group.LastMessage) }}
-          button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
-    rating(
-        v-if="group.Rating",
-        :rating="group.Rating",
-        :client="client",
-        :channel="channel",
-        @rate-rating="rateRating",
-        @ignore-rating="ignoreRating")
-    inforequest(
-        v-if="group.InfoRequest",
-        :request="group.InfoRequest",
-        @send-info="sendInfo",
-        @ignore-info="ignoreInfo"
-    )
+                    scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
+            div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
+              div.choice_box_dropdown
+                div(style="display:flex;justify-content:flex-end")
+                button.choice_button(type="button"
+                v-for="choice in group.LastMessage.SingleChoices",
+                @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
+            div.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
+              button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
+                span {{ getProductMsgText(group.LastMessage) }}
+              button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
+        rating(
+            v-if="group.Rating",
+            :rating="group.Rating",
+            :client="client",
+            :channel="channel",
+            @rate-rating="rateRating",
+            @ignore-rating="ignoreRating")
+        inforequest(
+            v-if="group.InfoRequest",
+            :request="group.InfoRequest",
+            @send-info="sendInfo",
+            @ignore-info="ignoreInfo"
+        )
 
 </template>
 
@@ -525,7 +626,7 @@ import rating from './rating.vue';
 import linkifyString from 'linkify-string';
 import client from '../../client';
 import inforequest from './info-request.vue';
-import { humanDate, humanSize } from '../../lib/filters';
+import { humanDate, humanSize, humanDateTime } from '../../lib/filters';
 
 export default {
   components: { inforequest, avatar, rating },
@@ -534,35 +635,35 @@ export default {
     mode: String,
     searching: Boolean,
     opened: Boolean,
+    isBottom: Boolean,
     groups: Array,
     rating: Object,
     client: Object,
     channel: String,
+    docWidth: Number,
   },
 
   data: function () {
     return {
       swipeRange: 100,
-      audioMessagePlayingId: null
+      audioMessagePlayingId: null,
+      showImageModal: false,
+      modalImageMsg: null,
     }
   },
 
   mounted() {
+    setTimeout(() => {
     this.scrollToLastMessage();
+    }, 1500)
   },
 
   methods: {
     humanSize,
     humanDate,
+    humanDateTime,
     scrollToLastMessage() {
       const el = $('#chat');
-
-      el.on('scroll', () => {
-        setTimeout(() => {
-          const htmlMessages = [].slice.apply(document.getElementsByClassName('message-wrapper'));
-          htmlMessages.forEach(transform => transform.style.transform = 'none');
-        });
-      });
 
       el.stop().animate({
         scrollTop: el[0].scrollHeight
@@ -784,6 +885,24 @@ export default {
 
         event.preventDefault();
         this.$emit("click-file", file);
+    },
+
+    clickFileImage(msg, event) {
+      if (this.docWidth <= 1024) {
+        this.showImageModal = true;
+        this.modalImageMsg = msg;
+      }
+    },
+
+    closeModalImg() {
+      this.showImageModal = false;
+      this.modalImageMsg = null;
+    },
+
+    downloadModalImg(msg) {
+      let file = msg.File;
+
+      this.$emit("download-file", file);
     },
 
     clickLink(url, event, text) {

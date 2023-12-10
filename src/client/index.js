@@ -182,8 +182,8 @@ class Client {
       .then(response => response.Result.Client);
   }
 
-  channelMessages (channel, chatType, searchTerm, fromId) {
-    const data = { ChatType: chatType, Limit: config.REQUEST_MESSAGES_LIMIT, Q: searchTerm, FromId: fromId };
+  channelMessages (channel, chatType, searchTerm, fromId, toId) {
+    const data = { ChatType: chatType, Limit: config.REQUEST_MESSAGES_LIMIT, Q: searchTerm, FromId: fromId, ToId: toId };
     return this._enqueueRequest(`/chats/channel/messages/${channel}`, data)
       .then(response => new Relations(config, response.Rels).messages(response.Result));
   }
@@ -210,8 +210,8 @@ class Client {
     return this._enqueueRequest(`/ratings/send_poll`, { RatingPollClientAnswerInput: input });
   }
 
-  finishPoll (ratingId, pollId) {
-    return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId });
+  finishPoll (ratingId, pollId, rated) {
+    return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId, Rated: rated});
   }
 
   getChatSettings (channel) {
@@ -303,7 +303,8 @@ class Client {
     const request = {
       RequestId: info.Id,
       Email: info.Email,
-      Name: info.Name,
+      FirstName: info.FirstName,
+      SurName: info.SurName,
       Phone: info.Phone,
       ClientId: info.ClientId,
       ClientConsent: info.ClientConsent

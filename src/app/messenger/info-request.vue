@@ -23,6 +23,7 @@
   top: 0;
   margin: auto 40px;
   display: flex;
+  padding: 10px;
   flex-direction: column;
   justify-content: space-between;
   height: fit-content;
@@ -172,14 +173,13 @@
 }
 
 .client-consent{
-  font-size: 14px;
-  margin: 15px 3px;
+  font-size: 12px;
+  margin: 15px;
   display: flex;
   align-items: center;
 }
 
 .checkbox-custom{
-  margin-left: 5px;
   margin-right: 5px;
 }
 
@@ -200,10 +200,13 @@
     .title Пожалуйста, укажите Ваши данные
     .data-error(v-if="dataError") {{ dataError }}
     .div(style="margin-top:10px")
-      label(for="name").label-custom Введите имя и фамилию:
-      input.input-custom(name="name" id="name" v-model="request.Name" )
+        label(for="firstname").label-custom Введите имя:
+        input.input-custom(name="firstname" id="firstname" v-model="request.FirstName" )
 
-      label(for="phone").label-custom Введите телефон:
+        label(for="surname").label-custom Введите фамилию
+        input.input-custom(name="surname" id="surname" v-model="request.SurName")
+
+        label(for="phone").label-custom Введите телефон:
       input(name="phone", id="phone", type="tel", v-model="request.Phone", pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}").input-custom
 
       label(for="email").label-custom Введите email:
@@ -211,11 +214,11 @@
 
       div.client-consent
         input(type="checkbox" v-model="request.ClientConsent" ).checkbox-custom
-        label Согласие на обработку
-        a(style="text-decoration:underline" :href="request.ProcessingDataLink" target="_blank") &nbsp;персональных данных
+        span Согласие на обработку
+          a(style="text-decoration:underline" :href="request.ProcessingDataLink" target="_blank") &nbsp;персональных данных
     .buttons
       .ignore(@click="ignoreInfo") Отмена
-      .submit(@click="sendInfo", :class="{'disabled': !request.Name || !request.ClientConsent}") Отправить
+      .submit(@click="sendInfo", :class="{'disabled': !request.FirstName || !request.ClientConsent}") Отправить
 
 </template>
 

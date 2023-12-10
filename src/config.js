@@ -1,6 +1,6 @@
 class Config {
 
-  REQUEST_MESSAGES_LIMIT = 100;
+  REQUEST_MESSAGES_LIMIT = 50;
   CLIENT_SESSION_COOKIE = 'client-session';
 
   constructor () {

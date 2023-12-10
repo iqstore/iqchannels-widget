@@ -14,6 +14,34 @@ export function humanDate (value) {
   }
 }
 
+export function humanDateTime (value) {
+  const now = new Date();
+  if (now.getFullYear() !== value.getFullYear() || now.getMonth() !== value.getMonth()) {
+    return formatDateTime(value);
+  }
+  const daysDelta = now.getDate() - value.getDate();
+  switch (daysDelta) {
+    case 0:
+      return 'Сегодня, ' + formatTime(value);
+    case 1:
+      return 'Вчера, ' + formatTime(value);
+    default:
+      return formatDateTime(value);
+  }
+}
+
+function formatDateTime (value) {
+  const date = formatDate(value);
+
+  return date + ', ' + formatTime(value);
+}
+
+function formatTime (value) {
+  const hours = value.getHours();
+  const mins = value.getMinutes();
+  return hours + ':' + mins;
+}
+
 function formatDate (value) {
   const day = value.getDate();
   const month = value.getMonth();

@@ -84,6 +84,7 @@ class IQChannelsWidget extends EventEmitter {
     this.pushToken = null;
     this.opened = false;
     this.DOMIdentifier = DOMIdentifier || null;
+    this.docWidth = document.documentElement.offsetWidth;
     iconOptions = cleanIconOptions(iconOptions);
     // Add elements
 
@@ -134,7 +135,8 @@ class IQChannelsWidget extends EventEmitter {
           mode: this.mode,
           project: this.project,
           requireName: this.requireName,
-          pushToken: this.pushToken
+          pushToken: this.pushToken,
+          docWidth: this.docWidth
         });
         this.frameWindow.postMessage(JSON.stringify(event), '*');
       });

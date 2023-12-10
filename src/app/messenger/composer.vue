@@ -315,7 +315,7 @@
         input.hidden(type="file" ref="uploadInput" @change="uploadFile")
         a.button.csm-btn(v-if="recording || recordingStopped" @click="cancelRecording()", style="cursor:pointer")
           icon(name="close")
-        a.button.upload(v-if="!recording && !recordingStopped", href="#" @click.prevent="$refs.uploadInput.click()" title="Загрузить файл")
+        a.button.upload(v-if="!recording && !recordingStopped", href="#" @click.prevent="trySendFile()" title="Загрузить файл")
           span.icon
         .d-flex.audio-msg-track(style="width:100%;" v-show="recording || recordingStopped")
           button.audio-msg-track--btn(aria-label="Воспроизвести" v-if="recordingStopped" @click="playAudio()")
@@ -419,13 +419,20 @@ export default {
     });
   },
 
-  beforeUnmount() {
+  beforeDestroy() {
     clearInterval(this.timer);
     if (this.typing) this.stopTyping();
   },
 
   methods: {
     humanSize,
+    trySendFile() {
+      if (!this.currentFile) {
+        this.$refs.uploadInput.click()
+      } else {
+        this.trySendMessage();
+      }
+    },
     // Public
     appendText(text) {
       if (!text) {
