@@ -61,6 +61,7 @@
 .button {
     border-radius: 50%;
     color: #ffffff;
+    fill: #ffffff;
     background: #EBEBEB;
     display: flex;
     min-width: 32px;
@@ -314,7 +315,8 @@
     .composer-inputs(:class="{'disabled': disableFreeText}")
         input.hidden(type="file" ref="uploadInput" @change="uploadFile")
         a.button.csm-btn(v-if="recording || recordingStopped" @click="cancelRecording()", style="cursor:pointer")
-          icon(name="close")
+          svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
+            path(d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z")
         a.button.upload(v-if="!recording && !recordingStopped", href="#" @click.prevent="trySendFile()" title="Загрузить файл")
           span.icon
         .d-flex.audio-msg-track(style="width:100%;" v-show="recording || recordingStopped")
@@ -324,7 +326,7 @@
         .textarea(v-if="!recording && !recordingStopped")
           textarea(ref="text", placeholder="Сообщение..." style="resize: none;" @keydown.enter="handleEnterPressed" @input="handleChange")
         a.button.csm-btn(href="#" @click.prevent="trySendMessage" title="Отправить сообщение" :class="getClass()")
-            icon(name="long-arrow-up")
+            icon(name="long-arrow-alt-up")
         div(v-if="audioMsgEnabled")
           a.button.csm-btn(v-if="textTyped === '' && !recording && !recordingStopped" @click="startRecording()")
             icon(name="microphone")
@@ -332,10 +334,10 @@
 </template>
 <script>
 import WaveSurfer from "wavesurfer.js";
-import MicrophonePlugin from "wavesurfer.js/dist/plugin/wavesurfer.microphone.js";
 import lamejs from "lamejs";
 import client from '../../client';
 import { humanSize } from '../../lib/filters';
+import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js';
 const TYPING_INTERVAL = 2000;
 const TEXTAREA_HEIGHT = '32px';
 
@@ -357,7 +359,8 @@ export default {
       msgVisible: false,
       typingVisible: false,
       timer: null,
-      currentFile: null
+      currentFile: null,
+      record: null,
     };
   },
 
@@ -452,72 +455,90 @@ export default {
       this.handleChange();
     },
     loadWs() {
-       this.ws = WaveSurfer.create({
-        container: "#waveform",
-        waveColor: "#FFFFFF",
-         cursorWidth: 0,
-        barWidth: 5,
-        barGap: 2,
-         barMinHeight: 2,
-         barHeight: 3,
-        height: 25,
-        normalize: true,
-         hideScrollbar: true,
-        plugins: [
-          MicrophonePlugin.create(),
-        ]
-      });
+        this.ws = WaveSurfer.create({
+          container: "#waveform",
+          waveColor: "#FFFFFF",
+          cursorWidth: 0,
+          width: 280,
+          barWidth: 5,
+          barGap: 2,
+          barMinHeight: 2,
+          barHeight: 3,
+          height: 25,
+          normalize: true,
+          hideScrollbar: true,
+        });
 
-      this.ws.microphone.on("deviceReady", (stream) => {
+        this.record = this.ws.registerPlugin(RecordPlugin.create())
+        this.record.on('record-end', (blob) => {
+          this.audioChunks.push(blob);
+          this.ws.loadBlob(blob);
+        });
 
-        this.mediaRecorder = new MediaRecorder(stream);
-
-        this.mediaRecorder.ondataavailable = (e) => {
-          this.audioChunks.push(e.data);
-          this.ws.loadBlob(new Blob(this.audioBitsPerSecond));
-        };
-
-        this.mediaRecorder.onstop = () => {
-          this.ws.loadBlob(new Blob(this.audioChunks));
-        };
-
-        this.mediaRecorder.start(250);
-        //ws.load(URL.createObjectURL(stream));
-      });
-
-      this.ws.microphone.on("deviceError", (code) => {
-        console.warn("Device error: " + code);
-      });
+      //   this.ws.plugins[0].on("deviceReady", (stream) => {
+      //
+      //    this.mediaRecorder = new MediaRecorder(stream);
+      //
+      //    this.mediaRecorder.ondataavailable = (e) => {
+      //      this.audioChunks.push(e.data);
+      //      this.ws.loadBlob(new Blob(this.audioBitsPerSecond));
+      //   };
+      //
+      //   this.mediaRecorder.onstop = () => {
+      //     this.ws.loadBlob(new Blob(this.audioChunks));
+      //   };
+      //
+      //   this.mediaRecorder.start(250);
+      //   //ws.load(URL.createObjectURL(stream));
+      // });
+      //
+      // this.ws.microphone.on("deviceError", (code) => {
+      //   console.warn("Device error: " + code);
+      // });
 
     },
     startRecording() {
-      this.recording = true;
-      this.audioChunks = [];
-      if (this.ws){
-       this.ws.destroy();
+      try {
+        this.audioChunks = [];
+        if (this.ws){
+          this.ws.destroy();
+        } else if (this.ws && this.record.isRecording()) {
+          this.record.stopRecording();
+          return;
+        }
+        this.recording = true;
+        setTimeout(() => {
+          this.loadWs();
+          this.record.startRecording();
+          // this.ws.microphone.start();
+          // this.ws.microphone.play();
+        }, 100);
+      } catch (e) {
+        console.warn(e);
       }
-      setTimeout(() => {
-        this.loadWs();
-        this.ws.microphone.start();
-        this.ws.microphone.play();
-      }, 100);
-
     },
+
     stopRecording() {
       if (!this.ws) {
         return;
       }
-      this.ws.microphone.stop();
-      this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
+      this.record.stopRecording();
+      // this.ws.microphone.stop();
+      // this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
       this.recording = false;
       this.recordingStopped = true;
     },
     cancelRecording() {
-      if (!this.ws) {
+      if (this.record.isPaused()) {
+        this.record.resumeRecording();
         return;
       }
-      this.ws.microphone.stop();
-      this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
+      this.record.pauseRecording();
+      // if (!this.ws) {
+      //   return;
+      // }
+      // this.ws.microphone.stop();
+      // this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
       this.recording = false;
       this.audioChunks = [];
       this.recordingStopped = false;
@@ -690,12 +711,16 @@ export default {
       if (!this.ws) {
         return;
       }
-      this.ws.microphone.stop();
-      this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
+      // this.ws.microphone.stop();
+      if (this.record.isRecording()) {
+        this.record.stopRecording();
+      }
+      // this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
       this.recording = false;
       this.recordingStopped = false;
       setTimeout(() => {
-        const mp3Blob = this.analyzeAudioBuffer(this.ws.backend.buffer);
+        console.log(this.record);
+        const mp3Blob = this.analyzeAudioBuffer(this.ws.decodedData);
         this.$emit("file-selected", mp3Blob, "", null);
         this.audioChunks = [];
       }, 100);

@@ -28,6 +28,9 @@ module.exports = webpackMerge.merge(commonConfig, {
     //   chunkModules: false,
     //   modules: false
     // },
+    client: {
+      overlay: false
+    },
     hot: true,
     open: true,
     compress: true,

@@ -490,7 +490,7 @@
               span(v-if="group.User") {{ group.User.DisplayName }}
               span(v-if="group.Client") {{ group.Client.Name }}
             .message-wrapper(v-for="(msg, index) in group.Messages",
-              v-hammer:pan="(event)=> swipeRight(event, msg)",
+              v-touch:swipe="(event)=> swipeRight(event, msg)",
               :id="msg.Id")
 
               .message.bubble(
@@ -595,7 +595,7 @@
                     span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
 
 
-                    //scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
+                    scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
             div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
               div.choice_box_dropdown
                 div(style="display:flex;justify-content:flex-end")
@@ -809,6 +809,7 @@ export default {
     },
 
     swipeRight(event, item){
+      console.log(event);
       const eventType = event.changedPointers[0].type;
       const closest = event.target.closest('.message-wrapper');
 

@@ -29,11 +29,12 @@
     "normalize.css": "5.0.0",
     "vue": "^3.2.13",
     "vue-awesome": "4.5.0",
-    "wavesurfer.js": "4.0.1"
+    "vue3-touch-events": "^4.1.8",
+    "wavesurfer.js": "7.5.1"
   },
   "devDependencies": {
-    "@vue/compat": "^3.2.13",
     "@vue/cli-service": "~5.0.0",
+    "@vue/compat": "^3.2.13",
     "autoprefixer": "6.5.3",
     "babel": "6.23.0",
     "babel-core": "6.26.3",
