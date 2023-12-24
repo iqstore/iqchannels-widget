@@ -1,4 +1,3 @@
-const path = require('path');
 const webpackMerge = require('webpack-merge');
 const commonConfig = require('./common.js');
 const CompressionPlugin = require('compression-webpack-plugin');
@@ -11,7 +10,6 @@ module.exports = webpackMerge.merge(commonConfig, {
     filename: '[name].js',
     publicPath: '/'
   },
-  stats: 'detailed',
   // historyApiFallback: {
   //   index: '/'
   // },

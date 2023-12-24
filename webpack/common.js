@@ -25,7 +25,7 @@ module.exports = {
   resolve: {
     // root: path.resolve('../'),
     alias: {
-      vue: '@vue/compat'
+      vue: 'vue'
     }
   },
 
