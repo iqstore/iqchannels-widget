@@ -211,7 +211,7 @@ class Client {
   }
 
   finishPoll (ratingId, pollId, rated) {
-    return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId, Rated: rated});
+    return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId, Rated: rated });
   }
 
   getChatSettings (channel) {
@@ -474,6 +474,7 @@ class Client {
     let text = JSON.stringify(token);
 
     // Sign them as JSON using the auth token.
+    // eslint-disable-next-line new-cap
     let hmac = new jsSHA('SHA-1', 'TEXT', {
       hmacKey: { value: this.authToken, format: 'TEXT' }
     });
@@ -488,10 +489,10 @@ class Client {
     let json = JSON.stringify(signed);
 
     // Base64 encode the result.
+    // eslint-disable-next-line no-undef
     let b64 = btoa(json);
     return b64;
   }
-
 }
 
 export default new Client();

@@ -1,12 +1,4 @@
 import { createApp } from 'vue';
-// import Icon from 'vue-awesome/components/Icon';
-// import 'vue-awesome/icons/paperclip';
-// import 'vue-awesome/icons/long-arrow-alt-up';
-// import 'vue-awesome/icons/check';
-// import 'vue-awesome/icons/microphone';
-// import 'vue-awesome/icons/headphones';
-// import 'vue-awesome/icons/search';
-// import 'vue-awesome/icons/arrow-right';
 import ScaleLoader from 'vue-spinner/src/ScaleLoader.vue';
 import clientAuth from './client-auth.vue';
 import clientCreate from './client-create.vue';
