@@ -6,6 +6,7 @@
 # Project
 build/
 dist/
+package-lock.json
 
 # Node
 logs
