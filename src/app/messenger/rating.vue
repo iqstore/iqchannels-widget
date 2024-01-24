@@ -234,6 +234,17 @@
   cursor: pointer;
   transition: 0.5s ease;
 
+  &.button_one_of_list {
+    background-color: white;
+    border: 1px #2EB8FE solid;
+    color: #2EB8FE;
+
+    &:hover {
+      background-color: #3cbdff;
+      color: white;
+    }
+  }
+
   &.button_active {
     background-color: #2EB8FE;
     color: white;
@@ -318,11 +329,11 @@
                 .buttons-one-of-list.m-b(v-for="(answer, i) in poll.Questions[index].Answers",
                     @click.prevent="setPollVariant(answer)"
                 )
-                    button.button(@click.prevent="setPollVariant(answer)", :class="{'button_active': answer.Id === pollResult[index].RatingPollAnswerId }") {{ answer.Text }}
+                    button.button.button_one_of_list(@click.prevent="setPollVariant(answer)", :class="{'button_active': answer.Id === pollResult[index].RatingPollAnswerId }") {{ answer.Text }}
             .fcr.mt(v-if="poll.Questions[index].Type === 'fcr'")
               .buttons-fcr.mt
-                button.button(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])", :class="{'button_active': poll.Questions[index].Answers[0].Id === pollResult[index].RatingPollAnswerId}") {{ poll.Questions[index].Answers[0].Text }}
-                button.button(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[1])", :class="{'button_active': poll.Questions[index].Answers[1].Id === pollResult[index].RatingPollAnswerId}") {{ poll.Questions[index].Answers[1].Text }}
+                button.button.button_one_of_list(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])", :class="{'button_active': poll.Questions[index].Answers[0].Id === pollResult[index].RatingPollAnswerId}") {{ poll.Questions[index].Answers[0].Text }}
+                button.button.button_one_of_list(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[1])", :class="{'button_active': poll.Questions[index].Answers[1].Id === pollResult[index].RatingPollAnswerId}") {{ poll.Questions[index].Answers[1].Text }}
 
             .input(v-if="poll.Questions[index].Type === 'input'")
                 textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
