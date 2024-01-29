@@ -315,7 +315,7 @@
         .pending(v-if="rating.State === 'poll' && !start && this.poll")
             .title.mt Желаете пройти опрос?
             .buttons.mt
-                .ignore(@click="finishRating")
+                .ignore(@click="ignoreRating")
                     | Нет
                 .submit(@click="startPoll")
                     | Да
