@@ -333,7 +333,7 @@ widget.setAndroidToken(tokenString);
 
 Зависимости:
 - Make.
-- Node 10.+.
+- Node 16.+.
 - Npm.
 
 Установка зависимостей:

@@ -648,7 +648,6 @@ export default {
   data: function () {
     return {
       swipeRange: 100,
-      audioMessagePlayingId: null,
       showImageModal: false,
       modalImageMsg: null,
     }
@@ -792,12 +791,7 @@ export default {
       if (msg.My) {
         return;
       }
-      if (this.audioMessagePlayingId) {
-        const playing = document.getElementById(this.audioMessagePlayingId);
-        playing.pause();
-      }
       const elId = "audio-track-" + msg.Id;
-      this.audioMessagePlayingId = elId;
       const track = document.getElementById(elId);
       // listen for ended event and set listened flag
       track.onended = () => {

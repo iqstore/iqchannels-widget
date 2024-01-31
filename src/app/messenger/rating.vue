@@ -55,7 +55,6 @@
     svg {
       width: 28px;
       height: 34px;
-
     }
 
     .star-background, .star-outline {
@@ -63,22 +62,18 @@
       position:absolute;
       text-align:center;
       width: 100%;
-
     }
 
     .star-background {
       color: #ffffff;
-
     }
 
     .star-outline {
       color: #2EB8FE;
-
     }
 
     &:hover {
       cursor:pointer;
-
     }
 
     &:hover, &.star-selected {
@@ -302,7 +297,7 @@
     .pending(v-if="rating.State === 'poll' && !start && this.poll")
         .title.mt Желаете пройти опрос?
         .buttons.mt
-            .ignore(@click="finishRating") Нет
+            .ignore(@click="ignoreRating") Нет
             .submit(@click="startPoll") Да
 
     .pending(v-if="start")
