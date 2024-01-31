@@ -29,8 +29,6 @@ module.exports = webpackMerge.merge(commonConfig, {
     client: {
       overlay: false
     },
-    hot: true,
-    open: true,
     compress: true,
     host: '0.0.0.0',
     port: process.env.PORT,

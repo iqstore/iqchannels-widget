@@ -197,6 +197,11 @@ module.exports = {
       'process.env': {
         'ENV': JSON.stringify(process.env.NODE_ENV || process.env.ENV || 'development')
       }
+    }),
+    new webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true
     })
   ]
 };
