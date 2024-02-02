@@ -531,8 +531,7 @@ export default {
     appendMessages(messages) {
       if (messages.length > 0) {
         const last = messages[messages.length - 1];
-        console.log("appending last message", last);
-        if (last.DisableFreeText) {
+        if (last.DisableFreeText && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null) {
           this.disableFreeText = true;
         } else{
           this.disableFreeText = false;
@@ -625,11 +624,8 @@ export default {
             group.Messages[i] = message;
             if (i === group.Messages.length - 1) {
               group.LastMessage = message;
-              console.log("replace");
-              console.log("lastmessage", group.LastMessage)
               this.singleChoices = group.LastMessage.SingleChoices
-              console.log("single_choices", this.singleChoices)
-              if (group.LastMessage.DisableFreeText) {
+              if (group.LastMessage.DisableFreeText && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null) {
                 this.disableFreeText = true
               } else {
                 this.disableFreeText = false
@@ -656,11 +652,8 @@ export default {
               groups.splice(g, 1);
             } else {
               group.LastMessage = group.Messages[group.Messages.length - 1];
-              console.log("remove");
-              console.log("lastmessage", group.LastMessage)
               this.singleChoices = group.Messages[group.Messages.length - 1].SingleChoices;
-              console.log("single_choices", this.singleChoices)
-              if (group.LastMessage.DisableFreeText) {
+              if (group.LastMessage.DisableFreeText && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null) {
                 this.disableFreeText = true
               } else {
                 this.disableFreeText = false
@@ -687,11 +680,8 @@ export default {
         ) {
           group.Messages.push(message);
           group.LastMessage = message;
-          console.log("groups_append")
-          console.log("lastmessage", group.LastMessage)
           this.singleChoices = group.LastMessage.SingleChoices
-          console.log("single_choices", this.singleChoices)
-          if (group.LastMessage.DisableFreeText) {
+          if (group.LastMessage.DisableFreeText && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null) {
             this.disableFreeText = true
           } else {
             this.disableFreeText = false
