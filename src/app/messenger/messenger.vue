@@ -530,7 +530,8 @@ export default {
 
     appendMessages(messages) {
       if (messages.length > 0) {
-        const last = messages[messages.length - 1]
+        const last = messages[messages.length - 1];
+        console.log("appending last message", last);
         if (last.DisableFreeText) {
           this.disableFreeText = true;
         } else{
@@ -624,6 +625,7 @@ export default {
             group.Messages[i] = message;
             if (i === group.Messages.length - 1) {
               group.LastMessage = message;
+              console.log("replace");
               console.log("lastmessage", group.LastMessage)
               this.singleChoices = group.LastMessage.SingleChoices
               console.log("single_choices", this.singleChoices)
@@ -654,7 +656,10 @@ export default {
               groups.splice(g, 1);
             } else {
               group.LastMessage = group.Messages[group.Messages.length - 1];
+              console.log("remove");
+              console.log("lastmessage", group.LastMessage)
               this.singleChoices = group.Messages[group.Messages.length - 1].SingleChoices;
+              console.log("single_choices", this.singleChoices)
               if (group.LastMessage.DisableFreeText) {
                 this.disableFreeText = true
               } else {
@@ -682,7 +687,10 @@ export default {
         ) {
           group.Messages.push(message);
           group.LastMessage = message;
+          console.log("groups_append")
+          console.log("lastmessage", group.LastMessage)
           this.singleChoices = group.LastMessage.SingleChoices
+          console.log("single_choices", this.singleChoices)
           if (group.LastMessage.DisableFreeText) {
             this.disableFreeText = true
           } else {
