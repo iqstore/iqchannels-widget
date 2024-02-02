@@ -531,7 +531,7 @@ export default {
     appendMessages(messages) {
       if (messages.length > 0) {
         const last = messages[messages.length - 1];
-        if (last.DisableFreeText && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null) {
+        if (last.DisableFreeText) {
           this.disableFreeText = true;
         } else{
           this.disableFreeText = false;
@@ -539,6 +539,9 @@ export default {
       }
       for (let message of messages) {
         this.appendMessage(message);
+      }
+      if (!(this.groups.length && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null)) {
+        this.disableFreeText = false;
       }
     },
 
@@ -625,10 +628,13 @@ export default {
             if (i === group.Messages.length - 1) {
               group.LastMessage = message;
               this.singleChoices = group.LastMessage.SingleChoices
-              if (group.LastMessage.DisableFreeText && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null) {
+              if (group.LastMessage.DisableFreeText) {
                 this.disableFreeText = true
               } else {
                 this.disableFreeText = false
+              }
+              if (!(this.groups.length && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null)) {
+                this.disableFreeText = false;
               }
             }
             return true;
@@ -653,10 +659,13 @@ export default {
             } else {
               group.LastMessage = group.Messages[group.Messages.length - 1];
               this.singleChoices = group.Messages[group.Messages.length - 1].SingleChoices;
-              if (group.LastMessage.DisableFreeText && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null) {
+              if (group.LastMessage.DisableFreeText) {
                 this.disableFreeText = true
               } else {
                 this.disableFreeText = false
+              }
+              if (!(this.groups.length && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null)) {
+                this.disableFreeText = false;
               }
             }
             return true;
@@ -681,10 +690,13 @@ export default {
           group.Messages.push(message);
           group.LastMessage = message;
           this.singleChoices = group.LastMessage.SingleChoices
-          if (group.LastMessage.DisableFreeText && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null) {
+          if (group.LastMessage.DisableFreeText) {
             this.disableFreeText = true
           } else {
             this.disableFreeText = false
+          }
+          if (!(this.groups.length && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null)) {
+            this.disableFreeText = false;
           }
           return;
         }
