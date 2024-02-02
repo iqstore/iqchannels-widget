@@ -624,7 +624,9 @@ export default {
             group.Messages[i] = message;
             if (i === group.Messages.length - 1) {
               group.LastMessage = message;
+              console.log("lastmessage", group.LastMessage)
               this.singleChoices = group.LastMessage.SingleChoices
+              console.log("single_choices", this.singleChoices)
               if (group.LastMessage.DisableFreeText) {
                 this.disableFreeText = true
               } else {
