@@ -540,7 +540,7 @@ export default {
       for (let message of messages) {
         this.appendMessage(message);
       }
-      if (!(this.groups.length && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null)) {
+      if (!this.groups[this.groups.length -1].LastMessage.SingleChoices || !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
         this.disableFreeText = false;
       }
     },
@@ -633,7 +633,7 @@ export default {
               } else {
                 this.disableFreeText = false
               }
-              if (!(this.groups.length && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null)) {
+              if (!group.LastMessage.SingleChoices || !group.LastMessage.SingleChoices.length) {
                 this.disableFreeText = false;
               }
             }
@@ -664,7 +664,7 @@ export default {
               } else {
                 this.disableFreeText = false
               }
-              if (!(this.groups.length && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null)) {
+              if (!group.LastMessage.SingleChoices || !group.LastMessage.SingleChoices.length) {
                 this.disableFreeText = false;
               }
             }
@@ -695,7 +695,7 @@ export default {
           } else {
             this.disableFreeText = false
           }
-          if (!(this.groups.length && this.groups[this.groups.length -1].LastMessage.SingleChoices !== null)) {
+          if (!group.LastMessage.SingleChoices || !group.LastMessage.SingleChoices.length) {
             this.disableFreeText = false;
           }
           return;
