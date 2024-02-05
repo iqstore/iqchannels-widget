@@ -540,9 +540,7 @@ export default {
       for (let message of messages) {
         this.appendMessage(message);
       }
-      if (!this.groups[this.groups.length -1].LastMessage.SingleChoices || !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
-        this.disableFreeText = false;
-      }
+      this.enableFreeText();
     },
 
     appendMessage(message) {
@@ -633,9 +631,7 @@ export default {
               } else {
                 this.disableFreeText = false
               }
-              if (!this.groups[this.groups.length -1].LastMessage.SingleChoices || !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
-                this.disableFreeText = false;
-              }
+              this.enableFreeText();
             }
             return true;
           }
@@ -664,9 +660,7 @@ export default {
               } else {
                 this.disableFreeText = false
               }
-              if (!this.groups[this.groups.length -1].LastMessage.SingleChoices || !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
-                this.disableFreeText = false;
-              }
+              this.enableFreeText();
             }
             return true;
           }
@@ -695,9 +689,7 @@ export default {
           } else {
             this.disableFreeText = false
           }
-          if (!this.groups[this.groups.length -1].LastMessage.SingleChoices || !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
-            this.disableFreeText = false;
-          }
+          this.enableFreeText();
           return;
         }
       }
@@ -729,6 +721,7 @@ export default {
         group.InfoRequest = message.InfoRequest;
       }
       groups.push(group);
+      this.enableFreeText();
     },
 
     sendGreeting() {
@@ -776,6 +769,12 @@ export default {
           })
             }
       })
+    },
+
+    enableFreeText() {
+      if (!this.groups[this.groups.length -1].LastMessage.SingleChoices || !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
+        this.disableFreeText = false;
+      }
     },
 
     getNextLocalId() {
