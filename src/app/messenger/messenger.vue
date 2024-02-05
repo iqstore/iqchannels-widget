@@ -772,7 +772,9 @@ export default {
     },
 
     enableFreeText() {
-      if (!this.groups[this.groups.length -1].LastMessage.SingleChoices || !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
+      if (!this.groups.length ||
+          !this.groups[this.groups.length -1].LastMessage.SingleChoices ||
+          !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
         this.disableFreeText = false;
       }
     },
