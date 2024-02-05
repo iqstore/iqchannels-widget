@@ -633,7 +633,7 @@ export default {
               } else {
                 this.disableFreeText = false
               }
-              if (!group.LastMessage.SingleChoices || !group.LastMessage.SingleChoices.length) {
+              if (!this.groups[this.groups.length -1].LastMessage.SingleChoices || !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
                 this.disableFreeText = false;
               }
             }
@@ -664,7 +664,7 @@ export default {
               } else {
                 this.disableFreeText = false
               }
-              if (!group.LastMessage.SingleChoices || !group.LastMessage.SingleChoices.length) {
+              if (!this.groups[this.groups.length -1].LastMessage.SingleChoices || !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
                 this.disableFreeText = false;
               }
             }
@@ -695,7 +695,7 @@ export default {
           } else {
             this.disableFreeText = false
           }
-          if (!group.LastMessage.SingleChoices || !group.LastMessage.SingleChoices.length) {
+          if (!this.groups[this.groups.length -1].LastMessage.SingleChoices || !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
             this.disableFreeText = false;
           }
           return;
