@@ -1,35 +1,20 @@
 const webpackMerge = require('webpack-merge');
 const commonConfig = require('./common.js');
 const CompressionPlugin = require('compression-webpack-plugin');
-const webpack = require('webpack');
 
 module.exports = webpackMerge.merge(commonConfig, {
   mode: 'development',
-  devtool: 'source-map',
+  devtool: 'cheap-module-source-map',
   output: {
     filename: '[name].js',
     publicPath: '/'
   },
-  // historyApiFallback: {
-  //   index: '/'
-  // },
   devServer: {
-    // contentBase: path.resolve(__dirname, 'public'),
-    // historyApiFallback: true,
-    // inline: true,
-    // progress: true,
-    // stats: {
-    //   colors: true,
-    //   hash: true,
-    //   timings: true,
-    //   chunks: false,
-    //   chunkModules: false,
-    //   modules: false
-    // },
     client: {
       overlay: false
     },
-    compress: true,
+    hot: false,
+    compress: false,
     host: '0.0.0.0',
     port: process.env.PORT,
     proxy: {
@@ -40,8 +25,6 @@ module.exports = webpackMerge.merge(commonConfig, {
     }
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    // new webpack.NoErrorsPlugin(),
     new CompressionPlugin()
   ]
 });

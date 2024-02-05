@@ -19,33 +19,11 @@ module.exports = {
     'example10': './src/examples/10.js'
   },
 
-  // debug: true,
-
-  resolve: {
-    // root: path.resolve('../'),
-    alias: {
-      vue: 'vue'
-    }
-  },
-
-  optimization: {
-    splitChunks: {
-      automaticNameDelimiter: '-'
-    }
-  },
-
   module: {
     rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          compilerOptions: {
-            compatConfig: {
-              MODE: 2
-            }
-          }
-        }
+        loader: 'vue-loader'
       }, {
         test: /\.pug$/,
         oneOf: [
@@ -60,15 +38,13 @@ module.exports = {
           }
         ]
       },
-      // {
-      //   exclude: file => (
-      //     /node_modules/.test(file) && !/\.vue\.js/.test(file)
-      //   ),
-      //   test: /\.js$/,
-      //   use: {
-      //     loader: 'babel-loader'
-      //   }
-      // },
+      {
+        exclude: file => (
+          /node_modules/.test(file) && !/\.vue\.js/.test(file)
+        ),
+        test: /\.js$/,
+        loader: 'babel-loader'
+      },
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
@@ -95,8 +71,6 @@ module.exports = {
   },
 
   plugins: [
-    // new webpack.optimize.DedupePlugin(),
-    // new webpack.optimize.OccurenceOrderPlugin(),
     new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       template: 'src/main.pug',
