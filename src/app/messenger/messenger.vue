@@ -421,7 +421,7 @@ export default {
           behavior: 'smooth',
           block: 'center'
         })
-      }, 1000)
+      }, 2000);
     },
     scrollToPushMessage(msg) {
       document.getElementById(msg).scrollIntoView({
