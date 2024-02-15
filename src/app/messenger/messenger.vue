@@ -540,7 +540,7 @@ export default {
       for (let message of messages) {
         this.appendMessage(message);
       }
-      this.enableFreeText();
+      this.maybeEnableFreeText();
     },
 
     appendMessage(message) {
@@ -631,7 +631,7 @@ export default {
               } else {
                 this.disableFreeText = false
               }
-              this.enableFreeText();
+              this.maybeEnableFreeText();
             }
             return true;
           }
@@ -660,7 +660,7 @@ export default {
               } else {
                 this.disableFreeText = false
               }
-              this.enableFreeText();
+              this.maybeEnableFreeText();
             }
             return true;
           }
@@ -689,7 +689,7 @@ export default {
           } else {
             this.disableFreeText = false
           }
-          this.enableFreeText();
+          this.maybeEnableFreeText();
           return;
         }
       }
@@ -721,7 +721,7 @@ export default {
         group.InfoRequest = message.InfoRequest;
       }
       groups.push(group);
-      this.enableFreeText();
+      this.maybeEnableFreeText();
     },
 
     sendGreeting() {
@@ -771,10 +771,9 @@ export default {
       })
     },
 
-    enableFreeText() {
+    maybeEnableFreeText() {
       if (!this.groups.length ||
-          !this.groups[this.groups.length -1].LastMessage.SingleChoices ||
-          !this.groups[this.groups.length -1].LastMessage.SingleChoices.length) {
+          !this.groups[this.groups.length -1].LastMessage.DisableFreeText) {
         this.disableFreeText = false;
       }
     },
