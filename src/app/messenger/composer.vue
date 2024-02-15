@@ -653,6 +653,9 @@ export default {
     },
 
     trySendMessage(actionTitle, payload, url) {
+      if (this.disableFreeText) {
+        return;
+      }
       if (this.audioChunks.length > 0) {
         this.sendAudioMessage();
         return;
