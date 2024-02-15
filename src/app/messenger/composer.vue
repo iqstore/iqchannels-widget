@@ -789,7 +789,7 @@ export default {
       switch (type) {
         case "text":  this.$refs.text.value = data; break;
         case "image": 
-          this.$emit("file-selected", data); 
+          this.currentFile = data;
           break;
         default: break;
       }
