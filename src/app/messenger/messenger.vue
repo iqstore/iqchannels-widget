@@ -317,6 +317,7 @@ export default {
       systemChat: false,
       singleChoices: [],
       disableFreeText: false,
+      shouldBeScrolledBottom: true
     };
   },
 
@@ -367,7 +368,7 @@ export default {
         this.searching = true;
       }
       this.queryMessages(newValue);
-      if (newValue === "") {
+      if (newValue === "" && this.shouldBeScrolledBottom) {
         setTimeout(() => {
         this.scrollToLastMessage();
 
@@ -412,18 +413,19 @@ export default {
     },
 
     scrollToFoundMessage(id) {
+      this.shouldBeScrolledBottom = false;
       this.searching = false;
       this.search = "";
       client.channelMessages(this.channel, this.chatType, null, id ).then(messages => {
         this.appendMessages(messages);
       });
       setTimeout(() => {
-
         document.getElementById(id).scrollIntoView({
           behavior: 'smooth',
           block: 'center'
         })
-      }, 1000)
+        this.shouldBeScrolledBottom = true;
+      }, 2000);
     },
     scrollToPushMessage(msg) {
       document.getElementById(msg).scrollIntoView({
@@ -532,7 +534,7 @@ export default {
 
     appendMessages(messages) {
       if (messages.length > 0) {
-        const last = messages[messages.length - 1]
+        const last = messages[messages.length - 1];
         if (last.DisableFreeText) {
           this.disableFreeText = true;
         } else{
@@ -542,6 +544,7 @@ export default {
       for (let message of messages) {
         this.appendMessage(message);
       }
+      this.maybeEnableFreeText();
     },
 
     appendMessage(message) {
@@ -632,6 +635,7 @@ export default {
               } else {
                 this.disableFreeText = false
               }
+              this.maybeEnableFreeText();
             }
             return true;
           }
@@ -660,6 +664,7 @@ export default {
               } else {
                 this.disableFreeText = false
               }
+              this.maybeEnableFreeText();
             }
             return true;
           }
@@ -688,6 +693,7 @@ export default {
           } else {
             this.disableFreeText = false
           }
+          this.maybeEnableFreeText();
           return;
         }
       }
@@ -719,6 +725,7 @@ export default {
         group.InfoRequest = message.InfoRequest;
       }
       groups.push(group);
+      this.maybeEnableFreeText();
     },
 
     sendGreeting() {
@@ -766,6 +773,13 @@ export default {
           })
             }
       })
+    },
+
+    maybeEnableFreeText() {
+      if (!this.groups.length ||
+          !this.groups[this.groups.length -1].LastMessage.DisableFreeText) {
+        this.disableFreeText = false;
+      }
     },
 
     getNextLocalId() {

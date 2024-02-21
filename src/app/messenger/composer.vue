@@ -324,7 +324,7 @@
           button.audio-msg-track-btn-stop(aria-label="Стоп", v-if="recording && !recordingStopped" @click="stopRecording()")
           div(id="waveform")
         .textarea(v-if="!recording && !recordingStopped")
-          textarea(ref="text", placeholder="Сообщение..." style="resize: none;" @keydown.enter="handleEnterPressed" @input="handleChange" @paste.prevent="paste")
+          textarea(ref="text", placeholder="Сообщение..." style="resize: none;" @keydown.enter="handleEnterPressed" :disabled="disableFreeText" @input="handleChange" @paste.prevent="paste")
         a.button.csm-btn(href="#" @click.prevent="trySendMessage" title="Отправить сообщение" :class="getClass()")
           svg(xmlns="http://www.w3.org/2000/svg" height="16" width="10" viewBox="0 0 320 512")
             path(d="M318 177.5c3.8-8.8 2-19-4.6-26l-136-144C172.9 2.7 166.6 0 160 0s-12.9 2.7-17.4 7.5l-136 144c-6.6 7-8.4 17.2-4.6 26S14.4 192 24 192H96l0 288c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32l0-288h72c9.6 0 18.2-5.7 22-14.5z")
@@ -677,6 +677,9 @@ export default {
     },
 
     trySendMessage(actionTitle, payload, url) {
+      if (this.disableFreeText) {
+        return;
+      }
       if (this.audioChunks.length > 0) {
         this.sendAudioMessage();
         return;
@@ -788,7 +791,7 @@ export default {
 
       switch (type) {
         case "text":  this.$refs.text.value = data; break;
-        case "image": 
+        case "image":
           this.currentFile = data;
           break;
         default: break;
@@ -797,10 +800,10 @@ export default {
 
     getClipboardData(pasteEvent) {
       let data = pasteEvent.clipboardData.getData("text")
-      if (data && data.length) return {type: "text", data}; 
+      if (data && data.length) return {type: "text", data};
 
       data = pasteEvent.clipboardData.files[0]
-      if (data) return {type: "image", data}; 
+      if (data) return {type: "image", data};
 
       return {type, data}
     }
