@@ -315,6 +315,7 @@ export default {
       systemChat: false,
       singleChoices: [],
       disableFreeText: false,
+      shouldBeScrolledBottom: true
     };
   },
 
@@ -365,7 +366,7 @@ export default {
         this.searching = true;
       }
       this.queryMessages(newValue);
-      if (newValue === "") {
+      if (newValue === "" && this.shouldBeScrolledBottom) {
         setTimeout(() => {
         this.scrollToLastMessage();
 
@@ -410,17 +411,18 @@ export default {
     },
 
     scrollToFoundMessage(id) {
+      this.shouldBeScrolledBottom = false;
       this.searching = false;
       this.search = "";
       client.channelMessages(this.channel, this.chatType, null, id ).then(messages => {
         this.appendMessages(messages);
       });
       setTimeout(() => {
-
         document.getElementById(id).scrollIntoView({
           behavior: 'smooth',
           block: 'center'
         })
+        this.shouldBeScrolledBottom = true;
       }, 2000);
     },
     scrollToPushMessage(msg) {
