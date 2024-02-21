@@ -3,19 +3,19 @@ const webpackMerge = require('webpack-merge');
 const commonConfig = require('./common.js');
 const CompressionPlugin = require('compression-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = webpackMerge.merge(commonConfig, {
   devtool: 'source-map',
   mode: 'production',
-  module: {
-    rules: [
-      {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
-      }
-    ]
-  },
+  // module: {
+  //   rules: [
+  //     {
+  //       test: /\.css$/i,
+  //       use: [MiniCssExtractPlugin.loader, 'css-loader']
+  //     }
+  //   ]
+  // },
   output: {
     path: path.join(__dirname, '../build'),
     publicPath: '/widget/',
@@ -34,7 +34,7 @@ module.exports = webpackMerge.merge(commonConfig, {
     ]
   },
   plugins: [
-    new CompressionPlugin(),
-    new MiniCssExtractPlugin()
+    new CompressionPlugin()
+    // new MiniCssExtractPlugin()
   ]
 });
