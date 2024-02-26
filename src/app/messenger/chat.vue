@@ -1,11 +1,10 @@
 <style lang="sass" scoped>
     .messages {
-        padding: 0 8px;
         height: inherit;
     }
 
     .message {
-        margin-bottom: 4px;
+        margin: 2px 8px;
         padding: 0.7rem 1rem 0.7rem 1rem;
         clear: both;
         max-width: 75%;
@@ -148,7 +147,6 @@
             .message {
                 float: right;
                 margin-left: auto;
-                margin-right: 0;
                 background-color: #DCF5C0;
                 color: #488445;
             }
@@ -220,7 +218,6 @@
 
     .body {
       width: 100%;
-      margin-left: 10px;
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
@@ -450,6 +447,23 @@
     }
   }
 }
+
+.scroll_msg_animation {
+  animation: 1.5s afterScrollAnimate ease-out forwards;
+}
+
+@keyframes afterScrollAnimate {
+  0% {
+    background: none;
+  }
+  50% {
+    background: var(--color-after-scroll-animation);
+  }
+  100% {
+    background: none;
+  }
+}
+
 </style>
 
 <template lang="pug">
@@ -491,6 +505,7 @@
                   span(v-if="group.Client") {{ group.Client.Name }}
                 .message-wrapper(v-for="(msg, index) in group.Messages",
                   v-hammer:pan="(event)=> swipeRight(event, msg)",
+                  :class="{ scroll_msg_animation: animateMsgId === msg.Id }"
                   :id="msg.Id")
 
                   .message.bubble(
@@ -648,6 +663,7 @@ export default {
       swipeRange: 100,
       showImageModal: false,
       modalImageMsg: null,
+      animateMsgId: 0,
     }
   },
 
@@ -819,6 +835,13 @@ export default {
           this.resetSwipeRight(closest);
         }
       }
+    },
+
+    animateMsgAfterScroll(msgId) {
+      this.animateMsgId = +msgId;
+      setTimeout(() => {
+        this.animateMsgId = 0;
+      }, 3500);
     },
 
     getTitle() {
