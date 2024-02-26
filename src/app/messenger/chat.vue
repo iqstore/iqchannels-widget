@@ -117,6 +117,7 @@
             .author {
                 float: left;
                 margin-top: 8px;
+                margin-left: 58px;
             }
 
             .message {
@@ -212,8 +213,20 @@
         background-color: rgba(1, 138, 43, 0.4);
     }
 
+    .message-inner {
+      display: flex;
+    }
+
     .avatar {
-      margin:auto auto 0;
+      margin-left: 8px;
+      display: flex;
+      align-items: end;
+    }
+
+    .avatar-empty {
+      width: 40px;
+      height: 40px;
+      margin-left: 8px;
     }
 
     .body {
@@ -267,6 +280,7 @@
 
     .message-wrapper {
       display: flex;
+      flex-flow: column;
       transition: all 0.3s;
       font-size: 14px;
     }
@@ -448,16 +462,32 @@
   }
 }
 
-.scroll_msg_animation {
-  animation: 1.5s afterScrollAnimate ease-out forwards;
+.scroll_msg_animation_client {
+  animation: 1.5s afterScrollAnimateClient ease-out forwards;
 }
 
-@keyframes afterScrollAnimate {
+@keyframes afterScrollAnimateClient {
   0% {
     background: none;
   }
   50% {
-    background: var(--color-after-scroll-animation);
+    background: var(--color-after-scroll-animation_client);
+  }
+  100% {
+    background: none;
+  }
+}
+
+.scroll_msg_animation_user {
+  animation: 1.5s afterScrollAnimateUser ease-out forwards;
+}
+
+@keyframes afterScrollAnimateUser {
+  0% {
+    background: none;
+  }
+  50% {
+    background: var(--color-after-scroll-animation_user);
   }
   100% {
     background: none;
@@ -495,120 +525,123 @@
                 span.title {{ group.LastMessage.CreatedAt | humanDate }}
 
             .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
-
-              .avatar(v-if="group.User")
-                avatar(v-bind:user="group.User")
-
               .body()
-                .author
-                  span(v-if="group.User") {{ group.User.DisplayName }}
-                  span(v-if="group.Client") {{ group.Client.Name }}
                 .message-wrapper(v-for="(msg, index) in group.Messages",
                   v-hammer:pan="(event)=> swipeRight(event, msg)",
-                  :class="{ scroll_msg_animation: animateMsgId === msg.Id }"
+                  :class="{ scroll_msg_animation_client: msg.My && animateMsgId === msg.Id, scroll_msg_animation_user: !msg.My && animateMsgId === msg.Id }"
                   :id="msg.Id")
 
-                  .message.bubble(
-                    v-touch:longtap="longtapEvent(msg)",
-                    :title="getTitle()",
+                  .author(v-if="group.Messages[0].Id === msg.Id")
+                    span(v-if="group.User") {{ group.User.DisplayName }}
+                    span(v-if="group.Client") {{ group.Client.Name }}
 
-                    :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
+                  .message-inner
+                    .avatar(v-if="group.User && group.Messages[group.Messages.length - 1].Id === msg.Id")
+                      avatar(v-bind:user="group.User")
 
-                    .reply-icon
-                      svg(width='14' height='12' viewbox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg')
-                        path(d='M0.168205 5.31043L5.31015 0.16848C5.67006 -0.191429 6.28546 0.0634719 6.28546 0.572471V2.8604C9.55786 2.99642 12.4442 5.22457 13.359 8.39557C13.6644 9.45406 13.7406 10.3252 13.7166 11.2627C13.7135 11.3728 13.7128 11.4046 13.7128 11.4277C13.7128 12.0082 12.9474 12.2187 12.6505 11.7199C12.014 10.6504 11.291 9.82404 10.4991 9.21322C9.06731 8.10896 7.57668 7.78917 6.28549 7.91831V10.8564C6.28549 11.3654 5.67009 11.6203 5.31018 11.2604L0.168232 6.11841C-0.0549068 5.8953 -0.0549078 5.53354 0.168205 5.31043ZM5.14283 9.47707V7.4284C5.14283 7.16667 5.32068 6.93842 5.57446 6.87441C5.64398 6.85687 5.75946 6.83389 5.91613 6.81198C7.5345 6.58555 9.41461 6.93378 11.1969 8.3084C11.6353 8.64653 12.0529 9.03949 12.4473 9.48957L12.4385 9.44383C12.393 9.20926 12.3346 8.96702 12.2611 8.71231C11.4456 5.88536 8.77869 3.93434 5.82534 3.998C5.77542 3.99888 5.75699 3.99928 5.73388 4.00009C5.41082 4.01123 5.14285 3.75236 5.14285 3.42909V1.95177L1.38021 5.71442L5.14283 9.47707Z' fill='#C6E39F')
+                    .avatar-empty(v-if="group.User && group.Messages[group.Messages.length - 1].Id !== msg.Id")
 
-                    .reply(v-if="msg.ReplyToMessageId", @click="goToMessage(msg)", v-for="replyMsg of getReplyMsg(msg)" v-bind:class="{ 'reply-client': msg.Author === 'client', 'reply-user': msg.Author === 'user' }" )
-                      .reply-author(v-bind:class="{ 'reply-author-client': msg.Author === 'client', 'reply-author-user': msg.Author === 'user' }") {{ getAuthorAndText(msg).author }}
-                      div(v-if="replyMsg.Payload === 'carousel' && !replyMsg.File")
-                        pre.text()
-                        button.img-button(
-                          v-for="action of replyMsg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-                      div(v-else-if="replyMsg.File && replyMsg.File.Type == 'image'")
-                        a.image(
-                          v-if="docWidth > 1024",
-                          v-bind:href="replyMsg.File.URL",
-                          target="_blank",
-                          @click="clickFile(replyMsg, $event)"
-                        )
-                          img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                        .image(
-                          v-else-if="docWidth <= 1024",
-                          @click="clickFileImage(replyMsg, $event)"
-                        )
-                          img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                        button.img-button(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'",
-                          v-for="action of replyMsg.Actions") {{ action.Title }}
-                      a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type == 'file'"
-                          v-bind:href="replyMsg.File.URL"
-                          target="_blank"
-                          @click="clickFile(replyMsg, $event)")
-                        span.file
-                          .filename(v-bind:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
-                      audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
-                        :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
-                      .reply-text {{ getAuthorAndText(msg).text }}
+                    .message.bubble(
+                      v-touch:longtap="longtapEvent(msg)",
+                      :title="getTitle()",
 
-                    .message-data
+                      :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
 
-                      pre.text(v-if="isTextPayload(msg.Payload)" v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
-                      .file.text(v-if="msg.Upload")
-                        div(v-if="msg.Uploading")
-                          .filename {{ msg.Upload.name }}
-                          .filesize {{ msg.Upload.size | humanSize }} - Загружено {{ msg.UploadProgress }}%
-                          a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
-                        div(v-if="msg.UploadError")
-                          .filename {{ msg.Upload.name }}
-                          .filesize {{ msg.Upload.size | humanSize }}
-                          .error {{ msg.UploadError }}
-                          a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
-                          a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
-                      div(v-if="msg.Payload === 'carousel' && !msg.File")
-                        pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
-                        button.img-button(
-                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-                      div(v-else-if="(msg.File && msg.File.Type == 'image') || msg.Payload === 'card'")
-                        a.image(
-                          v-if="docWidth > 1024 && msg.File",
-                          v-bind:href="msg.File.URL",
-                          target="_blank",
-                          @click="clickFile(msg, $event)"
-                        )
-                          img.bubble(v-if="msg.File && msg.File.Type === 'image'" :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                        .image(
-                          v-else-if="docWidth <= 1024",
-                          @click="clickFileImage(msg, $event)"
-                        )
-                          img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                        div.img-caption
-                          pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
-                        button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
-                          v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-                      div(v-else-if="msg.File && msg.File.Type == 'file'")
-                        a.message_file(
-                            v-bind:href="msg.File.URL"
+                      .reply-icon
+                        svg(width='14' height='12' viewbox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg')
+                          path(d='M0.168205 5.31043L5.31015 0.16848C5.67006 -0.191429 6.28546 0.0634719 6.28546 0.572471V2.8604C9.55786 2.99642 12.4442 5.22457 13.359 8.39557C13.6644 9.45406 13.7406 10.3252 13.7166 11.2627C13.7135 11.3728 13.7128 11.4046 13.7128 11.4277C13.7128 12.0082 12.9474 12.2187 12.6505 11.7199C12.014 10.6504 11.291 9.82404 10.4991 9.21322C9.06731 8.10896 7.57668 7.78917 6.28549 7.91831V10.8564C6.28549 11.3654 5.67009 11.6203 5.31018 11.2604L0.168232 6.11841C-0.0549068 5.8953 -0.0549078 5.53354 0.168205 5.31043ZM5.14283 9.47707V7.4284C5.14283 7.16667 5.32068 6.93842 5.57446 6.87441C5.64398 6.85687 5.75946 6.83389 5.91613 6.81198C7.5345 6.58555 9.41461 6.93378 11.1969 8.3084C11.6353 8.64653 12.0529 9.03949 12.4473 9.48957L12.4385 9.44383C12.393 9.20926 12.3346 8.96702 12.2611 8.71231C11.4456 5.88536 8.77869 3.93434 5.82534 3.998C5.77542 3.99888 5.75699 3.99928 5.73388 4.00009C5.41082 4.01123 5.14285 3.75236 5.14285 3.42909V1.95177L1.38021 5.71442L5.14283 9.47707Z' fill='#C6E39F')
+
+                      .reply(v-if="msg.ReplyToMessageId", @click="goToMessage(msg)", v-for="replyMsg of getReplyMsg(msg)" v-bind:class="{ 'reply-client': msg.Author === 'client', 'reply-user': msg.Author === 'user' }" )
+                        .reply-author(v-bind:class="{ 'reply-author-client': msg.Author === 'client', 'reply-author-user': msg.Author === 'user' }") {{ getAuthorAndText(msg).author }}
+                        div(v-if="replyMsg.Payload === 'carousel' && !replyMsg.File")
+                          pre.text()
+                          button.img-button(
+                            v-for="action of replyMsg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+                        div(v-else-if="replyMsg.File && replyMsg.File.Type == 'image'")
+                          a.image(
+                            v-if="docWidth > 1024",
+                            v-bind:href="replyMsg.File.URL",
+                            target="_blank",
+                            @click="clickFile(replyMsg, $event)"
+                          )
+                            img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                          .image(
+                            v-else-if="docWidth <= 1024",
+                            @click="clickFileImage(replyMsg, $event)"
+                          )
+                            img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                          button.img-button(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'",
+                            v-for="action of replyMsg.Actions") {{ action.Title }}
+                        a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type == 'file'"
+                            v-bind:href="replyMsg.File.URL"
                             target="_blank"
-                            @click="clickFile(msg, $event)")
-                          svg.message-file(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" v-bind:class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
-                            path(d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z")
+                            @click="clickFile(replyMsg, $event)")
                           span.file
-                            .filename(v-bind:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
-                            .filesize(v-bind:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ msg.File.Size | humanSize }}
-                        div.img-caption(v-if="msg.Text")
-                          pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
-                      audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
-                        :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
-                      div
+                            .filename(v-bind:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
+                        audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
+                          :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
+                        .reply-text {{ getAuthorAndText(msg).text }}
 
-                      .time
-                        span.listened-flag(v-if="msg.Listened" title="Прослушано")
-                          icon(name="headphones")
-                        span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
-                        span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
-                        span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
+                      .message-data
+
+                        pre.text(v-if="isTextPayload(msg.Payload)" v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
+                        .file.text(v-if="msg.Upload")
+                          div(v-if="msg.Uploading")
+                            .filename {{ msg.Upload.name }}
+                            .filesize {{ msg.Upload.size | humanSize }} - Загружено {{ msg.UploadProgress }}%
+                            a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
+                          div(v-if="msg.UploadError")
+                            .filename {{ msg.Upload.name }}
+                            .filesize {{ msg.Upload.size | humanSize }}
+                            .error {{ msg.UploadError }}
+                            a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
+                            a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
+                        div(v-if="msg.Payload === 'carousel' && !msg.File")
+                          pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
+                          button.img-button(
+                            v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+                        div(v-else-if="(msg.File && msg.File.Type == 'image') || msg.Payload === 'card'")
+                          a.image(
+                            v-if="docWidth > 1024 && msg.File",
+                            v-bind:href="msg.File.URL",
+                            target="_blank",
+                            @click="clickFile(msg, $event)"
+                          )
+                            img.bubble(v-if="msg.File && msg.File.Type === 'image'" :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                          .image(
+                            v-else-if="docWidth <= 1024",
+                            @click="clickFileImage(msg, $event)"
+                          )
+                            img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                          div.img-caption
+                            pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
+                          button.img-button(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'",
+                            v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+                        div(v-else-if="msg.File && msg.File.Type == 'file'")
+                          a.message_file(
+                              v-bind:href="msg.File.URL"
+                              target="_blank"
+                              @click="clickFile(msg, $event)")
+                            svg.message-file(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" v-bind:class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
+                              path(d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z")
+                            span.file
+                              .filename(v-bind:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
+                              .filesize(v-bind:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ msg.File.Size | humanSize }}
+                          div.img-caption(v-if="msg.Text")
+                            pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
+                        audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
+                          :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
+                        div
+
+                        .time
+                          span.listened-flag(v-if="msg.Listened" title="Прослушано")
+                            icon(name="headphones")
+                          span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
+                          span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
+                          span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
 
 
-                        scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
+                          scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
                 div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
                   div.choice_box_dropdown
                     div(style="display:flex;justify-content:flex-end")
