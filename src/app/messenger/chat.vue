@@ -293,6 +293,7 @@
       border-color: #CCCCCC;
       }
     .choice_box_dropdown{
+    margin-left: 58px;
     display: flex;
     font-size: 14px;
     justify-content: flex-start;
