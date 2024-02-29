@@ -9,8 +9,8 @@ main: dist
 
 clean:
 	rm -rf build/* \
-	rm -rf package-lock.json \
-  	rm -rf node_modules/
+	rm -rf ./package-lock.json \
+  	rm -rf ./node_modules/
 
 install:
 	npm install --legacy-peer-deps
