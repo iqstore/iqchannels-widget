@@ -8,9 +8,9 @@ import App from './App.vue';
 import { VueHammer } from '../lib/vue3-hammer';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faFile } from '@fortawesome/free-solid-svg-icons';
+import { faFile, faFileExcel, faFilePdf, faFileWord } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faFile);
+library.add(faFile, faFileWord, faFilePdf, faFileExcel);
 
 const app = createApp(App);
 

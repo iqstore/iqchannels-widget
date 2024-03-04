@@ -628,7 +628,7 @@
                           :href="msg.File.URL"
                           target="_blank"
                           @click="clickFile(msg, $event)")
-                        font-awesome-icon(:icon="['fas', 'fa-file']", :class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
+                        font-awesome-icon(:icon="getIcon(msg)", :class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
                         span.file
                           .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
                           .filesize(:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ humanSize(msg.File.Size) }}
@@ -892,12 +892,15 @@ export default {
       return "Сообщение"
     },
 
-    getSvgPathByFileType(msg) {
-        const splittedPath = msg.Path.split(".");
+    getIcon(msg) {
+      const splittedPath = msg.File.Path.split(".");
         const fileType = splittedPath[splittedPath.length - 1];
-        switch(fileType) {
-          default: return "M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
-        }
+
+        if (fileType.includes("doc")) return ['fas', 'fa-file-word'];
+        if (fileType.includes("xls")) return ['fas', 'fa-file-excel'];
+        if (fileType.includes("pdf")) return ['fas', 'fa-file-pdf'];
+
+        return ['fas', 'fa-file'];
     },
 
     resetSwipeRight(closest) {
