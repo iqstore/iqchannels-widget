@@ -366,10 +366,14 @@
   text-decoration: none;
 
   &-client {
-    fill: #92BD83;
+    width: 32px !important;
+    height: 32px !important;
+    color: #92BD83 !important
   }
   &-user {
-    fill: #ABB8C0;
+    width: 32px !important;
+    height: 32px !important;
+    color: #ABB8C0 !important
   }
 
   svg {
@@ -380,7 +384,6 @@
     width: 24px !important;
     height: 24px !important;
   }
-
   svg.message-file {
     width: 32px !important;
     height: 32px !important;
@@ -624,8 +627,7 @@
                           :href="msg.File.URL"
                           target="_blank"
                           @click="clickFile(msg, $event)")
-                        svg.message-file(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" v-bind:class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
-                          path(d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z")
+                        font-awesome-icon(:icon="getIcon(msg)", :class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
                         span.file
                           .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
                           .filesize(:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ humanSize(msg.File.Size) }}
@@ -887,6 +889,17 @@ export default {
         return "Перейти к сообщению"
       }
       return "Сообщение"
+    },
+
+    getIcon(msg) {
+      const splittedPath = msg.File.Path.split(".");
+        const fileType = splittedPath[splittedPath.length - 1];
+
+        if (fileType.includes("doc")) return ['fas', 'fa-file-word'];
+        if (fileType.includes("xls")) return ['fas', 'fa-file-excel'];
+        if (fileType.includes("pdf")) return ['fas', 'fa-file-pdf'];
+
+        return ['fas', 'fa-file'];
     },
 
     resetSwipeRight(closest) {

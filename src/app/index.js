@@ -6,6 +6,11 @@ import messenger from './messenger/messenger.vue';
 import Vue3TouchEvents from 'vue3-touch-events';
 import App from './App.vue';
 import { VueHammer } from '../lib/vue3-hammer';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faFile, faFileExcel, faFilePdf, faFileWord } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faFile, faFileWord, faFilePdf, faFileExcel);
 
 const app = createApp(App);
 
@@ -22,5 +27,6 @@ app.component('scale-loader', ScaleLoader);
 app.component('client-auth', clientAuth);
 app.component('client-create', clientCreate);
 app.component('messenger', messenger);
+app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.mount('#app');
