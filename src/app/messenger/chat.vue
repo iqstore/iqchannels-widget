@@ -371,8 +371,8 @@
     color: #92BD83 !important
   }
   &-user {
-    width: 24px !important;
-    height: 24px !important;
+    width: 32px !important;
+    height: 32px !important;
     color: #ABB8C0 !important
   }
 
@@ -384,7 +384,6 @@
     width: 24px !important;
     height: 24px !important;
   }
-
   svg.message-file {
     width: 32px !important;
     height: 32px !important;
