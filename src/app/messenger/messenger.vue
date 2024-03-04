@@ -191,6 +191,7 @@ border-radius: 3px;
 
     #chat
       chat(
+        ref="chat",
         :mode="mode",
         :opened="opened",
         :groups="groups",
@@ -420,11 +421,13 @@ export default {
         this.appendMessages(messages);
       });
       setTimeout(() => {
-        document.getElementById(id).scrollIntoView({
+        const msgElement = document.getElementById(id);
+        msgElement.scrollIntoView({
           behavior: 'smooth',
           block: 'center'
         })
         this.shouldBeScrolledBottom = true;
+        this.animateMsgAfterScroll(id);
       }, 2000);
     },
     scrollToPushMessage(msg) {
@@ -456,6 +459,10 @@ export default {
       }
 
       this.$refs.composer.appendText(text);
+    },
+
+    animateMsgAfterScroll(msgId) {
+      this.$refs.chat.animateMsgAfterScroll(msgId);
     },
 
     // Private
