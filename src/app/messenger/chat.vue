@@ -201,8 +201,12 @@
         margin-right: 8px !important;
         float: left;
         width: 35%;
-        white-space: nowrap;
-        word-break: keep-all;
+        white-space: nowrap !important;
+        word-break: keep-all !important;
+
+        &.cancel, &.retry {
+            width: fit-content !important;
+        }
     }
 
     .cancel {
