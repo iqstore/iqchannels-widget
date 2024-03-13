@@ -12,49 +12,49 @@
     flex: 1;
 
     .client-name-container {
-        display: block;
-      }
+      display: block;
+    }
 
-      p {
-          margin-bottom: 8px;
-      }
+    p {
+      margin-bottom: 8px;
+    }
   }
 }
 
 a.close, a.close:active, a.close:visited, a.close:focus {
-    position: absolute;
-    padding: 1em 0.8em 1em 0.8em;
-    right: 0;
-    top: 0;
-    color: #666666;
+  position: absolute;
+  padding: 1em 0.8em 1em 0.8em;
+  right: 0;
+  top: 0;
+  color: #666666;
 }
 
 a.logout, a.logout:active, a.logout:visited, a.logout:focus {
-    color: #666666;
-    text-decoration: none;
-    font-size: 75%;
-    border-bottom: 1px dashed #666666;
-    margin-top: 8px;
-    margin-bottom: 8px;
+  color: #666666;
+  text-decoration: none;
+  font-size: 75%;
+  border-bottom: 1px dashed #666666;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 #chat {
-    width: 100%;
-    background-color: white;
-    position: relative;
-    overflow-y: scroll;
-    -webkit-touch-callout:none;
-    -webkit-user-select:none;
-    -khtml-user-select:none;
-    -moz-user-select:none;
-    -ms-user-select:none;
-    user-select:none;
-    -webkit-tap-highlight-color:rgba(0,0,0,0);
-    flex: 1;
+  width: 100%;
+  background-color: white;
+  position: relative;
+  overflow-y: scroll;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  flex: 1;
 }
 
 #composer {
-    background: #fff;
+  background: #fff;
 }
 
 .wrapper {
@@ -103,23 +103,24 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
   padding: .375rem 2.25rem .375rem .75rem;
 }
 
-.choice_box{
-float: right;
-margin-top: 5px;
-line-height: 1.15;
-text-transform: none;
-visibility: visible;
--webkit-box-direction: normal;
-text-align: right;
-font-size: 14px;
-border-radius: 3px;
+.choice_box {
+  float: right;
+  margin-top: 5px;
+  line-height: 1.15;
+  text-transform: none;
+  visibility: visible;
+  -webkit-box-direction: normal;
+  text-align: right;
+  font-size: 14px;
+  border-radius: 3px;
 }
-.choice_button{
-  white-space: pre-wrap;       /* css-3 */
-  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-  white-space: -pre-wrap;      /* Opera 4-6 */
-  white-space: -o-pre-wrap;    /* Opera 7 */
-  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+
+.choice_button {
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
   font-family: inherit;
   font-size: inherit;
   text-align: right;
@@ -135,7 +136,7 @@ border-radius: 3px;
   transition: border 0.3s, background 0.3s, color 0.3s;
 }
 
-.search-icon{
+.search-icon {
   margin-left: 5px;
   padding: 5px;
   cursor: pointer;
@@ -148,7 +149,7 @@ border-radius: 3px;
   cursor: pointer;
 }
 
-.search-input{
+.search-input {
   width: 100%;
   color: gray;
   background-color: #FFFFFF;
@@ -156,7 +157,7 @@ border-radius: 3px;
   border: 1px solid #ced4da;
   padding: .375rem 3rem .375rem .75rem;
 
-  &:focus{
+  &:focus {
     outline: none;
   }
 }
@@ -164,75 +165,74 @@ border-radius: 3px;
 </style>
 
 <template lang="pug">
-.wrapper
-  .messenger
-    .header
-      .content
-        div.client-name-container(v-if="mode !== 'mobile'")
-          p {{ client.Name }}
-          p(v-if="anonymous")
-            a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
-          a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
-            svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
-              path(d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z")
-        div(style="display:flex")
-          span.search-icon(title="Поиск по чату", @click.prevent="searchMsg()")
-            svg(xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512")
-              path(d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z")
-          div.chat-type-container(v-if="searching || !hasPersonalManager", style="display:flex; width:100%" )
-            input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
-            span.comment-icon(v-if="hasPersonalManager" title="Назад", @click.prevent="cancelSearch()")
-              svg(xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512")
-                path(d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z")
-          div.chat-type-container(v-if="hasPersonalManager && !searching")
-            select(name="chat-type" @change="onChatTypeSelected").chat-type-select
-              option(selected value="regular") Общий чат
-              option(value="personal_manager") Чат с персональным менеджером
+  .wrapper
+    .messenger
+      .header
+        .content
+          div.client-name-container(v-if="mode !== 'mobile'")
+            p {{ client.Name }}
+            p(v-if="anonymous")
+              a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
+            a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
+              svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
+                path(d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z")
+          div(style="display:flex")
+            span.search-icon(title="Поиск по чату", @click.prevent="searchMsg()")
+              svg(xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512")
+                path(d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z")
+            div.chat-type-container(v-if="searching || !hasPersonalManager", style="display:flex; width:100%" )
+              input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
+              span.comment-icon(v-if="hasPersonalManager" title="Назад", @click.prevent="cancelSearch()")
+                svg(xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512")
+                  path(d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z")
+            div.chat-type-container(v-if="hasPersonalManager && !searching")
+              select(name="chat-type" @change="onChatTypeSelected").chat-type-select
+                option(selected value="regular") Общий чат
+                option(value="personal_manager") Чат с персональным менеджером
 
-    #chat
-      chat(
-        ref="chat",
-        :mode="mode",
-        :opened="opened",
-        :groups="groups",
-        :rating="rating",
-        :client="client",
-        :channel="channel",
-        :singleChoices="singleChoices",
-        :searching="searching",
-        :docWidth="docWidth",
-        @cancel-upload="cancelUpload",
-        @retry-upload="retryUpload",
-        @rate-rating="rateRating",
-        @message-composed="onMessageComposed",
-        @ignore-rating="ignoreRating",
-        @mobile-rating="mobileRating",
-        @send-info="sendInfo",
-        @ignore-info="ignoreInfo",
-        @long-tap="longTap",
-        @reply-msg="reply",
-        @scrollToMessage="(id) => scrollToFoundMessage(id)",
-        @click-file="clickFile",
-        @download-file="downloadFile",
-      )
-      .scrollBottom(v-if="!isBottom && !this.searching" @click="scrollToLastMessage(false)")
-        svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
-          path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
-      .div(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
-        div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
-          button.choice_button(type="button",
-            v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
-            @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
-    #composer
-      composer(
-        ref="composer"
-        :replayedMsg="inputMsg"
-        :operatorTyping="inputTyping"
-        :disableFreeText="disableFreeText"
-        @message-composed="onMessageComposed"
-        @file-selected="onFileSelected"
-        @start-typing="onStartTyping"
-        :channel="this.channel"
+      #chat
+        chat(
+          ref="chat",
+          :mode="mode",
+          :opened="opened",
+          :groups="groups",
+          :rating="rating",
+          :client="client",
+          :channel="channel",
+          :singleChoices="singleChoices",
+          :searching="searching",
+          @cancel-upload="cancelUpload",
+          @retry-upload="retryUpload",
+          @rate-rating="rateRating",
+          @message-composed="onMessageComposed",
+          @ignore-rating="ignoreRating",
+          @mobile-rating="mobileRating",
+          @send-info="sendInfo",
+          @ignore-info="ignoreInfo",
+          @long-tap="longTap",
+          @reply-msg="reply",
+          @scrollToMessage="(id) => scrollToFoundMessage(id)",
+          @click-file="clickFile",
+          @download-file="downloadFile",
+        )
+        .scrollBottom(v-if="!isBottom && !this.searching" @click="scrollToLastMessage(false)")
+          svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
+            path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
+        .div(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
+          div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
+            button.choice_button(type="button",
+              v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
+              @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
+      #composer
+        composer(
+          ref="composer"
+          :replayedMsg="inputMsg"
+          :operatorTyping="inputTyping"
+          :disableFreeText="disableFreeText"
+          @message-composed="onMessageComposed"
+          @file-selected="onFileSelected"
+          @start-typing="onStartTyping"
+          :channel="this.channel"
         )
 </template>
 
@@ -283,7 +283,7 @@ export default {
 
   },
 
-  beforeMount () {
+  beforeMount() {
     setTimeout(() => {
       this.scrollToLastMessage();
     }, 200);
@@ -296,7 +296,7 @@ export default {
       setTimeout(() => {
         const height = document.getElementById('chat').offsetHeight;
         // add 1px because the difference is 0.333 for some reason
-        this.isBottom = !((ev.target.scrollHeight - ev.target.scrollTop -1 ) >= height);
+        this.isBottom = !((ev.target.scrollHeight - ev.target.scrollTop - 1) >= height);
       }, 300);
     });
   },
@@ -323,25 +323,25 @@ export default {
   },
 
   computed: {
-    incomingMessages: function() {
+    incomingMessages: function () {
       if (!this.client) return [];
       const clientId = this.client.Id;
       return this.groups.reduce(
-        (result, group) =>
-          result.concat(group.Messages.filter(m => m.ClientId !== clientId)),
-        []
+          (result, group) =>
+              result.concat(group.Messages.filter(m => m.ClientId !== clientId)),
+          []
       );
     },
-    unreadMessages: function() {
+    unreadMessages: function () {
       return this.incomingMessages.filter(m => m.Author === "user" && !m.Read);
     },
-    unreceivedMessages: function() {
+    unreceivedMessages: function () {
       return this.incomingMessages.filter(m => !m.Received);
     },
-    unreadCount: function() {
+    unreadCount: function () {
       return this.unreadMessages.length;
     },
-    anonymous: function() {
+    anonymous: function () {
       return this.client.Type === "anonymous";
     },
     hasPersonalManager() {
@@ -350,7 +350,7 @@ export default {
 
   },
   watch: {
-    opened: function(newValue, oldValue) {
+    opened: function (newValue, oldValue) {
       if (newValue && !oldValue) {
         // widget opened
         this.markMessagesAsRead();
@@ -358,8 +358,8 @@ export default {
         // Force fixed element to repaint,
         // because of safari issue with fixed hidden elements
         $("#composer")
-          .hide()
-          .show(0);
+            .hide()
+            .show(0);
         this.setScrollPositionToBottom();
         this.scrollToLastMessage();
       }
@@ -371,12 +371,12 @@ export default {
       this.queryMessages(newValue);
       if (newValue === "" && this.shouldBeScrolledBottom) {
         setTimeout(() => {
-        this.scrollToLastMessage();
+          this.scrollToLastMessage();
 
         }, 1000)
       }
     },
-    unreadCount: function(newValue, oldValue) {
+    unreadCount: function (newValue, oldValue) {
       this.$emit("on-unread-changed", newValue);
     },
     replayedMsg: function (newValue) {
@@ -417,7 +417,7 @@ export default {
       this.shouldBeScrolledBottom = false;
       this.searching = false;
       this.search = "";
-      client.channelMessages(this.channel, this.chatType, null, id ).then(messages => {
+      client.channelMessages(this.channel, this.chatType, null, id).then(messages => {
         this.appendMessages(messages);
       });
       setTimeout(() => {
@@ -439,12 +439,12 @@ export default {
 
     queryMessages(value) {
       client.channelMessages(this.channel, this.chatType, value).then(messages => {
-            this.lastEventId = messages.length
-                ? messages[messages.length - 1].EventId
-                : null;
-            this.groups = [];
-            this.appendMessages(messages);
-    })
+        this.lastEventId = messages.length
+            ? messages[messages.length - 1].EventId
+            : null;
+        this.groups = [];
+        this.appendMessages(messages);
+      })
     },
 
     cancelSearch() {
@@ -470,8 +470,8 @@ export default {
     loadHistory() {
       client.channelMessages(this.channel, this.chatType).then(messages => {
         this.lastEventId = messages.length
-          ? messages[messages.length - 1].EventId
-          : null;
+            ? messages[messages.length - 1].EventId
+            : null;
         this.groups = [];
         this.appendMessages(messages);
         this.markMessages();
@@ -482,11 +482,11 @@ export default {
     subscribe() {
       this.unsubscribe();
       this.subscription = client.channelListen(
-        this.channel,
-        this.chatType,
-        this.lastEventId,
-        this.onChannelEvents,
-        this.onSubscriptionError
+          this.channel,
+          this.chatType,
+          this.lastEventId,
+          this.onChannelEvents,
+          this.onSubscriptionError
       );
     },
     unsubscribe() {
@@ -544,7 +544,7 @@ export default {
         const last = messages[messages.length - 1];
         if (last.DisableFreeText) {
           this.disableFreeText = true;
-        } else{
+        } else {
           this.disableFreeText = false;
         }
       }
@@ -630,8 +630,8 @@ export default {
         for (let i = groups[g].Messages.length - 1; i >= 0; i--) {
           const msg = group.Messages[i];
           if (
-            (msg.Id && msg.Id === message.Id) ||
-            msg.LocalId === message.LocalId
+              (msg.Id && msg.Id === message.Id) ||
+              msg.LocalId === message.LocalId
           ) {
             group.Messages[i] = message;
             if (i === group.Messages.length - 1) {
@@ -657,8 +657,8 @@ export default {
         for (let i = group.Messages.length - 1; i >= 0; i--) {
           const msg = group.Messages[i];
           if (
-            (msg.Id && msg.Id === message.Id) ||
-            msg.LocalId === message.LocalId
+              (msg.Id && msg.Id === message.Id) ||
+              msg.LocalId === message.LocalId
           ) {
             group.Messages.splice(i, 1);
             if (group.Messages.length === 0) {
@@ -686,11 +686,11 @@ export default {
         const lastMessage = group.Messages[group.Messages.length - 1];
 
         if (
-          group.Author === message.Author &&
-          group.UserId === message.UserId &&
-          group.ClientId === message.ClientId &&
-          message.CreatedAt - lastMessage.CreatedAt < 60000 &&
-          isSameDate(message.CreatedAt, lastMessage.CreatedAt)
+            group.Author === message.Author &&
+            group.UserId === message.UserId &&
+            group.ClientId === message.ClientId &&
+            message.CreatedAt - lastMessage.CreatedAt < 60000 &&
+            isSameDate(message.CreatedAt, lastMessage.CreatedAt)
         ) {
           group.Messages.push(message);
           group.LastMessage = message;
@@ -706,12 +706,12 @@ export default {
       }
 
       const isNewDay =
-        groups.length > 0
-          ? !isSameDate(
-              message.CreatedAt,
-              groups[groups.length - 1].LastMessage.CreatedAt
-            )
-          : true;
+          groups.length > 0
+              ? !isSameDate(
+                  message.CreatedAt,
+                  groups[groups.length - 1].LastMessage.CreatedAt
+              )
+              : true;
 
       const group = {
         Id: groups.length + 1,
@@ -736,27 +736,27 @@ export default {
     },
 
     sendGreeting() {
-      if (this.systemChat === true){
+      if (this.systemChat === true) {
         return;
       }
-      if(this.groups[this.groups.length -1] && !this.groups[this.groups.length -1]){
-        const lastGroup = this.groups[this.groups.length -1]
-        if (lastGroup.Rating && !lastGroup.LastMessage.RatingId){
-        return;
+      if (this.groups[this.groups.length - 1] && !this.groups[this.groups.length - 1]) {
+        const lastGroup = this.groups[this.groups.length - 1]
+        if (lastGroup.Rating && !lastGroup.LastMessage.RatingId) {
+          return;
         }
       }
       client.getChatSettings(this.channel).then(result => {
         const settings = result.Data
-        if (settings !== null){
+        if (settings !== null) {
           this.systemChat = true
           // if client has no open tickets, send him greeting from bot or from made-up operator
           // these messages are deleted if client does not respond
-          client.listTicketsByClient(this.channel,this.client.Id, {Open: true}).then(result => {
-            if (result.Data.TotalCount === 0){
+          client.listTicketsByClient(this.channel, this.client.Id, { Open: true }).then(result => {
+            if (result.Data.TotalCount === 0) {
               if (settings.GreetFrom === 'bot') {
                 client.openSystemChat(this.channel)
                 this.scrollToLastMessage();
-              }else{
+              } else {
                 const message = {
                   Id: new Date().getTime(),
                   Author: "user",
@@ -765,7 +765,12 @@ export default {
                   Payload: 'text',
                   Read: true,
                   UserId: new Date().getTime(),
-                  User: {DisplayName: settings.OperatorName, Name:settings.OperatorName, Active: true, Id: new Date().getTime()}
+                  User: {
+                    DisplayName: settings.OperatorName,
+                    Name: settings.OperatorName,
+                    Active: true,
+                    Id: new Date().getTime()
+                  }
                 };
                 this.appendMessage(message)
                 setTimeout(() => {
@@ -773,18 +778,17 @@ export default {
                   this.systemChat = false
                 }, 1000 * settings.Lifetime)
               }
-            }
-             else{
+            } else {
               this.systemChat = false;
             }
           })
-            }
+        }
       })
     },
 
     maybeEnableFreeText() {
       if (!this.groups.length ||
-          !this.groups[this.groups.length -1].LastMessage.DisableFreeText) {
+          !this.groups[this.groups.length - 1].LastMessage.DisableFreeText) {
         this.disableFreeText = false;
       }
     },
@@ -813,7 +817,7 @@ export default {
     },
 
     newTextMessageWithReply(text, id) {
-      const msg =  {
+      const msg = {
         LocalId: this.getNextLocalId(),
         Payload: schema.ChatPayloadText,
         Text: text,
@@ -851,28 +855,28 @@ export default {
       message.UploadError = null;
       message.UploadProgress = 0;
       message.Uploading = client.uploadFile(
-        message.Upload,
-        file => {
-          message.Upload = undefined;
-          message.UploadError = undefined;
-          message.UploadProgress = undefined;
-          message.Uploading = undefined;
-          message.File = file;
-          message.FileId = file.Id;
-          client.channelSend(this.channel, message);
-          this.replaceMessage(message);
-          this.scrollToLastMessage();
-        },
-        error => {
-          message.UploadError = error.http() ? "Ошибка загрузки" : error.text;
-          message.UploadProgress = undefined;
-          message.Uploading = undefined;
-          this.replaceMessage(message);
-        },
-        progress => {
-          message.UploadProgress = progress;
-          this.replaceMessage(message);
-        }
+          message.Upload,
+          file => {
+            message.Upload = undefined;
+            message.UploadError = undefined;
+            message.UploadProgress = undefined;
+            message.Uploading = undefined;
+            message.File = file;
+            message.FileId = file.Id;
+            client.channelSend(this.channel, message);
+            this.replaceMessage(message);
+            this.scrollToLastMessage();
+          },
+          error => {
+            message.UploadError = error.http() ? "Ошибка загрузки" : error.text;
+            message.UploadProgress = undefined;
+            message.Uploading = undefined;
+            this.replaceMessage(message);
+          },
+          progress => {
+            message.UploadProgress = progress;
+            this.replaceMessage(message);
+          }
       );
     },
 
@@ -906,19 +910,19 @@ export default {
       }
 
       rating.Sending = client
-        .rateRating(rating.Id, rating.Value, rating.Comment)
-        .then(
-          rated => {
-            rating.Sending = null;
-            rating.State = rated.State;
-            rating.Value = rated.Value;
-            rating.Comment = rated.Comment;
-          },
-          error => {
-            rating.Sending = null;
-            rating.Value = 0;
-          }
-        );
+          .rateRating(rating.Id, rating.Value, rating.Comment)
+          .then(
+              rated => {
+                rating.Sending = null;
+                rating.State = rated.State;
+                rating.Value = rated.Value;
+                rating.Comment = rated.Comment;
+              },
+              error => {
+                rating.Sending = null;
+                rating.Value = 0;
+              }
+          );
     },
 
     ignoreRating(rating) {
@@ -927,15 +931,15 @@ export default {
       }
 
       rating.Sending = client.ignoreRating(rating.Id).then(
-        ignored => {
-          rating.Sending = null;
-          rating.State = ignored.State;
-          rating.Value = 0;
-        },
-        error => {
-          rating.Sending = null;
-          rating.Value = 0;
-        }
+          ignored => {
+            rating.Sending = null;
+            rating.State = ignored.State;
+            rating.Value = 0;
+          },
+          error => {
+            rating.Sending = null;
+            rating.Value = 0;
+          }
       );
     },
 
@@ -982,18 +986,18 @@ export default {
 
     downloadFile(file) {
       client.fileSignedUrl(file.Id).then(
-        url => {
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          a.href = url;
-          a.download = file.Name;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-        },
-        error => {
-          console.log(error);
-        }
+          url => {
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = file.Name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          },
+          error => {
+            console.log(error);
+          }
       );
     },
 
@@ -1069,7 +1073,7 @@ export default {
             break;
           case schema.ChatEventCloseSystemChat:
             event.Messages.forEach(msg => this.removeMessage(msg))
-              this.systemChat = false
+            this.systemChat = false
             break;
           case schema.ChatEventChatClosed:
             this.systemChat = false;
@@ -1103,7 +1107,7 @@ export default {
       // Someone else's message
       if (!message.My) {
         this.appendMessage(message);
-      this.scrollToLastMessage();
+        this.scrollToLastMessage();
         return true;
       }
       // Replace my own message
@@ -1175,7 +1179,7 @@ export default {
           Payload: 'text',
           Read: true,
           UserId: new Date().getTime(),
-          User: {DisplayName: "Система", Name:"Система", Active: true, Id: new Date().getTime()}
+          User: { DisplayName: "Система", Name: "Система", Active: true, Id: new Date().getTime() }
         };
         this.appendMessage(message);
         this.scrollToLastMessage();
@@ -1191,9 +1195,9 @@ export default {
     onFileSelected(file, text, id) {
       let messageForm;
       if (id) {
-          messageForm = this.newFileMessageWithReply(file, id, text);
+        messageForm = this.newFileMessageWithReply(file, id, text);
       } else {
-          messageForm = this.newFileMessage(file, text);
+        messageForm = this.newFileMessage(file, text);
       }
       const message = this.appendLocalMessage(messageForm);
       this.uploadMessage(message);

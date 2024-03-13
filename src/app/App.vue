@@ -1,26 +1,26 @@
 <template lang="pug">
-div(v-if="initialized")
+  div(v-if="initialized")
     link(type="text/css" rel="stylesheet" :href="stylesURL")
 
     client-create(v-if="!client && !credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :channel="channel" :requireName="requireName")
     client-auth(v-if="!client && credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
     messenger(v-if="client" ref="messenger"
-       @on-unread-changed='onUnreadChanged'
-       @on-message-received='onMessageReceived'
-       @on-file-clicked='onFileClicked'
-       @on-close='onClose'
-       @on-logout='onLogout'
-       @on-longtap="onLongTap"
-       @on-rating="onRating"
-       :mode='mode'
-       :client='client'
-       :opened='opened'
-       :channel='channel'
-       :replayed-msg="replayedMsg"
-       :scrollToMsg="scrollToMsg"
-       :rating="rating"
-       :closeSystemChat="closeSystemChat"
-       :doc-width=docWidth,
+      @on-unread-changed='onUnreadChanged'
+      @on-message-received='onMessageReceived'
+      @on-file-clicked='onFileClicked'
+      @on-close='onClose'
+      @on-logout='onLogout'
+      @on-longtap="onLongTap"
+      @on-rating="onRating"
+      :mode='mode'
+      :client='client'
+      :opened='opened'
+      :channel='channel'
+      :replayed-msg="replayedMsg"
+      :scrollToMsg="scrollToMsg"
+      :rating="rating"
+      :closeSystemChat="closeSystemChat"
+      :doc-width=docWidth,
     )
 </template>
 
@@ -39,7 +39,7 @@ export default {
     }
   },
 
-  data () {
+  data() {
     return {
       initialized: false,
       mode: 'web', // web'\'mobile'
@@ -59,7 +59,7 @@ export default {
     };
   },
 
-  created () {
+  created() {
     jquery(window).on('message', (e) => {
       const { type, data } = e.originalEvent;
       if (type !== 'message') {
@@ -147,12 +147,12 @@ export default {
     onLongTap: (msg) => parent.postMessage({ type: 'iqchannels-widget-longtap', data: msg }, '*'),
     onRating: (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*'),
 
-    onLogin (client) {
+    onLogin(client) {
       this.client = client;
       this.maybeSendPushToken();
     },
 
-    onLogout () {
+    onLogout() {
       clearCookie(config.CLIENT_SESSION_COOKIE);
       this.credentials = null;
       this.project = null;
@@ -161,7 +161,7 @@ export default {
       client.clearAuth();
     },
 
-    maybeSendPushToken () {
+    maybeSendPushToken() {
       if (!this.client) {
         return;
       }
@@ -173,7 +173,7 @@ export default {
       client.channelPushToken(this.channel, tdata.type, tdata.token);
     },
 
-    refreshClient () {
+    refreshClient() {
       if (!this.client) {
         return;
       }
@@ -183,7 +183,7 @@ export default {
 
       client.refreshClient(this.credentials);
     },
-    getGreetings () {
+    getGreetings() {
       client.getWidgetGreetings(this.channel).then(res => {
         this.greetings = res.Data;
       });
