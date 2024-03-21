@@ -1,8 +1,9 @@
 import "normalize.css";
+import { LOCALSTORAGE_CHANNEL_NAME } from "../schema";
 
 /* globals IQChannelsWidget */
 var w = new IQChannelsWidget({
-  channel: 'support',
+  channel: localStorage.getItem(LOCALSTORAGE_CHANNEL_NAME) || 'support',
   credentials: '101',
   padBody: false,
   width: 425,

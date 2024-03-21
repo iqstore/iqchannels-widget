@@ -6,6 +6,7 @@ module.exports = {
   entry: {
     'app': './src/main.js',
     'widget': './src/widget.js',
+    'example': './src/examples/example.js',
     'example0': './src/examples/0.js',
     'example1': './src/examples/1.js',
     'example2': './src/examples/2.js',
@@ -80,7 +81,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: 'src/examples/example.pug',
-      chunks: ['widget'],
+      chunks: ['widget', 'example'],
       chunksSortMode: 'none',
       inject: 'head',
       filename: 'example.html'
