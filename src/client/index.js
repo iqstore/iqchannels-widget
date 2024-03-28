@@ -60,6 +60,28 @@ class Client {
     });
   }
 
+  get (path, data) {
+    let headers = {};
+    if (this.authToken) {
+      headers[XClientAuthorizationHeader] = this.authToken;
+    }
+
+    return new Promise((resolve, reject) => {
+      jquery.ajax({
+        type: 'GET',
+        url: config.apiUrl(path),
+        crossDomain: true,
+        data: JSON.stringify(data),
+        dataType: 'json',
+        withCredentials: true,
+        contentType: 'application/json',
+        headers: headers,
+        success: response => this.handleResponse(response, resolve, reject),
+        error: request => reject(AppError.fromRequest(request))
+      });
+    });
+  }
+
   xhr (onProgress) {
     const xhr = jquery.ajaxSettings.xhr();
     if (xhr.upload) {
@@ -334,6 +356,10 @@ class Client {
       let url = window.location.protocol + '//' + window.location.host + fullpath;
       return url;
     });
+  }
+
+  getFile (fileId) {
+    return this.get(`/files/get_file/${fileId}`, {});
   }
 
   uploadFile (file, onSuccess, onError, onProgress) {

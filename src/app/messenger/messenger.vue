@@ -243,6 +243,7 @@ import client from '../../client';
 import * as schema from '../../schema';
 import { isSameDate } from '../../lib/datetime';
 import { retryTimeout } from '../../lib/timeout';
+import { ChatEventFileUpdated } from "../../schema";
 
 
 export default {
@@ -1081,6 +1082,8 @@ export default {
           case schema.ChatEventMessagesDeleted:
             event.Messages.forEach(msg => this.removeMessage(msg))
             break;
+          case schema.ChatEventFileUpdated:
+            this.handleIncomingUpdatedFile(event);
           default:
             console.log("Unhandled channel event", event);
         }
@@ -1150,6 +1153,17 @@ export default {
 
     handleOperatorTyping(event) {
       this.inputTyping = JSON.parse(JSON.stringify(event));
+    },
+
+    handleIncomingUpdatedFile(event) {
+      const message = this.getMessageById(event.MessageId);
+      if (!message) {
+        return;
+      }
+      this.client.getFile(message.FileId).then(file => {
+        message.File = file;
+        this.replaceMessage(message);
+      })
     },
 
     onMessageComposed(text, botpressPayload) {
