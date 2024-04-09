@@ -1,19 +1,20 @@
 import { LOCALSTORAGE_CHANNEL_NAME } from "../schema";
 
 export function selectChannel() {
-    const channelName = localStorage.getItem(LOCALSTORAGE_CHANNEL_NAME);
+    const current = document.getElementById("current_channel");
 
-    if (!channelName) {
-        let channelTyped;
-        while (!channelTyped) {
-            channelTyped = prompt("Введите название канала Внутреннего чата (на английском), используемого для тестовых клиентов");
-        }
+    const channelTyped = prompt("Введите название канала Внутреннего чата (на английском), используемого для тестовых клиентов", "support");
+    if (channelTyped) {
         localStorage.setItem(LOCALSTORAGE_CHANNEL_NAME, channelTyped);
-    } else {
-        alert(`Канал уже выбран. Текущий канал: ${channelName}`);
+        current.innerHTML = `Текущий канал: ${channelTyped}`;
     }
 }
 
 export function clearChannel() {
-    localStorage.removeItem(LOCALSTORAGE_CHANNEL_NAME);
+    const current = document.getElementById("current_channel");
+    const yesOrNo = confirm("Подтвердите сброс канала для localStorage");
+    if (yesOrNo) {
+        localStorage.removeItem(LOCALSTORAGE_CHANNEL_NAME);
+        current.innerHTML = `Текущий канал не выбран.`;
+    }
 }
