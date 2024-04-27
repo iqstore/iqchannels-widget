@@ -1,14 +1,14 @@
 import "normalize.css";
-import { LOCALSTORAGE_CHANNEL_NAME } from "../schema";
+import { DefaultThirdClientConfig, LOCALSTORAGE_WIDGET_CONFIG } from "../schema";
+import { configureWidget } from "./examples-utils";
 
+window.configureWidget = configureWidget;
+window.onload = () => {
+    const cookies = document.cookie;
+    let config = window.localStorage.getItem(LOCALSTORAGE_WIDGET_CONFIG) ?? DefaultThirdClientConfig;
+    config = JSON.parse(config);
+    const current = window.document.getElementById("current_config");
+    current.innerHTML = config ? `${JSON.stringify(config, null, 2)}` : `Нету конфигурации.`;
+};
 /* globals IQChannelsWidget */
-window.widget = new IQChannelsWidget({
-  channel: localStorage.getItem(LOCALSTORAGE_CHANNEL_NAME) || 'support',
-  credentials: '3',
-  iconOptions: {
-    show: true,
-    style: {
-      backgroundColor: "#004885",
-    }
-  }
-});
+window.widget = new IQChannelsWidget(JSON.parse(localStorage.getItem(LOCALSTORAGE_WIDGET_CONFIG)) ?? DefaultThirdClientConfig);

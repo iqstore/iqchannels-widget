@@ -69,7 +69,8 @@ class IQChannelsWidget extends EventEmitter {
     padBody = true,
     requireName = true,
     iconOptions = {},
-    DOMIdentifier
+    DOMIdentifier,
+    chats = [],
   }) {
     super();
     url = url ? url : BASE_URL;
@@ -85,6 +86,9 @@ class IQChannelsWidget extends EventEmitter {
     this.opened = false;
     this.DOMIdentifier = DOMIdentifier || null;
     this.docWidth = document.documentElement.offsetWidth;
+    this.chats = chats;
+    this.isMultipleChats = this.chats.length > 0;
+
     iconOptions = cleanIconOptions(iconOptions);
     // Add elements
 
@@ -136,7 +140,9 @@ class IQChannelsWidget extends EventEmitter {
           project: this.project,
           requireName: this.requireName,
           pushToken: this.pushToken,
-          docWidth: this.docWidth
+          docWidth: this.docWidth,
+          chats: this.chats,
+          isMultipleChats: this.isMultipleChats,
         });
         this.frameWindow.postMessage(JSON.stringify(event), '*');
       });

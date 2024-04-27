@@ -1,4 +1,4 @@
-<style lang="scss" scoped>
+<style lang="scss">
 .header {
   width: 100%;
   background-color: #f0f0f0;
@@ -57,19 +57,17 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
   background: #fff;
 }
 
-.wrapper {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-}
-
 .messenger {
   height: 100%;
-  overflow-y: hidden;
+  overflow-y: clip;
   display: flex;
   flex-direction: column;
+}
+
+.messenger_absolute {
+  position: absolute;
+  right: 0;
+  left: 0;
 }
 
 .scrollBottom {
@@ -136,17 +134,29 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
   transition: border 0.3s, background 0.3s, color 0.3s;
 }
 
-.search-icon {
+.fa-icon {
   margin-left: 5px;
   padding: 5px;
   cursor: pointer;
-  font-size: 30px;
 }
 
-.comment-icon {
-  margin-left: 5px;
-  padding: 5px;
-  cursor: pointer;
+.search-icon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.back-icon, .options-icon {
+  font-size: 22px;
+}
+
+.options-icon {
+  border-radius: 100%;
+  width: 35px;
+}
+
+.w-100 {
+  width: 100%;
 }
 
 .search-input {
@@ -162,78 +172,120 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
   }
 }
 
+.nav-container {
+  display: flex;
+  padding: 15px 5px;
+  align-items: center;
+  min-height: 35px;
+}
+
+.nav-item {
+  margin-right: 8px;
+}
+
+.context-menu-option {
+  transition: 0.1s ease !important;
+
+  &:hover {
+    background-color: #dedede !important;
+    color: black !important;
+  }
+}
+
 </style>
 
 <template lang="pug">
-  .wrapper
-    .messenger
-      .header
-        .content
-          div.client-name-container(v-if="mode !== 'mobile'")
-            p {{ client.Name }}
-            p(v-if="anonymous")
-              a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
-            a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
-              svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
-                path(d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z")
-          div(style="display:flex")
-            span.search-icon(title="Поиск по чату", @click.prevent="searchMsg()")
-              svg(xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512")
-                path(d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z")
-            div.chat-type-container(v-if="searching || !hasPersonalManager", style="display:flex; width:100%" )
-              input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
-              span.comment-icon(v-if="hasPersonalManager" title="Назад", @click.prevent="cancelSearch()")
-                svg(xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512")
-                  path(d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z")
-            div.chat-type-container(v-if="hasPersonalManager && !searching")
-              select(name="chat-type" @change="onChatTypeSelected").chat-type-select
-                option(selected value="regular") Общий чат
-                option(value="personal_manager") Чат с персональным менеджером
+  .messenger(:class="{ 'messenger_absolute': !isMultiple }")
+    .header
+      .content(v-if="!isMultiple")
+        div.client-name-container(v-if="mode !== 'mobile'")
+          p {{ client.Name }}
+          p(v-if="anonymous")
+            a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
+          a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
+            font-awesome-icon(:icon="['fa', 'fa-times']")
+        div(style="display:flex")
+          span.fa-icon.search-icon(title="Поиск по чату", @click.prevent="searchMsg()")
+            font-awesome-icon(:icon="['fas', 'fa-search']")
+          div.chat-type-container(v-if="searching || !hasPersonalManager", style="display:flex; width:100%" )
+            input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
+            span.fa-icon(v-if="hasPersonalManager" title="Отменить", @click.prevent="cancelSearch()")
+              font-awesome-icon(:icon="['fas', 'fa-times']")
+          div.chat-type-container(v-if="hasPersonalManager && !searching")
+            select(name="chat-type" @change="onChatTypeSelected").chat-type-select
+              option(selected value="regular") Общий чат
+              option(value="personal_manager") Чат с персональным менеджером
 
-      #chat
-        chat(
-          ref="chat",
-          :mode="mode",
-          :opened="opened",
-          :groups="groups",
-          :rating="rating",
-          :client="client",
-          :channel="channel",
-          :singleChoices="singleChoices",
-          :searching="searching",
-          @cancel-upload="cancelUpload",
-          @retry-upload="retryUpload",
-          @rate-rating="rateRating",
-          @message-composed="onMessageComposed",
-          @ignore-rating="ignoreRating",
-          @mobile-rating="mobileRating",
-          @send-info="sendInfo",
-          @ignore-info="ignoreInfo",
-          @long-tap="longTap",
-          @reply-msg="reply",
-          @scrollToMessage="(id) => scrollToFoundMessage(id)",
-          @click-file="clickFile",
-          @download-file="downloadFile",
-        )
-        .scrollBottom(v-if="!isBottom && !this.searching" @click="scrollToLastMessage(false)")
-          svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
-            path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
-        .div(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
-          div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
-            button.choice_button(type="button",
-              v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
-              @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
-      #composer
-        composer(
-          ref="composer"
-          :replayedMsg="inputMsg"
-          :operatorTyping="inputTyping"
-          :disableFreeText="disableFreeText"
-          @message-composed="onMessageComposed"
-          @file-selected="onFileSelected"
-          @start-typing="onStartTyping"
-          :channel="this.channel"
-        )
+      .content(v-if="isMultiple")
+        .nav-container(v-if="isMultiple && !searching")
+          .nav-item
+            span.fa-icon.back-icon(@click.prevent="() => $emit('on-back')")
+              font-awesome-icon(:icon="['fas', 'fa-arrow-left']")
+          .nav-item.w-100
+            chat-container(:chat="client", :is-with-personal-manager="chatType === 'personal_manager'")
+          .nav-item.fa-icon.options-icon(v-wave, @click.prevent.stop="handleMenuContext($event)")
+            font-awesome-icon(:icon="['fas', 'fa-ellipsis-vertical']")
+
+        .nav-container(v-if="searching")
+          .nav-item
+            span.fa-icon(title="Отменить", @click.prevent="cancelSearch()")
+              font-awesome-icon(:icon="['fas', 'fa-times']")
+          .nav-item.w-100
+            div(v-if="searching || !hasPersonalManager", style="width:80%" )
+              input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
+
+
+    #chat
+      chat(
+        ref="chat",
+        :mode="mode",
+        :opened="opened",
+        :groups="groups",
+        :rating="rating",
+        :client="client",
+        :channel="channel",
+        :singleChoices="singleChoices",
+        :searching="searching",
+        @cancel-upload="cancelUpload",
+        @retry-upload="retryUpload",
+        @rate-rating="rateRating",
+        @message-composed="onMessageComposed",
+        @ignore-rating="ignoreRating",
+        @mobile-rating="mobileRating",
+        @send-info="sendInfo",
+        @ignore-info="ignoreInfo",
+        @long-tap="longTap",
+        @reply-msg="reply",
+        @scrollToMessage="(id) => scrollToFoundMessage(id)",
+        @click-file="clickFile",
+        @download-file="downloadFile",
+      )
+      .scrollBottom(v-if="!isBottom && !this.searching" @click="scrollToLastMessage(false)")
+        svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
+          path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
+      .div(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
+        div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
+          button.choice_button(type="button",
+            v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
+            @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
+    #composer
+      composer(
+        ref="composer"
+        :replayedMsg="inputMsg"
+        :operatorTyping="inputTyping"
+        :disableFreeText="disableFreeText"
+        @message-composed="onMessageComposed"
+        @file-selected="onFileSelected"
+        @start-typing="onStartTyping"
+        :channel="this.channel"
+      )
+
+  v-context(
+    element-id="nav-context",
+    :options="[{name: 'Поиск', class: 'context-menu-option'}]",
+    ref="contextMenu",
+    @option-clicked="optionClicked",
+  )
 </template>
 
 <script>
@@ -243,10 +295,10 @@ import client from '../../client';
 import * as schema from '../../schema';
 import { isSameDate } from '../../lib/datetime';
 import { retryTimeout } from '../../lib/timeout';
-
+import ChatContainer from "../components/chat-container.vue";
 
 export default {
-  components: { chat, composer },
+  components: { ChatContainer, chat, composer },
 
   props: {
     mode: String,
@@ -260,6 +312,7 @@ export default {
     chatType: String,
     client: Object,
     docWidth: Number,
+    isMultiple: Boolean,
   },
 
   created() {
@@ -318,7 +371,7 @@ export default {
       systemChat: false,
       singleChoices: [],
       disableFreeText: false,
-      shouldBeScrolledBottom: true
+      shouldBeScrolledBottom: true,
     };
   },
 
@@ -450,6 +503,18 @@ export default {
     cancelSearch() {
       this.cashedGroups = [];
       this.searching = false;
+    },
+
+    optionClicked (event) {
+      switch (event.item) {
+        case "search":
+          this.searching = true;
+          this.searchMsg();
+      }
+    },
+
+    handleMenuContext(event) {
+      this.$refs.contextMenu.showMenu(event, "search");
     },
 
     // Public

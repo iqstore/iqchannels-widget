@@ -2,26 +2,53 @@
   div(v-if="initialized")
     link(type="text/css" rel="stylesheet" :href="stylesURL")
 
-    client-create(v-if="!client && !credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :channel="channel" :requireName="requireName")
-    client-auth(v-if="!client && credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
-    messenger(v-if="client" ref="messenger"
-      @on-unread-changed='onUnreadChanged'
-      @on-message-received='onMessageReceived'
-      @on-file-clicked='onFileClicked'
-      @on-close='onClose'
-      @on-logout='onLogout'
-      @on-longtap="onLongTap"
-      @on-rating="onRating"
-      :mode='mode'
-      :client='client'
-      :opened='opened'
-      :channel='channel'
-      :replayed-msg="replayedMsg"
-      :scrollToMsg="scrollToMsg"
-      :rating="rating"
-      :closeSystemChat="closeSystemChat"
-      :doc-width=docWidth,
-    )
+    template(v-if="isMultipleChats")
+      template(v-if="!multiClient")
+        client-auth(@on-client-multiple-authorized='onMultiLogin' :greetings="greetings" :multiChatData="chats")
+
+      multi-messenger(
+        v-if="multiClient",
+        ref="multiMessenger",
+        @on-unread-changed='onUnreadChanged',
+        @on-message-received='onMessageReceived',
+        @on-file-clicked='onFileClicked',
+        @on-close='onClose',
+        @on-logout='onLogout',
+        @on-longtap="onLongTap",
+        @on-rating="onRating",
+        :mode='mode',
+        :multiClient='multiClient',
+        :opened='opened',
+        :channel='channel',
+        :replayed-msg="replayedMsg",
+        :scrollToMsg="scrollToMsg",
+        :rating="rating",
+        :closeSystemChat="closeSystemChat",
+        :doc-width="docWidth",
+        :chats="chats",
+      )
+    template(v-else)
+      template(v-if="!client")
+        client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :channel="channel" :requireName="requireName")
+        client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
+      messenger(v-if="client" ref="messenger"
+        @on-unread-changed='onUnreadChanged'
+        @on-message-received='onMessageReceived'
+        @on-file-clicked='onFileClicked'
+        @on-close='onClose'
+        @on-logout='onLogout'
+        @on-longtap="onLongTap"
+        @on-rating="onRating"
+        :mode='mode'
+        :client='client'
+        :opened='opened'
+        :channel='channel'
+        :replayed-msg="replayedMsg"
+        :scrollToMsg="scrollToMsg"
+        :rating="rating"
+        :closeSystemChat="closeSystemChat"
+        :doc-width=docWidth,
+      )
 </template>
 
 <script>
@@ -55,7 +82,10 @@ export default {
       replayedMsg: null,
       scrollToMsg: null,
       rating: null,
-      docWidth: null
+      docWidth: null,
+      chats: null,
+      isMultipleChats: false,
+      multiClient: null,
     };
   },
 
@@ -77,6 +107,8 @@ export default {
           this.requireName = event.data.requireName;
           this.pushToken = event.data.pushToken;
           this.docWidth = event.data.docWidth;
+          this.chats = event.data.chats;
+          this.isMultipleChats = event.data.isMultipleChats;
 
           this.maybeSendPushToken();
           this.getGreetings();
@@ -105,7 +137,11 @@ export default {
             return;
           }
 
-          this.$refs.messenger.appendText(text);
+          if (this.isMultipleChats) {
+            this.$refs.multiMessenger.appendText(text);
+          } else {
+            this.$refs.messenger.appendText(text);
+          }
           break;
 
         case 'push_token':
@@ -152,17 +188,22 @@ export default {
       this.maybeSendPushToken();
     },
 
+    onMultiLogin(multiClient) {
+      this.multiClient = multiClient;
+    },
+
     onLogout() {
       clearCookie(config.CLIENT_SESSION_COOKIE);
       this.credentials = null;
       this.project = null;
       this.client = null;
+      this.multiClient = null;
 
       client.clearAuth();
     },
 
     maybeSendPushToken() {
-      if (!this.client) {
+      if (!this.client && !this.multiClient) {
         return;
       }
       if (!this.pushToken) {

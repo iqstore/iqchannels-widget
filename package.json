@@ -30,7 +30,9 @@
     "linkifyjs": "^4.1.3",
     "node-sass": "6.0.0",
     "normalize.css": "8.0.1",
+    "v-wave": "^2.0.0",
     "vue": "^3.3.13",
+    "vue-simple-context-menu": "^4.1.0",
     "vue3-touch-events": "^4.1.8",
     "wavesurfer.js": "7.5.4"
   },

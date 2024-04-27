@@ -20,3 +20,16 @@ export const ChatEventCloseSystemChat = 'close-system-chat';
 export const ChatEventTyping = 'typing';
 
 export const LOCALSTORAGE_CHANNEL_NAME = "iq-channel-name";
+export const LOCALSTORAGE_WIDGET_CONFIG = "iq-widget-config";
+export const DefaultThirdClientConfig = {
+    chats: [
+        {
+            channel: 'support',
+            credentials: '3',
+        },
+        {
+            channel: 'finance',
+            credentials: '3',
+        },
+    ]
+};
