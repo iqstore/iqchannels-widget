@@ -257,7 +257,7 @@ export default {
     closeSystemChat: Boolean,
     typing: Object,
     rating: Number,
-    chatType: String,
+    chatTypeProp: String,
     client: Object,
     docWidth: Number,
   },
@@ -290,6 +290,7 @@ export default {
   },
 
   mounted() {
+    this.chatType = this.chatTypeProp;
     this.loadHistory();
     this.sendGreeting();
     document.getElementById('chat').addEventListener('scroll', ev => {
@@ -318,7 +319,8 @@ export default {
       systemChat: false,
       singleChoices: [],
       disableFreeText: false,
-      shouldBeScrolledBottom: true
+      shouldBeScrolledBottom: true,
+      chatType: 'regular',
     };
   },
 
