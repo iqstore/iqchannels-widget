@@ -201,6 +201,7 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
           :channel="channel",
           :singleChoices="singleChoices",
           :searching="searching",
+          :docWidth="docWidth",
           @cancel-upload="cancelUpload",
           @retry-upload="retryUpload",
           @rate-rating="rateRating",
@@ -1154,7 +1155,10 @@ export default {
       this.inputTyping = JSON.parse(JSON.stringify(event));
     },
 
-    onMessageComposed(text, botpressPayload) {
+    onMessageComposed(text, botpressPayload, url) {
+      if (url) {
+        window.open(url, '_blank').focus();
+      }
       let messageForm;
       if (text.messageText === "/version") {
         this.handleVersion();
