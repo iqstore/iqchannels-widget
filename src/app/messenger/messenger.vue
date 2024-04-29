@@ -737,9 +737,9 @@ export default {
       if (this.systemChat === true){
         return;
       }
-      if(this.groups[this.groups.length -1] && !this.groups[this.groups.length -1]){
+      if(this.groups[this.groups.length -1]){
         const lastGroup = this.groups[this.groups.length -1]
-        if (lastGroup.Rating && !lastGroup.LastMessage.RatingId){
+        if (lastGroup.Rating){
         return;
         }
       }
@@ -771,8 +771,7 @@ export default {
                   this.systemChat = false
                 }, 1000 * settings.Lifetime)
               }
-            }
-             else{
+            } else{
               this.systemChat = false;
             }
           })
