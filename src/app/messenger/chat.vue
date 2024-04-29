@@ -541,7 +541,7 @@
                     span(v-if="group.Client") {{ group.Client.Name }}
 
                   .message-inner
-                    .avatar(v-if="group.User && group.Messages[group.Messages.length - 1].Id === msg.Id")
+                    .avatar(v-if="group.User && msg.Author === 'user' && group.Messages[group.Messages.length - 1].Id === msg.Id")
                       avatar(v-bind:user="group.User")
 
                     .avatar-empty(v-if="group.User && group.Messages[group.Messages.length - 1].Id !== msg.Id")
@@ -644,7 +644,7 @@
                           span.listened-flag(v-if="msg.Listened" title="Прослушано")
                             icon(name="headphones")
                           span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
-                          span.received(v-if="group.LastMessage.Id && group.LastMessage" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
+                          span.received(v-if="group.LastMessage.Id && group.LastMessage.Received" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
                           span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
 
 
