@@ -1158,6 +1158,7 @@ export default {
     onMessageComposed(text, botpressPayload, url) {
       if (url) {
         window.open(url, '_blank').focus();
+        return;
       }
       let messageForm;
       if (text.messageText === "/version") {
