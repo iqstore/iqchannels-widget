@@ -201,6 +201,7 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
           :channel="channel",
           :singleChoices="singleChoices",
           :searching="searching",
+          :docWidth="docWidth",
           @cancel-upload="cancelUpload",
           @retry-upload="retryUpload",
           @rate-rating="rateRating",
@@ -257,7 +258,7 @@ export default {
     closeSystemChat: Boolean,
     typing: Object,
     rating: Number,
-    chatType: String,
+    chatTypeProp: String,
     client: Object,
     docWidth: Number,
   },
@@ -290,6 +291,7 @@ export default {
   },
 
   mounted() {
+    this.chatType = this.chatTypeProp;
     this.loadHistory();
     this.sendGreeting();
     document.getElementById('chat').addEventListener('scroll', ev => {
@@ -318,7 +320,8 @@ export default {
       systemChat: false,
       singleChoices: [],
       disableFreeText: false,
-      shouldBeScrolledBottom: true
+      shouldBeScrolledBottom: true,
+      chatType: 'regular',
     };
   },
 
