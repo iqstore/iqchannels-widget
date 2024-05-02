@@ -222,7 +222,7 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
           div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
             button.choice_button(type="button",
               v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
-              @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
+              @click.prevent="onMessageComposed(choice.title, choice.value, choice.URL)") {{ choice.title }}
       #composer
         composer(
           ref="composer"
@@ -1152,7 +1152,11 @@ export default {
       this.inputTyping = JSON.parse(JSON.stringify(event));
     },
 
-    onMessageComposed(text, botpressPayload) {
+    onMessageComposed(text, botpressPayload, url) {
+      if (url) {
+        window.open(url, '_blank').focus();
+        return;
+      }
       let messageForm;
       if (text.messageText === "/version") {
         this.handleVersion();

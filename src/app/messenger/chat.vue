@@ -599,8 +599,10 @@
                     .reply-text {{ getAuthorAndText(msg).text }}
 
                 .message-data
+                  message-text(v-if="isTextPayload(msg.Payload)",
+                    v-bind:msg="msg",
+                    @scroll-to-message="scrollToMessage")
 
-                  pre.text(v-if="isTextPayload(msg.Payload)" v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
                   .file.text(v-if="msg.Upload")
                     div(v-if="msg.Uploading")
                       .filename {{ msg.Upload.name }}
@@ -692,9 +694,10 @@ import linkifyString from 'linkify-string';
 import client from '../../client';
 import inforequest from './info-request.vue';
 import { humanDate, humanDateTime, humanSize } from '../../lib/filters';
+import MessageText from "./message-text.vue";
 
 export default {
-  components: { inforequest, avatar, rating },
+  components: {MessageText, inforequest, avatar, rating },
 
   props: {
     mode: String,
