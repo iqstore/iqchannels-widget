@@ -693,7 +693,6 @@ import rating from './rating.vue';
 import linkifyString from 'linkify-string';
 import client from '../../client';
 import inforequest from './info-request.vue';
-import MessageText from "./message-text.vue";
 import { humanDate, humanDateTime, humanSize } from '../../lib/filters';
 import MessageText from "./message-text.vue";
 
