@@ -185,9 +185,11 @@
 
 
 .data-error{
+  background-color: #FBE7E9;
+  border-radius: 5px;
   text-align: center;
   color: red;
-  margin: 10px;
+  padding: 10px 0;
 }
 </style>
 
@@ -200,17 +202,9 @@
     .title Пожалуйста, укажите Ваши данные
     .data-error(v-if="dataError") {{ dataError }}
     .div(style="margin-top:10px")
-      label(for="firstname").label-custom Введите имя:
-      input.input-custom(name="firstname" id="firstname" v-model="request.FirstName" )
-
-      label(for="surname").label-custom Введите фамилию
-      input.input-custom(name="surname" id="surname" v-model="request.SurName")
-
-      label(for="phone").label-custom Введите телефон:
-      input(name="phone", id="phone", type="tel", v-model="request.Phone", pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}").input-custom
-
-      label(for="email").label-custom Введите email:
-      input(name="email", id="email", type="email", v-model="request.Email" ).input-custom
+      div(v-for="field in request.Form.Fields")
+        label(:for="field.Label").label-custom {{ field.Label }}
+        input.input-custom(:name="field.Label" :id="field.Label" v-model="field.CorrespondingField" )
 
       div.client-consent
         input(type="checkbox" v-model="request.ClientConsent" ).checkbox-custom
@@ -218,11 +212,14 @@
           a(style="text-decoration:underline" :href="request.ProcessingDataLink" target="_blank") &nbsp;персональных данных
     .buttons
       .ignore(@click="ignoreInfo") Отмена
-      .submit(@click="sendInfo", :class="{'disabled': !request.FirstName || !request.ClientConsent}") Отправить
+      .submit(@click="sendInfo", :class="{'disabled': !request.ClientConsent}") Отправить
 
 </template>
 
 <script>
+const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im
+const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+const DOBRegex = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/i
 export default {
   props: {
     request: Object
@@ -242,16 +239,34 @@ export default {
       if (this.dataError) {
         this.dataError = null;
       }
-      let phone = this.request.Phone;
-      if (!phone.match(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im)){
-        this.dataError = "Неправильно введён телефон";
-        return;
-      }
-      const re =
-          /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-      if (!this.request.Email.match(re)){
-        this.dataError = "Неправильно введён email";
-        return;
+      for (let f of this.request.Form.Fields){
+        if (f.Required) {
+          const val = f.CorrespondingField
+          if (val === '') {
+            this.dataError = "Вы не заполнили поле " + f.Name
+            document.getElementById(f.Label).style.borderColor = 'red';
+            return;
+          }
+          if (f.Name === 'Телефон') {
+            if (!val.match(phoneRegex)){
+              this.dataError = "Неправильно введён телефон";
+              return;
+            }
+          }
+          if (f.Name === 'Email') {
+            if (!val.match(emailRegex)){
+              this.dataError = "Неправильно введён Email";
+              return;
+            }
+          }
+          if (f.Name === 'Дата Рождения') {
+            if (!val.match(DOBRegex)){
+              this.dataError = "Неправильно введена Дата Рождения";
+              return;
+            }
+          }
+        }
+
       }
       this.$emit("send-info", this.request)
       this.request.State = 'finished';

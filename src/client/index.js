@@ -302,12 +302,9 @@ class Client {
   sendInfo (info) {
     const request = {
       RequestId: info.Id,
-      Email: info.Email,
-      FirstName: info.FirstName,
-      SurName: info.SurName,
-      Phone: info.Phone,
       ClientId: info.ClientId,
-      ClientConsent: info.ClientConsent
+      ClientConsent: info.ClientConsent,
+      Form: info.Form
     };
     return this._enqueueRequest(`/info_requests/respond`, request)
       .then(response => new Relations(config, response.Rels).infoRequest(response.Result));
