@@ -339,7 +339,7 @@ import WaveSurfer from "wavesurfer.js";
 import lamejs from "lamejs";
 import client from '../../client';
 import { humanSize } from '../../lib/filters';
-import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js';
+import MicrophonePlugin from "wavesurfer.js/dist/plugin/wavesurfer.microphone.js";
 const TYPING_INTERVAL = 2000;
 const TEXTAREA_HEIGHT = '32px';
 
@@ -362,7 +362,6 @@ export default {
       typingVisible: false,
       timer: null,
       currentFile: null,
-      record: null,
     };
   },
 
@@ -457,90 +456,71 @@ export default {
       this.handleChange();
     },
     loadWs() {
-        this.ws = WaveSurfer.create({
-          container: "#waveform",
-          waveColor: "#FFFFFF",
-          cursorWidth: 0,
-          width: 280,
-          barWidth: 5,
-          barGap: 2,
-          barMinHeight: 2,
-          barHeight: 3,
-          height: 25,
-          normalize: true,
-          hideScrollbar: true,
-        });
+      this.ws = WaveSurfer.create({
+        container: "#waveform",
+        waveColor: "#FFFFFF",
+        cursorWidth: 0,
+        barWidth: 5,
+        barGap: 2,
+        barMinHeight: 2,
+        barHeight: 3,
+        height: 25,
+        normalize: true,
+        hideScrollbar: true,
+        plugins: [
+          MicrophonePlugin.create(),
+        ]
+      });
 
-        this.record = this.ws.registerPlugin(RecordPlugin.create())
-        this.record.on('record-end', (blob) => {
-          this.audioChunks.push(blob);
-          this.ws.loadBlob(blob);
-        });
+      this.ws.microphone.on("deviceReady", (stream) => {
 
-      //   this.ws.plugins[0].on("deviceReady", (stream) => {
-      //
-      //    this.mediaRecorder = new MediaRecorder(stream);
-      //
-      //    this.mediaRecorder.ondataavailable = (e) => {
-      //      this.audioChunks.push(e.data);
-      //      this.ws.loadBlob(new Blob(this.audioBitsPerSecond));
-      //   };
-      //
-      //   this.mediaRecorder.onstop = () => {
-      //     this.ws.loadBlob(new Blob(this.audioChunks));
-      //   };
-      //
-      //   this.mediaRecorder.start(250);
-      //   //ws.load(URL.createObjectURL(stream));
-      // });
-      //
-      // this.ws.microphone.on("deviceError", (code) => {
-      //   console.warn("Device error: " + code);
-      // });
+        this.mediaRecorder = new MediaRecorder(stream);
+
+        this.mediaRecorder.ondataavailable = (e) => {
+          this.audioChunks.push(e.data);
+          this.ws.loadBlob(new Blob(this.audioBitsPerSecond));
+        };
+
+        this.mediaRecorder.onstop = () => {
+          this.ws.loadBlob(new Blob(this.audioChunks));
+        };
+
+        this.mediaRecorder.start(250);
+      });
+
+      this.ws.microphone.on("deviceError", (code) => {
+        console.warn("Device error: " + code);
+      });
 
     },
     startRecording() {
-      try {
-        this.audioChunks = [];
-        if (this.ws){
-          this.ws.destroy();
-        } else if (this.ws && this.record.isRecording()) {
-          this.record.stopRecording();
-          return;
-        }
-        this.recording = true;
-        setTimeout(() => {
-          this.loadWs();
-          this.record.startRecording();
-          // this.ws.microphone.start();
-          // this.ws.microphone.play();
-        }, 100);
-      } catch (e) {
-        console.warn(e);
+      this.recording = true;
+      this.audioChunks = [];
+      if (this.ws){
+        this.ws.destroy();
       }
-    },
+      setTimeout(() => {
+        this.loadWs();
+        this.ws.microphone.start();
+        this.ws.microphone.play();
+      }, 100);
 
+    },
     stopRecording() {
       if (!this.ws) {
         return;
       }
-      this.record.stopRecording();
-      // this.ws.microphone.stop();
-      // this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
+      this.ws.microphone.stop();
+      this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
       this.recording = false;
       this.recordingStopped = true;
     },
     cancelRecording() {
-      if (this.record.isPaused()) {
-        this.record.resumeRecording();
+      if (!this.ws) {
         return;
       }
-      this.record.pauseRecording();
-      // if (!this.ws) {
-      //   return;
-      // }
-      // this.ws.microphone.stop();
-      // this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
+      this.ws.microphone.stop();
+      this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
       this.recording = false;
       this.audioChunks = [];
       this.recordingStopped = false;
@@ -716,16 +696,12 @@ export default {
       if (!this.ws) {
         return;
       }
-      // this.ws.microphone.stop();
-      if (this.record.isRecording()) {
-        this.record.stopRecording();
-      }
-      // this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
+      this.ws.microphone.stop();
+      this.mediaRecorder && this.mediaRecorder.state !== "inactive" && this.mediaRecorder.stop();
       this.recording = false;
       this.recordingStopped = false;
       setTimeout(() => {
-        console.log(this.record);
-        const mp3Blob = this.analyzeAudioBuffer(this.ws.decodedData);
+        const mp3Blob = this.analyzeAudioBuffer(this.ws.backend.buffer);
         this.$emit("file-selected", mp3Blob, "", null);
         this.audioChunks = [];
       }, 100);

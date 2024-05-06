@@ -339,7 +339,7 @@ class Client {
       type = 'image';
     }
 
-    if (file.toString().startsWith('audio')) {
+    if (file.type.toString().startsWith('audio')) {
       type = 'audio';
     }
     const data = new FormData();
