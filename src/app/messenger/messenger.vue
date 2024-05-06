@@ -246,6 +246,7 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
         :channel="channel",
         :singleChoices="singleChoices",
         :searching="searching",
+        :docWidth="docWidth",
         @cancel-upload="cancelUpload",
         @retry-upload="retryUpload",
         @rate-rating="rateRating",
@@ -309,7 +310,7 @@ export default {
     closeSystemChat: Boolean,
     typing: Object,
     rating: Number,
-    chatType: String,
+    chatTypeProp: String,
     client: Object,
     docWidth: Number,
     isMultiple: Boolean,
@@ -343,6 +344,7 @@ export default {
   },
 
   mounted() {
+    this.chatType = this.chatTypeProp;
     this.loadHistory();
     this.sendGreeting();
     document.getElementById('chat').addEventListener('scroll', ev => {
@@ -372,6 +374,7 @@ export default {
       singleChoices: [],
       disableFreeText: false,
       shouldBeScrolledBottom: true,
+      chatType: 'regular',
     };
   },
 
@@ -1217,7 +1220,11 @@ export default {
       this.inputTyping = JSON.parse(JSON.stringify(event));
     },
 
-    onMessageComposed(text, botpressPayload) {
+    onMessageComposed(text, botpressPayload, url) {
+      if (url) {
+        window.open(url, '_blank').focus();
+        return;
+      }
       let messageForm;
       if (text.messageText === "/version") {
         this.handleVersion();
