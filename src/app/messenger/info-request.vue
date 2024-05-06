@@ -217,6 +217,7 @@
 </template>
 
 <script>
+const strNoNumber = /^([^0-9]*)$/
 const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im
 const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
 const DOBRegex = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/i
@@ -236,9 +237,8 @@ export default {
   methods: {
 
     sendInfo() {
-      if (this.dataError) {
-        this.dataError = null;
-      }
+      this.dataError = null;
+      console.log(this.dataError);
       for (let f of this.request.Form.Fields){
         if (f.Required) {
           const val = f.CorrespondingField
@@ -247,23 +247,33 @@ export default {
             document.getElementById(f.Label).style.borderColor = 'red';
             return;
           }
-          if (f.Name === 'Телефон') {
-            if (!val.match(phoneRegex)){
-              this.dataError = "Неправильно введён телефон";
-              return;
-            }
-          }
-          if (f.Name === 'Email') {
-            if (!val.match(emailRegex)){
-              this.dataError = "Неправильно введён Email";
-              return;
-            }
-          }
-          if (f.Name === 'Дата Рождения') {
-            if (!val.match(DOBRegex)){
-              this.dataError = "Неправильно введена Дата Рождения";
-              return;
-            }
+          switch (f.Name){
+            case 'Телефон':
+              if (!val.match(phoneRegex)){
+                this.dataError = "Неправильно введён телефон";
+                return;
+              }
+              break
+            case 'Email':
+              if (!val.match(emailRegex)){
+                this.dataError = "Неправильно введён Email";
+                return;
+              }
+              break
+            case 'Дата Рождения':
+              if (!val.match(DOBRegex)){
+                this.dataError = "Неправильно введена Дата Рождения";
+                return;
+              }
+              break;
+            case 'Имя':
+            case 'Фамилия':
+            case 'Отчество':
+              if (!val.match(strNoNumber)){
+                this.dataError = "ФИО не должно содержать цифр";
+                return;
+              }
+              break;
           }
         }
 
