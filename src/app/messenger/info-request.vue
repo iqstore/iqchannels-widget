@@ -204,10 +204,10 @@
     .div(style="margin-top:10px")
       div(v-for="field in request.Form.Fields")
         label(:for="field.Label").label-custom {{ field.Label }}
-        input.input-custom(:name="field.Label" :id="field.Label" v-model="field.CorrespondingField" )
+        input.input-custom(:name="field.Label" :id="field.Label" @input="inputChange" v-model="field.CorrespondingField" )
 
       div.client-consent
-        input(type="checkbox" v-model="request.ClientConsent" ).checkbox-custom
+        input(type="checkbox" v-model="request.ClientConsent").checkbox-custom
         span Согласие на обработку
           a(style="text-decoration:underline" :href="request.ProcessingDataLink" target="_blank") &nbsp;персональных данных
     .buttons
@@ -217,6 +217,7 @@
 </template>
 
 <script>
+const MaxFieldLength = 25
 const strNoNumber = /^([^0-9]*)$/
 const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im
 const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
@@ -237,9 +238,15 @@ export default {
   methods: {
 
     sendInfo() {
+      if (this.dataError === `Максимальная длина значения - ${MaxFieldLength} символов`) {
+        return;
+      }
       this.dataError = null;
-      console.log(this.dataError);
       for (let f of this.request.Form.Fields){
+        if (f.CorrespondingField.length > MaxFieldLength) {
+          this.dataError = `Максимальная длина значения - ${MaxFieldLength} символов`
+            return;
+        }
         if (f.Required) {
           const val = f.CorrespondingField
           if (val === '') {
@@ -291,6 +298,15 @@ export default {
       if (!event.shiftKey) {
         event.preventDefault();
         this.sendInfo();
+      }
+    },
+    inputChange(e) {
+      if (e.target.value.length > MaxFieldLength){
+        e.srcElement.style.borderColor = 'red'
+        this.dataError = `Максимальная длина значения - ${MaxFieldLength} символов`
+      } else {
+        this.dataError = null;
+        e.srcElement.style.borderColor = '#ced4da'
       }
     }
   }
