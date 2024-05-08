@@ -703,6 +703,9 @@ export default {
           } else {
             this.disableFreeText = false
           }
+          if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
+            group.InfoRequest = message.InfoRequest;
+          }
           this.maybeEnableFreeText();
           return;
         }

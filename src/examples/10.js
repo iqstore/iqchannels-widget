@@ -31,7 +31,6 @@ w.on('open', function () {
   frameWindow.postMessage(msg, '*');
 });
 w.on('file-clicked', function (url) {
-  console.log(url);
   window.alert(url);
 });
 
