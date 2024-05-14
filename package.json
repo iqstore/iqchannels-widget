@@ -24,19 +24,18 @@
     "hammerjs": "^2.0.8",
     "jquery": "3.6.0",
     "jssha": "^3.3.1",
-    "lamejs": "1.2.1",
+    "lamejs": "1.2.0",
     "linkify-html": "^4.1.3",
     "linkify-string": "^4.1.3",
     "linkifyjs": "^4.1.3",
     "markdown-it": "^14.1.0",
     "node-sass": "6.0.0",
-    "markdown-it": "^14.1.0",
     "normalize.css": "8.0.1",
     "v-wave": "^2.0.0",
     "vue": "^3.3.13",
     "vue-simple-context-menu": "^4.1.0",
     "vue3-touch-events": "^4.1.8",
-    "wavesurfer.js": "7.5.4"
+    "wavesurfer.js": "4.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.23.9",

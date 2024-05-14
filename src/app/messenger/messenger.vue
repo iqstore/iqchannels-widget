@@ -768,6 +768,9 @@ export default {
           } else {
             this.disableFreeText = false
           }
+          if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
+            group.InfoRequest = message.InfoRequest;
+          }
           this.maybeEnableFreeText();
           return;
         }
@@ -1020,7 +1023,33 @@ export default {
       if (info.Sending) {
         return;
       }
-      this.client.Name = info.FirstName + " " + info.SurName;
+      let clientName = this.client.Name
+      let firstName = '';
+      let middleName = '';
+      let lastName = '';
+      for (let f of info.Form.Fields) {
+        if (f.Name === 'Имя' && f.CorrespondingField !== '') {
+          firstName = f.CorrespondingField;
+        }
+        if (f.Name === 'Отчество' && f.CorrespondingField !== '') {
+          middleName += f.CorrespondingField;
+        }
+        if (f.Name === 'Фамилия' && f.CorrespondingField !== '') {
+          lastName += f.CorrespondingField;
+        }
+      }
+      if (firstName !== '') {
+        clientName = firstName
+      }
+      if (middleName !== '') {
+        clientName += ' ' + middleName
+      }
+      if (lastName !== '') {
+        clientName += ' ' + lastName
+      }
+      if (firstName !== '') {
+      this.client.Name = clientName;
+      }
       info.Sending = client
           .sendInfo(info)
           .then(
