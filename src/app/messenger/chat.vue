@@ -481,6 +481,22 @@
   animation: 1.5s afterScrollAnimateClient ease-out forwards;
 }
 
+.file_state-not_approved {
+  text-align: center;
+  .rejected {
+    color: red;
+  }
+  .check_error {
+    color: red;
+  }
+  .on_checking {
+    color: #2D98F4;
+  }
+  .sent_for_checking {
+    color: #2D98F4;
+  }
+}
+
 @keyframes afterScrollAnimateClient {
   0% {
     background: none;
@@ -572,7 +588,7 @@
                       pre.text()
                       button.img-button(
                         v-for="action of replyMsg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-                    div(v-else-if="replyMsg.File && replyMsg.File.Type == 'image'")
+                    div(v-else-if="replyMsg.File && replyMsg.File.Type === 'image'")
                       a.image(
                         v-if="docWidth > 1024",
                         :href="replyMsg.File.URL",
@@ -588,7 +604,7 @@
                       div(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'")
                         button.img-button(
                           v-for="action of replyMsg.Actions") {{ action.Title }}
-                    a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type == 'file'"
+                    a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type === 'file'"
                       :href="replyMsg.File.URL"
                       target="_blank"
                       @click="clickFile(replyMsg, $event)")
@@ -637,7 +653,17 @@
                       button.img-button(
                         v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                   div(v-else-if="msg.File && msg.File.Type === 'file'")
+                    .file_state-not_approved(v-if="msg.File.State !== 'approved'")
+                      .check_error(v-if="msg.File.State === 'check_error'")
+                        span Ошибка проверки файла
+                      .on_checking(v-if="msg.File.State === 'on_checking'")
+                        span Файл на проверке
+                      .sent_for_checking(v-if="msg.File.State === 'sent_for_checking'")
+                        span Файл отправлен на проверку
+                      .rejected(v-if="msg.File.State === 'rejected'")
+                        span Небезопасный файл
                     a.message_file(
+                      v-else-if="msg.File.State === 'approved'"
                       :href="msg.File.URL"
                       target="_blank"
                       @click="clickFile(msg, $event)")

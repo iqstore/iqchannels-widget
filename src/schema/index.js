@@ -18,6 +18,7 @@ export const ChatEventChatClosed = 'chat_closed';
 export const ChatEventMessagesDeleted = 'delete-messages';
 export const ChatEventCloseSystemChat = 'close-system-chat';
 export const ChatEventTyping = 'typing';
+export const ChatEventFileUpdated = 'file_updated';
 
 export const LOCALSTORAGE_CHANNEL_NAME = "iq-channel-name";
 export const LOCALSTORAGE_WIDGET_CONFIG = "iq-widget-config";
