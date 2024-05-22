@@ -18,6 +18,7 @@ class Client {
 
     this.authToken = null;
     this.authSessionID = null;
+    this.multiClientAuth = {};
   }
 
   clearAuth () {
@@ -36,6 +37,14 @@ class Client {
     let s = auth.Session;
     this.authToken = s.Token;
     this.authSessionID = s.Id;
+  }
+
+  setMultiAuth (channel) {
+    if (channel && this.multiClientAuth[channel]) {
+      this.setAuth(this.multiClientAuth[channel]);
+    } else {
+      console.error("Неверный канал");
+    }
   }
 
   post (path, data) {
@@ -172,6 +181,9 @@ class Client {
     return this._enqueueRequest('/clients/integration_auth', data, options)
       .then(response => {
         let auth = response.Result;
+        if (channel) {
+          this.multiClientAuth[channel] = auth;
+        }
         this.setAuth(auth);
 
         return auth.Client;

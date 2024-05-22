@@ -80,6 +80,7 @@
 <script>
 
 import ChatContainer from "../components/chat-container.vue";
+import client from "../../client";
 
 export default {
   name: "multi-messenger",
@@ -110,6 +111,7 @@ export default {
   methods: {
     setCurrentChat(channel, type) {
       this.currentChannel = channel;
+      client.setMultiAuth(this.currentChannel);
       this.chatSelected = true;
       this.currentChatType = type;
     },
