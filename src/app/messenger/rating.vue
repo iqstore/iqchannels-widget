@@ -320,25 +320,25 @@
                         class="svg-inline--fa fa-star fa-w-18" role="img"
                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512")
                         path(fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM405.8 317.9l27.8 162L288 403.5 142.5 480l27.8-162L52.5 203.1l162.7-23.6L288 32l72.8 147.5 162.7 23.6-117.7 114.8z")
-            .one_of_list.mt(v-if="poll.Questions[index].Type === 'one_of_list'")
-                .buttons-one-of-list.m-b(v-for="(answer, i) in poll.Questions[index].Answers",
-                    @click.prevent="setPollVariant(answer)"
-                )
-                    button.button.button_one_of_list(@click.prevent="setPollVariant(answer)", :class="{'button_active': answer.Id === pollResult[index].RatingPollAnswerId }") {{ answer.Text }}
-            .fcr.mt(v-if="poll.Questions[index].Type === 'fcr'")
-              .buttons-fcr.mt
-                button.button.button_one_of_list(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])", :class="{'button_active': poll.Questions[index].Answers[0].Id === pollResult[index].RatingPollAnswerId}") {{ poll.Questions[index].Answers[0].Text }}
-                button.button.button_one_of_list(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[1])", :class="{'button_active': poll.Questions[index].Answers[1].Id === pollResult[index].RatingPollAnswerId}") {{ poll.Questions[index].Answers[1].Text }}
+        .one_of_list.mt(v-if="poll.Questions[index].Type === 'one_of_list'")
+            .buttons-one-of-list.m-b(v-for="(answer, i) in poll.Questions[index].Answers",
+                @click.prevent="setPollVariant(answer)"
+            )
+                button.button.button_one_of_list(@click.prevent="setPollVariant(answer)", :class="{'button_active': answer.Id === pollResult[index].RatingPollAnswerId }") {{ answer.Text }}
+        .fcr.mt(v-if="poll.Questions[index].Type === 'fcr'")
+          .buttons-fcr.mt
+            button.button.button_one_of_list(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])", :class="{'button_active': poll.Questions[index].Answers[0].Id === pollResult[index].RatingPollAnswerId}") {{ poll.Questions[index].Answers[0].Text }}
+            button.button.button_one_of_list(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[1])", :class="{'button_active': poll.Questions[index].Answers[1].Id === pollResult[index].RatingPollAnswerId}") {{ poll.Questions[index].Answers[1].Text }}
 
-            .input(v-if="poll.Questions[index].Type === 'input'")
-                textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
+        .input(v-if="poll.Questions[index].Type === 'input'")
+            textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
 
-            .buttons-next-prev.mt(v-if="this.poll.Questions.length !== 1")
-                button.button(@click.prevent="prevQuestion()", :disabled="index === 0") Назад
-                button.button(@click.prevent="nextQuestion()", :disabled="isRatingPollAnswerEmpty() && index === poll.Questions.length - 1") Далее
+        .buttons-next-prev.mt(v-if="this.poll.Questions.length !== 1")
+            button.button(@click.prevent="prevQuestion()", :disabled="index === 0") Назад
+            button.button(@click.prevent="nextQuestion()", :disabled="isRatingPollAnswerEmpty() && index === poll.Questions.length - 1") Далее
 
-            .buttons-answer.mt(v-if="this.poll.Questions.length === 1")
-                button.button(@click="sendRatingPoll") Отправить ответ
+        .buttons-answer.mt(v-if="this.poll.Questions.length === 1")
+            button.button(@click="sendRatingPoll") Отправить ответ
 
     .pending(v-if="thanksFeedback")
         .thanks-feedback
