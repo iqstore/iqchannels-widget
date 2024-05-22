@@ -72,7 +72,7 @@
       :closeSystemChat="closeSystemChat",
       :doc-width="docWidth",
       :is-multiple="true",
-      :chat-type="currentChatType",
+      :chat-type-prop="currentChatType",
     )
 
 </template>
@@ -112,6 +112,7 @@ export default {
     setCurrentChat(channel, type) {
       this.currentChannel = channel;
       client.setMultiAuth(this.currentChannel);
+      console.log(this.multiClient);
       this.chatSelected = true;
       this.currentChatType = type;
     },
@@ -149,6 +150,7 @@ export default {
       this.chatSelected = false;
       setTimeout(() => {
         this.currentChannel = null;
+        this.currentChatType = null;
       }, 250);
     },
 
