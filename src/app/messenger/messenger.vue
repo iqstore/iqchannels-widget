@@ -401,7 +401,7 @@ export default {
       return this.client.Type === "anonymous";
     },
     hasPersonalManager() {
-      return !!this.client.PersonalManagerId;
+      return !!this.client.PersonalManagerId || !!this.client.PersonalManagerGroupId;
     },
 
   },
