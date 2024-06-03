@@ -28,8 +28,29 @@ export default {
   },
 
   mounted() {
-    if (this.multiChatData) {
-      if (this.multiChatData.map(e => e.credentials !== null).length !== this.multiChatData.length) {
+    Promise.resolve(client.getBlocker(this.channel)).then((blocker) => {
+        if (blocker.Data.Enabled) {
+            this.error = blocker.Data.Text;
+            return;
+        }   
+        else {
+            authClients();
+        }
+    })
+},
+
+authClients() {
+    if (!this.multiChatData) {
+      authSingleChat();
+      return;
+    } 
+
+    authMultiChat();
+},
+
+
+authMultiChat() {
+    if (this.multiChatData.map(e => e.credentials !== null).length !== this.multiChatData.length) {
         this.error = "Чат недоступен для неавторизованных клиентов.";
       }
       const resultData = {};
@@ -48,17 +69,20 @@ export default {
                 this.authorizing = null;
               }
           );
-    } else {
-      let auth = client.authorize(this.credentials, this.channel);
-      this.authorizing = auth
-          .then(client => {
-            this.$emit("on-client-authorized", client);
-          })
-          .catch(error => {
-            this.error = error;
-            this.authorizing = null;
-          });
-    }
-  },
+},
+
+authSingleChat() {
+    let auth = client.authorize(this.credentials, this.channel);
+
+    this.authorizing = auth
+    .then(client => {
+      this.$emit("on-client-authorized", client);
+    })
+    .catch(error => {
+      this.error = error;
+      this.authorizing = null;
+    });
+}
+
 };
 </script>
