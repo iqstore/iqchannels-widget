@@ -205,7 +205,6 @@
   margin-top: 8px !important;
   margin-right: 8px !important;
   float: left;
-  width: 35%;
   white-space: nowrap;
   word-break: keep-all;
 }
