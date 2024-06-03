@@ -43,7 +43,7 @@ class Client {
     if (channel && this.multiClientAuth[channel]) {
       this.setAuth(this.multiClientAuth[channel]);
     } else {
-      console.error("Неверный канал");
+      console.error('Неверный канал');
     }
   }
 
@@ -174,7 +174,7 @@ class Client {
   authorize (credentials, channel) {
     const data = {
       Credentials: credentials,
-      Channel: channel,
+      Channel: channel
     };
     const options = { shouldRetry: (error) => !(error.unauthorized() || error.invalid()) };
 
@@ -331,6 +331,10 @@ class Client {
     const request = { RatingId: ratingId };
     return this._enqueueRequest(`/ratings/ignore`, request)
       .then(response => new Relations(config, response.Rels).rating(response.Result));
+  }
+
+  getInfoLinkByChannel (channel) {
+    return this._enqueueRequest(`/info_requests/${channel}`);
   }
 
   sendInfo (info) {
