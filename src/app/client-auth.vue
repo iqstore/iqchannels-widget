@@ -28,15 +28,15 @@ export default {
   },
 
   mounted() {
-    Promise.resolve(client.getBlocker(this.channel)).then((blocker) => {
-        if (blocker.Data.Enabled) {
-            this.error = blocker.Data.Text;
-            return;
-        }   
-        else {
-            this.authClients();
-        }
-    })
+        client.getBlocker(this.channel).then((blocker) => {
+            if (blocker.Data.Enabled) {
+                this.error = blocker.Data.Text;
+                return;
+            }   
+            else {
+                this.authClients();
+            }
+        })
     },
 
     methods: {
