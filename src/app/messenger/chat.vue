@@ -687,11 +687,11 @@
 
                     scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
           div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
-            div.choice_box_dropdown
-              div(style="display:flex;justify-content:flex-end")
-              button.choice_button(type="button"
-                v-for="choice in group.LastMessage.SingleChoices",
-                @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
+            div
+                div.choice_box_dropdown(v-for="choice in group.LastMessage.SingleChoices")
+                    button.choice_button(type="button", style="text-align: center"
+                        v-if="!choice.Deleted",
+                        @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
           div.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
             button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
               span {{ getProductMsgText(group.LastMessage) }}

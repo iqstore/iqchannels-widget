@@ -1279,7 +1279,7 @@ export default {
         messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
       }
       this.appendLocalMessage(messageForm);
-      client.channelSend(this.channel, messageForm);
+      client.channelSend(this.channel, messageForm).then(() => this.loadHistory());
     },
 
     handleVersion() {
