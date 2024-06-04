@@ -32,11 +32,15 @@ export default {
             if (blocker.Data.Enabled) {
                 this.error = blocker.Data.Text;
                 return;
-            }   
+            }
             else {
                 this.authClients();
             }
-        })
+        }).catch(err => {
+          if (err.text.includes("404")) {
+            this.authClients();
+          }
+        });
     },
 
     methods: {
@@ -44,7 +48,7 @@ export default {
         if (!this.multiChatData) {
             this.authSingleChat();
         return;
-        } 
+        }
 
         this.authMultiChat();
     },
