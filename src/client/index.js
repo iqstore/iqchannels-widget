@@ -339,6 +339,10 @@ class Client {
       .then(response => new Relations(config, response.Rels).rating(response.Result));
   }
 
+  getInfoLinkByChannel (channel) {
+    return this._enqueueRequest(`/info_requests/${channel}`);
+  }
+
   sendInfo (info) {
     const request = {
       RequestId: info.Id,

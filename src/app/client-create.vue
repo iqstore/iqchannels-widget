@@ -25,6 +25,11 @@ input[type="text"] {
   width: 246px;
   margin: 16px 0 5px 0;
   display: inline-block;
+
+  &:disabled {
+        background-color: gray;
+        color: white;
+    }
 }
 .close-button{
   position: absolute;
@@ -35,6 +40,18 @@ input[type="text"] {
 }
 .loader {
   margin-top: 4px;
+}
+
+.client-consent{
+  font-size: 12px;
+  margin: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-custom{
+  margin-right: 5px;
 }
 </style>
 
@@ -49,14 +66,18 @@ input[type="text"] {
 
   .center(v-else="checking")
     div
-      p.text
-        strong {{ this.greetings?.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
-        br
-        span {{ this.greetings?.Greeting ? this.greetings.Greeting : "желательно указать" }}
-        br()
-        span {{ !this.greetings?.Greeting ? "фамилию и имя:" : "" }}
-      input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create")
-    a.button(v-if="!creating" @click.prevent="create" href="#") Начать чат
+        p.text
+            strong {{ this.greetings?.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
+            br
+            span {{ this.greetings?.Greeting ? this.greetings.Greeting : "желательно указать" }}
+            br()
+            span {{ !this.greetings?.Greeting ? "фамилию и имя:" : "" }}
+        input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create" v-model="clientName")
+        div.client-consent
+            input(type="checkbox" v-model="personalDataConsent").checkbox-custom
+            span Согласие на обработку
+                a(style="text-decoration:underline" :href="processDataLink" target="_blank") &nbsp;персональных данных
+    button.button(v-if="!creating" :disabled="!personalDataConsent || !clientName || clientName === ''" @click.prevent="create" href="#") Начать чат
     a.button(v-if="creating" @click.prevent="" href="#")
         scale-loader.loader(v-if="creating" color="#ffffff" height="24px")
 
@@ -75,10 +96,19 @@ export default {
 
   data() {
     return {
-      checking: true,
-      creating: null,
-      error: null
+        clientName: null,
+        personalDataConsent: false, 
+        processDataLink: null,
+        checking: true,
+        creating: null,
+        error: null
     };
+  },
+
+  mounted() {
+    client.getInfoLinkByChannel(this.channel).then((link) => {
+        this.processDataLink = link.Data
+    })
   },
 
   created() {
@@ -95,8 +125,6 @@ export default {
   methods: {
     create() {
       this.error = null;
-      let name = '';
-      name = this.$refs.name.value.trim();
 
       this.creating = client
         .anonymousSignup(name, this.channel)
@@ -110,7 +138,15 @@ export default {
     },
     onCloseClicked () {
       this.$emit("on-close-clicked");
-    }
+    },
+
+
+    onEnterPressed(event) {
+      if (!event.shiftKey) {
+        event.preventDefault();
+        this.create();
+      }
+    },
   },
 };
 </script>
