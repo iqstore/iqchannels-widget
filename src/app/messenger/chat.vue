@@ -752,15 +752,19 @@ export default {
     this.docWidth = this.$parent.$parent.docWidth;
   },
 
+  updated() {
+    this.scrollToLastMessage();
+    this.docWidth = this.$parent.$parent.docWidth;
+  },
+
   methods: {
     humanSize,
     humanDate,
     humanDateTime,
     scrollToLastMessage() {
-      const el = $('#chat');
-
-      el.stop().animate({
-        scrollTop: el[0].scrollHeight
+      const chat = $('#chat');
+      chat.stop().animate({
+        scrollTop: chat[0].scrollHeight
       }, 800);
     },
 
