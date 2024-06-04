@@ -43,7 +43,7 @@ class Client {
     if (channel && this.multiClientAuth[channel]) {
       this.setAuth(this.multiClientAuth[channel]);
     } else {
-      console.error("Неверный канал");
+      console.error('Неверный канал');
     }
   }
 
@@ -174,8 +174,9 @@ class Client {
   authorize (credentials, channel) {
     const data = {
       Credentials: credentials,
-      Channel: channel,
+      Channel: channel
     };
+
     const options = { shouldRetry: (error) => !(error.unauthorized() || error.invalid()) };
 
     return this._enqueueRequest('/clients/integration_auth', data, options)
@@ -258,6 +259,11 @@ class Client {
   checkIfAudioMsgEnabled (channel) {
     return this._enqueueRequest(`/chats/channel/audio_messages_enabled/${channel}`, {}, { shouldRetry: (error) => !error });
   }
+
+  getBlocker (channel) {
+    return this._enqueueRequest(`/chats/channel/blocker/${channel}`, {}, { shouldRetry: (error) => !error });
+  }
+
   getWidgetGreetings (channel) {
     return this._enqueueRequest(`/widget/greetings/${channel}`, {}, { shouldRetry: (error) => !error });
   }

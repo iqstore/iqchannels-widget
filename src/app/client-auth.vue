@@ -28,37 +28,63 @@ export default {
   },
 
   mounted() {
-    if (this.multiChatData) {
-      if (this.multiChatData.map(e => e.credentials !== null).length !== this.multiChatData.length) {
-        this.error = "Чат недоступен для неавторизованных клиентов.";
-      }
-      const resultData = {};
-      let auth = Promise.all(this.multiChatData.reduce((acc, el) => {
-        acc.push(client.authorize(el.credentials, el.channel).then(data => {
-          resultData[el.channel] = data;
-        }));
-        return acc;
-      }, []));
-      this.authorizing = auth
-          .then(result => {
-            this.$emit("on-client-multiple-authorized", resultData);
-          })
-          .catch(error => {
-                this.error = error;
-                this.authorizing = null;
-              }
-          );
-    } else {
-      let auth = client.authorize(this.credentials, this.channel);
-      this.authorizing = auth
-          .then(client => {
-            this.$emit("on-client-authorized", client);
-          })
-          .catch(error => {
-            this.error = error;
-            this.authorizing = null;
-          });
+        client.getBlocker(this.channel).then((blocker) => {
+            if (blocker.Data.Enabled) {
+                this.error = blocker.Data.Text;
+                return;
+            }   
+            else {
+                this.authClients();
+            }
+        })
+    },
+
+    methods: {
+        authClients() {
+        if (!this.multiChatData) {
+            this.authSingleChat();
+        return;
+        } 
+
+        this.authMultiChat();
+    },
+
+
+    authMultiChat() {
+        if (this.multiChatData.map(e => e.credentials !== null).length !== this.multiChatData.length) {
+            this.error = "Чат недоступен для неавторизованных клиентов.";
+        }
+        const resultData = {};
+        let auth = Promise.all(this.multiChatData.reduce((acc, el) => {
+            acc.push(client.authorize(el.credentials, el.channel).then(data => {
+            resultData[el.channel] = data;
+            }));
+            return acc;
+        }, []));
+        this.authorizing = auth
+            .then(result => {
+                this.$emit("on-client-multiple-authorized", resultData);
+            })
+            .catch(error => {
+                    this.error = error;
+                    this.authorizing = null;
+                }
+            );
+        },
+
+    authSingleChat() {
+        let auth = client.authorize(this.credentials, this.channel);
+
+        this.authorizing = auth
+        .then(client => {
+        this.$emit("on-client-authorized", client);
+        })
+        .catch(error => {
+        this.error = error;
+        this.authorizing = null;
+        });
+        }
     }
-  },
+
 };
 </script>
