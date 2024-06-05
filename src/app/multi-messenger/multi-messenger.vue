@@ -112,7 +112,6 @@ export default {
     setCurrentChat(channel, type) {
       this.currentChannel = channel;
       client.setMultiAuth(this.currentChannel);
-      console.log(this.multiClient);
       this.chatSelected = true;
       this.currentChatType = type;
     },
