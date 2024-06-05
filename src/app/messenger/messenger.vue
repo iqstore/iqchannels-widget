@@ -453,9 +453,9 @@ export default {
 
   methods: {
     scrollToLastMessage() {
-      const el = $('#chat');
-      el.stop().animate({
-        scrollTop: el[0].scrollHeight
+      const chat = $('#chat');
+      chat.stop().animate({
+        scrollTop: chat[0].scrollHeight
       }, 800);
     },
 
@@ -469,7 +469,7 @@ export default {
       this.cashedGroups = this.groups;
     },
 
-    scrollToFoundMessage(id) {
+    scrollToFoundMessage(id, block) {
       this.shouldBeScrolledBottom = false;
       this.searching = false;
       this.search = "";
@@ -480,7 +480,7 @@ export default {
         const msgElement = document.getElementById(id);
         msgElement.scrollIntoView({
           behavior: 'smooth',
-          block: 'center'
+          block: block ?? 'center'
         })
         this.shouldBeScrolledBottom = true;
         this.animateMsgAfterScroll(id);
@@ -1206,7 +1206,7 @@ export default {
       // Someone else's message
       if (!message.My) {
         this.appendMessage(message);
-        this.scrollToLastMessage();
+        this.scrollToFoundMessage(message.Id, 'end');
         return true;
       }
       // Replace my own message
@@ -1279,7 +1279,7 @@ export default {
         messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
       }
       this.appendLocalMessage(messageForm);
-      client.channelSend(this.channel, messageForm);
+      client.channelSend(this.channel, messageForm).then(() => this.loadHistory());
     },
 
     handleVersion() {
