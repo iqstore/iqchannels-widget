@@ -879,6 +879,7 @@ export default {
         Payload: schema.ChatPayloadText,
         Text: text,
         BotpressPayload: botpressPayload,
+        Value: botpressPayload,
         ChatType: this.chatType
       };
       if (this.disableFreeText) {
