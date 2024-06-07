@@ -1306,15 +1306,17 @@ export default {
       });
     },
 
-    onFileSelected(file, text, id) {
+    onFileSelected(files, text, id) {
       let messageForm;
-      if (id) {
-        messageForm = this.newFileMessageWithReply(file, id, text);
-      } else {
-        messageForm = this.newFileMessage(file, text);
+      for (const file of files) {
+        if (id) {
+          messageForm = this.newFileMessageWithReply(file, id, text);
+        } else {
+          messageForm = this.newFileMessage(file, text);
+        }
+        const message = this.appendLocalMessage(messageForm);
+        this.uploadMessage(message);
       }
-      const message = this.appendLocalMessage(messageForm);
-      this.uploadMessage(message);
     },
 
   }

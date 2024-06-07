@@ -301,19 +301,12 @@
       svg(width='9' height='9' viewbox='0 0 9 9' fill='none' xmlns='http://www.w3.org/2000/svg' @click="resetReplayedMsg()")
         path(d='M8.79063 0.209373C8.65653 0.0753116 8.47467 0 8.28505 0C8.09543 0 7.91357 0.0753116 7.77947 0.209373L4.5 3.48884L1.22053 0.209373C1.08643 0.0753116 0.904572 0 0.714952 0C0.525332 0 0.343475 0.0753116 0.209373 0.209373C0.0753116 0.343475 0 0.525332 0 0.714952C0 0.904572 0.0753116 1.08643 0.209373 1.22053L3.48884 4.5L0.209373 7.77947C0.0753116 7.91357 0 8.09543 0 8.28505C0 8.47467 0.0753116 8.65653 0.209373 8.79063C0.343475 8.92469 0.525332 9 0.714952 9C0.904572 9 1.08643 8.92469 1.22053 8.79063L4.5 5.51116L7.77947 8.79063C7.91357 8.92469 8.09543 9 8.28505 9C8.47467 9 8.65653 8.92469 8.79063 8.79063C8.92469 8.65653 9 8.47467 9 8.28505C9 8.09543 8.92469 7.91357 8.79063 7.77947L5.51116 4.5L8.79063 1.22053C8.92469 1.08643 9 0.904572 9 0.714952C9 0.525332 8.92469 0.343475 8.79063 0.209373Z' fill='#C6E39F')
 
-    .upload_file(v-if="currentFile")
-        .upload_file__data
-            svg(xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512")
-                path(d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z")
-            div
-                a.file
-                    .filename {{ currentFile.name }}
-                    .filesize {{ humanSize(currentFile.size) }}
-        svg(width='9' height='9' viewbox='0 0 9 9' fill='none' xmlns='http://www.w3.org/2000/svg' style="cursor: pointer;" @click="resetUploadFile()")
-            path(d='M8.79063 0.209373C8.65653 0.0753116 8.47467 0 8.28505 0C8.09543 0 7.91357 0.0753116 7.77947 0.209373L4.5 3.48884L1.22053 0.209373C1.08643 0.0753116 0.904572 0 0.714952 0C0.525332 0 0.343475 0.0753116 0.209373 0.209373C0.0753116 0.343475 0 0.525332 0 0.714952C0 0.904572 0.0753116 1.08643 0.209373 1.22053L3.48884 4.5L0.209373 7.77947C0.0753116 7.91357 0 8.09543 0 8.28505C0 8.47467 0.0753116 8.65653 0.209373 8.79063C0.343475 8.92469 0.525332 9 0.714952 9C0.904572 9 1.08643 8.92469 1.22053 8.79063L4.5 5.51116L7.77947 8.79063C7.91357 8.92469 8.09543 9 8.28505 9C8.47467 9 8.65653 8.92469 8.79063 8.79063C8.92469 8.65653 9 8.47467 9 8.28505C9 8.09543 8.92469 7.91357 8.79063 7.77947L5.51116 4.5L8.79063 1.22053C8.92469 1.08643 9 0.904572 9 0.714952C9 0.525332 8.92469 0.343475 8.79063 0.209373Z' fill='#C6E39F')
+    .upload_container(v-if="currentFiles.length > 0")
+      .upload_files(v-for="file in currentFiles")
+        upload-file(:current-file="file", @reset-upload="resetUploadFile")
 
     .composer-inputs(:class="{'disabled': disableFreeText}")
-        input.hidden(type="file" ref="uploadInput" @change="uploadFile")
+        input.hidden(type="file" ref="uploadInput" @change="uploadFile" multiple)
         a.button.csm-btn(v-if="recording || recordingStopped" @click="cancelRecording()", style="cursor:pointer")
           svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
             path(d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z")
@@ -340,10 +333,12 @@ import lamejs from "lamejs";
 import client from '../../client';
 import { humanSize } from '../../lib/filters';
 import MicrophonePlugin from "wavesurfer.js/dist/plugin/wavesurfer.microphone.js";
+import UploadFile from "../components/upload-file.vue";
 const TYPING_INTERVAL = 2000;
 const TEXTAREA_HEIGHT = '32px';
 
 export default {
+  components: { UploadFile },
   data: function() {
     return {
       lastTypingEventAt: 0,
@@ -361,7 +356,7 @@ export default {
       msgVisible: false,
       typingVisible: false,
       timer: null,
-      currentFile: null,
+      currentFiles: [],
     };
   },
 
@@ -431,7 +426,7 @@ export default {
   methods: {
     humanSize,
     trySendFile() {
-      if (!this.currentFile) {
+      if (!this.currentFiles.length) {
         this.$refs.uploadInput.click()
       } else {
         this.trySendMessage();
@@ -631,7 +626,7 @@ export default {
     },
     getClass() {
       return {
-        'button-active': !this.titleVisible || this.currentFile
+        'button-active': !this.titleVisible || this.currentFiles.length
       }
     },
 
@@ -671,14 +666,14 @@ export default {
       const messageText = this.$refs.text.value
         .replace(/[\r\n]{2,}/g, "\n")
         .replace(/^[\s]+|[\s]+$/gm, "");
-      if (messageText || this.currentFile) {
+      if (messageText || this.currentFiles.length > 0) {
         this.stopTyping();
         this.scrollToLastMessage();
-        if (this.currentFile) {
+        if (this.currentFiles.length > 0) {
           if (this.msgVisible && this.msg) {
-            this.$emit("file-selected", this.currentFile, messageText, this.msg.Id);
+            this.$emit("file-selected", this.currentFiles, messageText, this.msg.Id);
           } else {
-            this.$emit("file-selected", this.currentFile, messageText, null);
+            this.$emit("file-selected", this.currentFiles, messageText, null);
           }
         } else if (this.msg && this.msgVisible) {
           this.$emit("message-composed", { messageText, replyToMessageId: this.msg.Id, payload: payload });
@@ -686,7 +681,7 @@ export default {
           this.$emit("message-composed", { messageText, payload: payload });
         }
         this.resetReplayedMsg();
-        this.resetUploadFile();
+        this.resetUploadFiles();
       }
       this.$refs.text.value = "";
       this.titleVisible = true;
@@ -751,12 +746,19 @@ export default {
     },
 
     uploadFile() {
-      const file = this.$refs.uploadInput.files[0];
-      this.currentFile = file;
+      const files =  Array.from(this.$refs.uploadInput.files);
+      this.currentFiles = files;
     },
 
-    resetUploadFile() {
-      this.currentFile = null;
+    resetUploadFile(file) {
+      this.currentFiles = this.currentFiles.filter(e => e.name !== file.name);
+      if (this.currentFiles.length === 0) {
+        this.$refs.uploadInput.value = "";
+      }
+    },
+
+    resetUploadFiles() {
+      this.currentFiles = [];
       this.$refs.uploadInput.value = "";
     },
 
@@ -768,7 +770,7 @@ export default {
       switch (type) {
         case "text":  this.$refs.text.value = data; break;
         case "image":
-          this.currentFile = data;
+          this.currentFiles.push(data);
           break;
         default: break;
       }
