@@ -535,7 +535,7 @@ export default {
 
     // Private
 
-    loadHistory() {
+    loadHistory(subscribeNeeded = true) {
       client.channelMessages(this.channel, this.chatType).then(messages => {
         this.lastEventId = messages.length
             ? messages[messages.length - 1].EventId
@@ -543,7 +543,9 @@ export default {
         this.groups = [];
         this.appendMessages(messages);
         this.markMessages();
-        this.subscribe();
+        if (subscribeNeeded) {
+          this.subscribe();
+        }
       });
     },
 
@@ -1279,7 +1281,7 @@ export default {
         messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
       }
       this.appendLocalMessage(messageForm);
-      client.channelSend(this.channel, messageForm).then(() => this.loadHistory());
+      client.channelSend(this.channel, messageForm).then(() => this.loadHistory(false));
     },
 
     handleVersion() {

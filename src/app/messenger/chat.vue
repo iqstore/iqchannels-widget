@@ -432,6 +432,7 @@
 
     img {
       object-fit: contain;
+      width: 100%;
     }
   }
 
@@ -680,12 +681,12 @@
                     span.listened-flag(v-if="msg.Listened" title="Прослушано")
                       svg(xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512")
                         path(d="M256 80C149.9 80 62.4 159.4 49.6 262c9.4-3.8 19.6-6 30.4-6c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48c-44.2 0-80-35.8-80-80V384 336 288C0 146.6 114.6 32 256 32s256 114.6 256 256v48 48 16c0 44.2-35.8 80-80 80c-26.5 0-48-21.5-48-48V304c0-26.5 21.5-48 48-48c10.8 0 21 2.1 30.4 6C449.6 159.4 362.1 80 256 80z")
-                    span(v-if="group.LastMessage.Id") {{ group.LastMessage.CreatedAt.toTimeString().slice(0, 5) }}
-                    span.received(v-if="group.LastMessage.Id && group.LastMessage.Received" title="Доставлено" :class="{'blue': group.LastMessage.Listened}") ✓
-                    span.read(v-if="group.LastMessage.Id && group.LastMessage.Read" title="Прочитано") ✓
+                    span(v-if="msg.Id") {{ msg.CreatedAt.toTimeString().slice(0, 5) }}
+                    span.received(v-if="msg.Id" title="Доставлено" :class="{'blue': msg.Listened}") ✓
+                    span.read(v-if="msg.Read" title="Прочитано") ✓
 
 
-                    scale-loader.loader(v-if="!group.LastMessage.Id" title="Отправляется" color="#999999" height="8px" width="1px")
+                    scale-loader.loader(v-if="!msg.Id" title="Отправляется" color="#999999" height="8px" width="1px")
           div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
             div
                 div.choice_box_dropdown(v-for="choice in group.LastMessage.SingleChoices")
