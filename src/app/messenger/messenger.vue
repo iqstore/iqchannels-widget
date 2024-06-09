@@ -41,7 +41,6 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
 #chat {
   width: 100%;
   background-color: white;
-  position: relative;
   overflow-y: scroll;
   -webkit-touch-callout: none;
   -webkit-user-select: none;

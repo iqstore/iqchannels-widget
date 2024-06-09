@@ -558,7 +558,7 @@
       .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
         .body()
           .message-wrapper(v-for="(msg, index) in group.Messages",
-            v-hammer:pan="(event)=> swipeRight(event, msg)",
+            v-hammer:pan="(event) => swipeRight(event, msg)",
             :class="{ scroll_msg_animation_client: msg.My && animateMsgId === msg.Id, scroll_msg_animation_user: !msg.My && animateMsgId === msg.Id }"
             :id="msg.Id")
 
@@ -574,6 +574,7 @@
 
               .message.bubble(
                 v-touch:longtap="longtapEvent(msg)",
+                @contextmenu.prevent="($event) => showMsgContext($event, msg)",
                 :title="getTitle()",
 
                 :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }")
@@ -710,6 +711,16 @@
         @send-info="sendInfo",
         @ignore-info="ignoreInfo"
       )
+
+  v-context(
+    element-id="msg-context",
+    :options=`[
+        {name: 'Ответить', class: 'context-menu-option'},
+        {name: 'Копировать', class: 'context-menu-option'}
+    ]`,
+    ref="msgContextMenu",
+    @option-clicked="optionClicked",
+  )
 
 </template>
 
@@ -927,6 +938,10 @@ export default {
       }
     },
 
+    showMsgContext(event, msg) {
+      this.$refs.msgContextMenu.showMenu(event, msg);
+    },
+
     animateMsgAfterScroll(msgId) {
       this.animateMsgId = +msgId;
       setTimeout(() => {
@@ -939,6 +954,17 @@ export default {
         return "Перейти к сообщению"
       }
       return "Сообщение"
+    },
+
+    optionClicked(event) {
+      switch (event.option.name) {
+        case "Ответить":
+          this.$emit("reply-msg", event.item);
+          break;
+        case "Копировать":
+          navigator.clipboard.writeText(event.item.Text);
+          break;
+      }
     },
 
     getIcon(msg) {
