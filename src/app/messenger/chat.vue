@@ -727,7 +727,7 @@
 <script>
 import avatar from './avatar.vue';
 import rating from './rating.vue';
-import linkifyString from 'linkify-string';
+import { linkify } from "../../lib/linkify";
 import client from '../../client';
 import inforequest from './info-request.vue';
 import { humanDate, humanDateTime, humanSize } from '../../lib/filters';
@@ -1069,7 +1069,7 @@ export default {
     },
 
     linkifyText(text) {
-      return linkifyString(text, { target: '_blank' });
+      return linkify(text);
     }
   }
 };
