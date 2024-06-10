@@ -1182,6 +1182,10 @@ export default {
             break;
           case schema.ChatEventFileUpdated:
             this.handleIncomingUpdatedFile(event);
+            break;
+          case schema.ChatEventClientChanged:
+            this.$emit("client-changed", event)
+            break;
           default:
             console.log("Unhandled channel event", event);
         }
