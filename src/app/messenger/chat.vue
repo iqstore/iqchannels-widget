@@ -185,8 +185,8 @@
   position: relative;
 }
 
-.sending {
-  background-color: rgba(212, 248, 186, 0.4) !important;
+.message-wrapper .message-inner .sending {
+  background-color: rgba(212, 248, 186, 0.4);
 }
 
 .loader {
@@ -765,7 +765,6 @@ export default {
   },
 
   updated() {
-    this.scrollToLastMessage();
     this.docWidth = this.$parent.$parent.docWidth;
   },
 

@@ -32,9 +32,9 @@
 
 <template lang="pug">
   .chat-container
-    .circle-chat(:style="{backgroundColor: chat.MultiChatsInfo.ChannelIconColor ?? '#0096F7'}")
+    .circle-chat(:style="{backgroundColor: chat.MultiChatsInfo?.ChannelIconColor ?? '#0096F7'}")
       font-awesome-icon(:icon="isWithPersonalManager ? ['fas', 'fa-user'] : ['fas', 'fa-message']", :class="{'dark-svg': isDarkSvg(), 'light-svg': !isDarkSvg()}")
-    span {{ chat.MultiChatsInfo.ChannelName }}
+    span {{ chat.MultiChatsInfo?.ChannelName ?? chatName }}
 </template>
 
 <script>
@@ -45,12 +45,13 @@ export default {
 
   props: {
     chat: Object,
+    chatName: "support",
     isWithPersonalManager: Boolean,
   },
 
   methods: {
     isDarkSvg() {
-      const HSL = hexToHSL((this.chat.MultiChatsInfo.ChannelIconColor ?? '#0096F7').slice(1));
+      const HSL = hexToHSL((this.chat.MultiChatsInfo?.ChannelIconColor ?? '#0096F7').slice(1));
       return HSL.l > 0.65;
     },
   }

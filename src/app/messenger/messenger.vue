@@ -182,12 +182,12 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
   margin-right: 8px;
 }
 
-.context-menu-option {
-  transition: 0.1s ease !important;
+.vue-simple-context-menu .context-menu-option {
+  transition: 0.1s ease;
 
   &:hover {
-    background-color: #dedede !important;
-    color: black !important;
+    background-color: #dedede;
+    color: black;
   }
 }
 
@@ -221,7 +221,7 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
             span.fa-icon.back-icon(@click.prevent="() => $emit('on-back')")
               font-awesome-icon(:icon="['fas', 'fa-arrow-left']")
           .nav-item.w-100
-            chat-container(:chat="client", :is-with-personal-manager="chatType === 'personal_manager'")
+            chat-container(:chat="client", :chat-name="channel" :is-with-personal-manager="chatType === 'personal_manager'")
           .nav-item.fa-icon.options-icon(v-wave, @click.prevent.stop="handleMenuContext($event)")
             font-awesome-icon(:icon="['fas', 'fa-ellipsis-vertical']")
 
@@ -364,7 +364,6 @@ export default {
       // reactive props
       groups: [],
       searching: false,
-      cashedGroups: [],
       search: "",
       inputMsg: {},
       inputTyping: {},
@@ -465,17 +464,13 @@ export default {
 
     searchMsg() {
       this.searching = true;
-      this.cashedGroups = this.groups;
     },
 
     scrollToFoundMessage(id, block) {
       this.shouldBeScrolledBottom = false;
       this.searching = false;
-      this.search = "";
       client.channelMessages(this.channel, this.chatType, null, id).then(messages => {
         this.appendMessages(messages);
-      });
-      setTimeout(() => {
         const msgElement = document.getElementById(id);
         msgElement.scrollIntoView({
           behavior: 'smooth',
@@ -483,7 +478,7 @@ export default {
         })
         this.shouldBeScrolledBottom = true;
         this.animateMsgAfterScroll(id);
-      }, 2000);
+      });
     },
     scrollToPushMessage(msg) {
       document.getElementById(msg).scrollIntoView({
@@ -503,7 +498,6 @@ export default {
     },
 
     cancelSearch() {
-      this.cashedGroups = [];
       this.searching = false;
     },
 
@@ -1211,6 +1205,7 @@ export default {
       // Someone else's message
       if (!message.My) {
         this.appendMessage(message);
+        console.log("scrollToFoundMessage")
         this.scrollToFoundMessage(message.Id, 'end');
         return true;
       }

@@ -42,13 +42,13 @@
   .chats
     template(v-for="(value, name) in multiClient")
       .chat(v-wave, @click.prevent="setCurrentChat(name, 'regular')")
-        chat-container(:chat="value")
+        chat-container(:chat="value" :chat-name="name")
       .chat(
         v-wave,
         @click.prevent="setCurrentChat(name, 'personal_manager')",
-        v-if="value.PersonalManagerId && value.MultiChatsInfo.EnableForPersonalManagers"
+        v-if="value.PersonalManagerId && value.MultiChatsInfo?.EnableForPersonalManagers"
       )
-        chat-container(:chat="value", :is-with-personal-manager="true")
+        chat-container(:chat="value", :chat-name="name", :is-with-personal-manager="true")
 
   .offscreen-block(:class="{ 'visible-block': chatSelected }")
     messenger(

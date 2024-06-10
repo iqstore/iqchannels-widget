@@ -17,6 +17,7 @@ IQChannels Widget
   * [6\. Стилизация виджета](#6-стилизация-виджета)
 * [Разработка](#разработка)
 * [Зависимости](#зависимости)
+* [Стилизация]()
 
 # Использование
 
@@ -402,3 +403,249 @@ $ make dist
 ### Другие:
 > - v-wave: Библиотека для создания анимированных волн на основе SVG.
 > - wavesurfer.js: Библиотека для визуализации и воспроизведения аудио в веб-браузерах.
+
+# Стилизация
+
+> Стилизация осуществляется в настройках канала Внутреннего чата, где можно задавать CSS-стили для данного виджета.
+> #### Некоторые из классов для стилизации компонентов:
+>
+> ![img.png](./examples/csm-btn.png)
+> ![img.png](./examples/btn-active.png)
+> ```css
+> #record-start { /* your styles */ }
+> #record-cancel { /* your styles */ }
+> #send-msg-btn { /* your styles */ }
+> #upload-btn { /* your styles */ }
+> 
+> .csm-btn {
+>     margin-left: 5px;
+>     height: 35px;
+>     min-width: 35px;
+>  }
+> 
+> .button {
+>     border-radius: 50%;
+>     color: #ffffff;
+>     fill: #ffffff;
+>     background: #EBEBEB;
+>     display: flex;
+>     min-width: 32px;
+>     height: 32px;
+>     margin-right: 3px;
+>     align-self: end;
+> }
+> .button.button-active:hover {
+>     background-color: #DCF5C0;
+> }
+> 
+> .button:hover, .button:active {
+>     background-color: #dddddd;
+> }
+> .button.button-active {
+>     background-color: #C6E39F;
+> }
+> ```
+
+> ![img.png](./examples/textarea.png)
+> ```css
+> #message-textarea { /* your styles */ } 
+>
+> .composer .textarea {
+>     background: #F2F3F5;
+>     width: 80%;
+>     position: relative;
+>     border: 2px solid #EBEBEB;
+>     border-radius: 10px;
+> }
+> .composer textarea {
+>     background-color: transparent;
+>     padding: 8px 32px 8px 8px;
+>     border: 0;
+>     width: 100%;
+>     outline: none;
+>     color: #000000;
+>     -moz-box-sizing: border-box;
+>     -webkit-box-sizing: border-box;
+>     box-sizing: border-box;
+>     float: right;
+>     clear: both;
+>     height: 34px;
+> }
+> ```
+
+> ![img.png](./examples/msgs.png)
+> ```css
+> #chat {
+>     width: 100%;
+>     background-color: white;
+>     overflow-y: scroll;
+>     -webkit-touch-callout: none;
+>     -webkit-user-select: none;
+>     -khtml-user-select: none;
+>     -moz-user-select: none;
+>     -ms-user-select: none;
+>     user-select: none;
+>     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+>     flex: 1;
+> }
+> 
+> #list { /* messages list block */ }
+> 
+> .group.client .message {
+>     float: right;
+>     margin-left: auto;
+>     background-color: #DCF5C0;
+>     color: #488445;
+> }
+> .group.user .message {
+>     float: left;
+>     background-color: #f3f3f3;
+>     color: #656565;
+> }
+> .message {
+>     margin: 2px 8px;
+>     padding: 0.7rem 1rem 0.7rem 1rem;
+>     clear: both;
+>     max-width: 75%;
+>     border-radius: 10px;
+>     display: flex;
+>     flex-direction: column;
+> }
+> .avatar {
+>     margin-left: 8px;
+>     display: flex;
+>     align-items: end;
+> }
+> .group.user .author {
+>     float: left;
+>     margin-top: 8px;
+>     margin-left: 58px;
+> }
+> 
+> .author {
+>     font-size: 13px;
+>     color: #333333;
+>     margin-bottom: 5px;
+>     white-space: nowrap;
+> }
+> .group.client .author {
+>     display: none;
+> }
+> .time {
+>     font-size: 10px;
+>     color: #5F814A;
+>     white-space: nowrap;
+>     clear: both;
+>     margin: auto 0 0 12px;
+>     position: relative;
+> }
+> .received {
+>     margin-left: 4px;
+> }
+> .read {
+>     margin-left: -4px;
+>     position: absolute;
+> }
+> .received, .read {
+>     color: #5F814A;
+> }
+> ```
+
+> ![img.png](./examples/context.png)
+> ```css
+> .vue-simple-context-menu__item {
+>     align-items: center;
+>     color: #333;
+>     cursor: pointer;
+>     display: flex;
+>     padding: 5px 15px;
+> }
+> .vue-simple-context-menu .context-menu-option {
+>     transition: 0.1s ease;
+> }
+> .vue-simple-context-menu .context-menu-option:hover {
+>     background-color: #dedede;
+>     color: black;
+> }
+> ```
+
+> ![img.png](./examples/chat.png)
+> ```css
+> .circle-chat {
+>     width: 35px;
+>     height: 35px;
+>     border-radius: 100%;
+>     display: flex;
+>     align-items: center;
+>     justify-content: center;
+> }
+> ```
+
+> ![img.png](./examples/header.png)
+> ```css
+> .header {
+>     width: 100%;
+>     background-color: #f0f0f0;
+>     text-align: center;
+>     display: flex;
+> }
+> .header .content {
+>     display: table-cell;
+>     vertical-align: middle;
+>     text-align: center;
+>     flex: 1;
+> }
+> .header .content .client-name-container {
+>     display: block;
+> }
+> .chat-type-select {
+>     width: 100%;
+>     color: inherit;
+>     background-color: inherit;
+>     border-radius: 0.25rem;
+>     border: 1px solid #ced4da;
+>     padding: .375rem 2.25rem .375rem .75rem;
+> }
+> ```
+
+> ![img.png](./examples/file-err.png)
+> ![img.png](./examples/file-load.png)
+> ```css
+> .message-wrapper .message-inner .sending {
+>     background-color: rgba(212, 248, 186, 0.4);
+> }
+> .loader {
+>     display: inline-block;
+>     float: right;
+> }
+> .v-spinner { // vue-spinner
+>     text-align: center;
+> }
+> .message .filename {
+>     display: block;
+>     font-weight: 700;
+> }
+> .message .filesize {
+>     margin-top: 6px;
+>     display: block;
+>     font-weight: 200;
+>     font-size: 12px;
+> }
+> .cancel {
+>     background-color: rgba(255, 0, 0, 0.4);
+> }
+> .retry {
+>     background-color: rgba(1, 138, 43, 0.4);
+> }
+> .message .error {
+>     margin-top: 8px;
+> }
+> ```
+
+> ![img.png](./examples/loader.png)
+> 
+> ```css
+> .v-spinner { // vue-spinner
+>     text-align: center;
+> }
+> ```
