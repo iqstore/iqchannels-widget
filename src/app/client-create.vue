@@ -70,7 +70,7 @@ input[type="text"] {
             strong {{ this.greetings?.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
             br
             span {{ this.greetings?.Greeting ? this.greetings.Greeting : "желательно указать" }}
-            br()
+            br
             span {{ !this.greetings?.Greeting ? "фамилию и имя:" : "" }}
         input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create" v-model="clientName")
         div.client-consent
@@ -127,7 +127,7 @@ export default {
       this.error = null;
 
       this.creating = client
-        .anonymousSignup(name, this.channel)
+        .anonymousSignup(this.clientName, this.channel)
         .then(client => {
           this.$emit("on-client-created", client);
         })
