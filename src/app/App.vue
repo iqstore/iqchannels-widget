@@ -39,6 +39,7 @@
         @on-logout='onLogout'
         @on-longtap="onLongTap"
         @on-rating="onRating"
+        @client-changed="onClientChanged"
         :mode='mode'
         :client='client'
         :opened='opened'
@@ -182,6 +183,10 @@ export default {
     onUnreadChanged: (count) => parent.postMessage({ type: 'iqchannels-widget-unread', data: count }, '*'),
     onLongTap: (msg) => parent.postMessage({ type: 'iqchannels-widget-longtap', data: msg }, '*'),
     onRating: (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*'),
+
+    onClientChanged(event){
+      this.client = event.Client
+    },
 
     onLogin(client) {
       this.client = client;
