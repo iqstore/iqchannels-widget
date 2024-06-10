@@ -746,7 +746,7 @@ export default {
     },
 
     uploadFile() {
-      const files =  Array.from(this.$refs.uploadInput.files);
+      const files =  Array.from(this.$refs.uploadInput.files).slice(0, 10);
       this.currentFiles = files;
     },
 
