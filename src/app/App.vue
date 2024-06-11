@@ -54,7 +54,6 @@
 
 <script>
 import config from '../config';
-import jquery from 'jquery';
 import { clearCookie } from '../lib/web';
 import client from '../client';
 
@@ -91,8 +90,8 @@ export default {
   },
 
   created() {
-    jquery(window).on('message', (e) => {
-      const { type, data } = e.originalEvent;
+    window.addEventListener('message', (e) => {
+      const { type, data } = e;
       if (type !== 'message') {
         return;
       }
@@ -184,7 +183,7 @@ export default {
     onLongTap: (msg) => parent.postMessage({ type: 'iqchannels-widget-longtap', data: msg }, '*'),
     onRating: (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*'),
 
-    onClientChanged(event){
+    onClientChanged(event) {
       this.client = event.Client
     },
 

@@ -773,10 +773,11 @@ export default {
     humanDate,
     humanDateTime,
     scrollToLastMessage() {
-      const chat = $('#chat');
-      chat.stop().animate({
-        scrollTop: chat[0].scrollHeight
-      }, 800);
+      const chat = document.getElementById('chat');
+      chat.scrollTo({
+        top: chat.scrollHeight,
+        behavior: 'smooth'
+      });
     },
 
     trySendMessage(messageText, botpressPayload, url) {

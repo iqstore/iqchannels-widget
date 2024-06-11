@@ -410,11 +410,14 @@ export default {
       this.audioMsgEnabled = r.Data;
     });
     this.audioMsgEnabled = false;
-    $('.textarea-field').keypress(x => {
-      if (x.keyCode === 13 && !x.shiftKey) {
-        x.preventDefault();
-        this.trySendMessage();
-      }
+    const textareas = document.querySelectorAll('.textarea-field');
+    textareas.forEach(textarea => {
+      textarea.addEventListener('keypress', (e) => {
+        if (e.keyCode === 13 && !e.shiftKey) {
+          e.preventDefault();
+          this.trySendMessage();
+        }
+      });
     });
   },
 

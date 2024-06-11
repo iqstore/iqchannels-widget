@@ -380,19 +380,17 @@ $ make dist
 ### Иконки:
 > - @fortawesome/fontawesome-svg-core: Ядро библиотек Font Awesome, предоставляющее SVG-иконки и функции для их использования.
 > - @fortawesome/free-solid-svg-icons: Набор бесплатных сплошных иконок Font Awesome.
-> - @fortawesome/vue-fontawesome: Компонент Vue для интеграции Font Awesome в ваши приложения Vue.
+> - @fortawesome/vue-fontawesome: Компонент Vue для интеграции Font Awesome.
 
 ### Общие зависимости:
-> - core-js: Полифил для современных функций JavaScript, обеспечивающий совместимость со старыми браузерами.
 > - es6-promise: Полифил для Promise API, обеспечивающий совместимость со старыми браузерами.
 > - event-emitter: Библиотека эмиттеров событий для JavaScript.
 > - event-source-polyfill: Полифил EventSource API для совместимости со старыми браузерами.
 > - hammerjs: Библиотека мультитач-событий для JavaScript.
-> - jquery: Популярная библиотека JavaScript для упрощения работы с DOM.
 > - jssha: Библиотека для вычисления SHA-1 хэшей.
 > - lamejs: Библиотека для кодирования и декодирования аудио в формате MP3.
 > - markdown-it: Парсер и компилятор Markdown формата.
-> - node-sass: Библиотека для компиляции Sass в CSS на стороне сервера.
+> - sass: Библиотека для компиляции Sass в CSS.
 > - normalize.css: Библиотека CSS для нормализации стилей браузеров по умолчанию.
 
 ### Vue и плагины:
@@ -618,7 +616,7 @@ $ make dist
 >     display: inline-block;
 >     float: right;
 > }
-> .v-spinner { // vue-spinner
+> .v-spinner {
 >     text-align: center;
 > }
 > .message .filename {
@@ -645,7 +643,7 @@ $ make dist
 > ![img.png](./examples/loader.png)
 > 
 > ```css
-> .v-spinner { // vue-spinner
+> .v-spinner {
 >     text-align: center;
 > }
 > ```

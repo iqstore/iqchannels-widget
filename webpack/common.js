@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: {
@@ -24,7 +25,16 @@ module.exports = {
     rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
+        loader: 'vue-loader',
+        options: {
+          loaders: {
+            scss: [
+              MiniCssExtractPlugin.loader,
+              'css-loader',
+              'sass-loader'
+            ]
+          }
+        }
       }, {
         test: /\.pug$/,
         oneOf: [
@@ -48,13 +58,13 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       }, {
         test: /\.less$/,
-        use: ['style-loader', 'css-loader', 'less-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader']
       }, {
         test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
       }, {
         test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         use: 'file-loader'
@@ -73,6 +83,7 @@ module.exports = {
 
   plugins: [
     new VueLoaderPlugin(),
+    new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       template: 'src/main.pug',
       inject: 'body',
@@ -162,11 +173,6 @@ module.exports = {
       chunksSortMode: 'none',
       inject: 'head',
       filename: 'example10.html'
-    }),
-    new webpack.ProvidePlugin({
-      jQuery: 'jquery',
-      $: 'jquery',
-      jquery: 'jquery'
     }),
     new webpack.DefinePlugin({
       'process.env': {

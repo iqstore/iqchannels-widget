@@ -7,6 +7,7 @@
 build/
 dist/
 package-lock.json
+stats.json
 
 # Node
 logs

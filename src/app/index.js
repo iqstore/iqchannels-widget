@@ -1,5 +1,4 @@
 import { createApp } from 'vue';
-import ScaleLoader from 'vue-spinner/src/ScaleLoader.vue';
 import clientAuth from './client-auth.vue';
 import clientCreate from './client-create.vue';
 import messenger from './messenger/messenger.vue';
@@ -22,6 +21,7 @@ import {
 import VWave from "v-wave";
 import VueSimpleContextMenu from 'vue-simple-context-menu';
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
+import ScaleLoader from "./components/scale-loader.vue";
 
 library.add(
     faFile,

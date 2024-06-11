@@ -348,7 +348,7 @@ export default {
     this.sendGreeting();
     document.getElementById('chat').addEventListener('scroll', ev => {
       setTimeout(() => {
-        const height = document.getElementById('chat').offsetHeight;
+        const height = document.getElementById('chat')?.offsetHeight;
         // add 1px because the difference is 0.333 for some reason
         this.isBottom = !((ev.target.scrollHeight - ev.target.scrollTop - 1) >= height);
       }, 300);
@@ -411,9 +411,11 @@ export default {
         this.sendGreeting();
         // Force fixed element to repaint,
         // because of safari issue with fixed hidden elements
-        $("#composer")
-            .hide()
-            .show(0);
+        const composer = document.getElementById('composer');
+        composer.style.display = 'none';
+        setTimeout(() => {
+          composer.style.display = '';
+        }, 0);
         this.setScrollPositionToBottom();
         this.scrollToLastMessage();
       }
@@ -451,15 +453,16 @@ export default {
 
   methods: {
     scrollToLastMessage() {
-      const chat = $('#chat');
-      chat.stop().animate({
-        scrollTop: chat[0].scrollHeight
-      }, 800);
+      const chat = document.getElementById('chat');
+      chat.scrollTo({
+        top: chat.scrollHeight,
+        behavior: 'smooth'
+      });
     },
 
     setScrollPositionToBottom() {
-      const chatElement = $('#chat');
-      chatElement[0].scrollTop = chatElement[0].scrollHeight - chatElement[0].clientHeight;
+      const chatElement = document.getElementById('chat');
+      chatElement.scrollTop = chatElement.scrollHeight - chatElement.clientHeight;
     },
 
     searchMsg() {
@@ -501,7 +504,7 @@ export default {
       this.searching = false;
     },
 
-    optionClicked (event) {
+    optionClicked(event) {
       switch (event.item) {
         case "search":
           this.searching = true;
@@ -1043,7 +1046,7 @@ export default {
         clientName += ' ' + lastName
       }
       if (firstName !== '') {
-      this.client.Name = clientName;
+        this.client.Name = clientName;
       }
       info.Sending = client
           .sendInfo(info)

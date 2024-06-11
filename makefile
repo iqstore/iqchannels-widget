@@ -13,8 +13,7 @@ clean:
   	rm -rf ./node_modules/
 
 install:
-	npm install --legacy-peer-deps
-	npm rebuild node-sass
+	npm install
 
 run:
 	npm start
