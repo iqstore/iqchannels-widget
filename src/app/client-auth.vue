@@ -29,68 +29,68 @@ export default {
 
   mounted() {
     if (this.channel) {
-        client.getBlocker(this.channel).then((blocker) => {
-            if (blocker.Data.Enabled) {
-                this.error = blocker.Data.Text;
-                return;
-            }
-            else {
-                this.authClients();
-            }
-        }).catch(err => {
-          if (err.text.includes("404")) {
-            this.authClients();
-          }
-        });
-    }
-    },
-
-    methods: {
-        authClients() {
-        if (!this.multiChatData) {
-            this.authSingleChat();
-        return;
+      client.getBlocker(this.channel).then((blocker) => {
+        if (blocker.Data.Enabled) {
+          this.error = blocker.Data.Text;
+        } else {
+          this.authClients();
         }
+      }).catch(err => {
+        if (err.text.includes("404")) {
+          this.authClients();
+        }
+      });
+    } else {
+      this.authClients();
+    }
+  },
 
-        this.authMultiChat();
+  methods: {
+    authClients() {
+      if (!this.multiChatData) {
+        this.authSingleChat();
+        return;
+      }
+
+      this.authMultiChat();
     },
 
 
     authMultiChat() {
-        if (this.multiChatData.map(e => e.credentials !== null).length !== this.multiChatData.length) {
-            this.error = "Чат недоступен для неавторизованных клиентов.";
-        }
-        const resultData = {};
-        let auth = Promise.all(this.multiChatData.reduce((acc, el) => {
-            acc.push(client.authorize(el.credentials, el.channel).then(data => {
-            resultData[el.channel] = data;
-            }));
-            return acc;
-        }, []));
-        this.authorizing = auth
-            .then(result => {
-                this.$emit("on-client-multiple-authorized", resultData);
-            })
-            .catch(error => {
-                    this.error = error;
-                    this.authorizing = null;
-                }
-            );
-        },
+      if (this.multiChatData.map(e => e.credentials !== null).length !== this.multiChatData.length) {
+        this.error = "Чат недоступен для неавторизованных клиентов.";
+      }
+      const resultData = {};
+      let auth = Promise.all(this.multiChatData.reduce((acc, el) => {
+        acc.push(client.authorize(el.credentials, el.channel).then(data => {
+          resultData[el.channel] = data;
+        }));
+        return acc;
+      }, []));
+      this.authorizing = auth
+          .then(result => {
+            this.$emit("on-client-multiple-authorized", resultData);
+          })
+          .catch(error => {
+                this.error = error;
+                this.authorizing = null;
+              }
+          );
+    },
 
     authSingleChat() {
-        let auth = client.authorize(this.credentials, this.channel);
+      let auth = client.authorize(this.credentials, this.channel);
 
-        this.authorizing = auth
-        .then(client => {
-        this.$emit("on-client-authorized", client);
-        })
-        .catch(error => {
-        this.error = error;
-        this.authorizing = null;
-        });
-        }
+      this.authorizing = auth
+          .then(client => {
+            this.$emit("on-client-authorized", client);
+          })
+          .catch(error => {
+            this.error = error;
+            this.authorizing = null;
+          });
     }
+  }
 
 };
 </script>
