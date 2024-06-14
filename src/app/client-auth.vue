@@ -28,6 +28,7 @@ export default {
   },
 
   mounted() {
+    if (this.channel) {
         client.getBlocker(this.channel).then((blocker) => {
             if (blocker.Data.Enabled) {
                 this.error = blocker.Data.Text;
@@ -41,6 +42,7 @@ export default {
             this.authClients();
           }
         });
+    }
     },
 
     methods: {
