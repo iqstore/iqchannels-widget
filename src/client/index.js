@@ -7,6 +7,7 @@ import config from '../config';
 import AppError, { ErrExpired } from './errors';
 import Relations from './relations';
 import Request from './request';
+import { reactive } from "vue";
 
 const XClientAuthorizationHeader = 'X-Client-Authorization';
 
@@ -18,6 +19,9 @@ class Client {
 		this.authToken = null;
 		this.authSessionID = null;
 		this.multiClientAuth = {};
+		this.state = reactive({
+			error: null
+		});
 	}
 
 	clearAuth() {
@@ -539,10 +543,12 @@ class Client {
 		this.sending = this
 			.post(req.url, req.data)
 			.then(response => {
+				this.state.error = null;
 				req.done(response);
 				this._triggerFlush({ clearSending: true });
 			})
 			.catch(error => {
+				this.state.error = { type: "connection", data: error, retryAttempt: req.retryAttempt };
 				const shouldRetry = req.shouldRetry(error);
 				if (shouldRetry) {
 					const timeout = req.retryTimeout();

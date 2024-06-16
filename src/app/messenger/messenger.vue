@@ -191,11 +191,29 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
   }
 }
 
+.messenger-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+
+  .loader {
+    height: 24px;
+    width: 24px;
+    top: 6px;
+  }
+}
+
 </style>
 
 <template lang="pug">
   .messenger(:class="{ 'messenger_absolute': !isMultiple }")
-    .header
+    .header(v-if="appError")
+      .messenger-loading
+        fade-loader.loader(:height="'6px'" :width="'2px'" :radius="'7px'" :color="'#b9b9b9'")
+        p Ожидание сети...
+    .header(v-else)
       .content(v-if="!isMultiple")
         div.client-name-container(v-if="mode !== 'mobile'")
           p {{ client.Name }}
@@ -296,6 +314,7 @@ import * as schema from '../../schema';
 import { isSameDate } from '../../lib/datetime';
 import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
+import { ref } from "vue";
 
 export default {
   components: { ChatContainer, chat, composer },
@@ -313,6 +332,7 @@ export default {
     client: Object,
     docWidth: Number,
     isMultiple: Boolean,
+    appError: Object,
   },
 
   created() {

@@ -68,3 +68,22 @@ body {
 a {
   word-break: break-all;
 }
+
+.small {
+  font-size: 0.875rem;
+}
+
+.app-error {
+  padding: 0 35px;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+
+  b {
+    margin-top: 10px;
+    font-size: 1.125rem;
+  }
+  span {
+    margin-top: 6px;
+  }
+}

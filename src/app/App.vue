@@ -1,68 +1,113 @@
 <template lang="pug">
   div(v-if="initialized")
-    link(type="text/css" rel="stylesheet" :href="stylesURL")
+    error-boundary(:error="appError")
+      link(type="text/css" rel="stylesheet" :href="stylesURL")
 
-    template(v-if="isMultipleChats")
-      template(v-if="!multiClient")
-        client-auth(@on-client-multiple-authorized='onMultiLogin' :greetings="greetings" :multiChatData="chats")
+      template(v-if="isMultipleChats")
+        template(v-if="!multiClient")
+          client-auth(@on-client-multiple-authorized='onMultiLogin' :greetings="greetings" :multiChatData="chats")
 
-      multi-messenger(
-        v-if="multiClient",
-        ref="multiMessenger",
-        @on-unread-changed='onUnreadChanged',
-        @on-message-received='onMessageReceived',
-        @on-file-clicked='onFileClicked',
-        @on-close='onClose',
-        @on-logout='onLogout',
-        @on-longtap="onLongTap",
-        @on-rating="onRating",
-        :mode='mode',
-        :multiClient='multiClient',
-        :opened='opened',
-        :channel='channel',
-        :replayed-msg="replayedMsg",
-        :scrollToMsg="scrollToMsg",
-        :rating="rating",
-        :closeSystemChat="closeSystemChat",
-        :doc-width="docWidth",
-        :chats="chats",
-      )
-    template(v-else)
-      template(v-if="!client")
-        client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :channel="channel" :requireName="requireName")
-        client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
-      messenger(v-if="client" ref="messenger"
-        @on-unread-changed='onUnreadChanged'
-        @on-message-received='onMessageReceived'
-        @on-file-clicked='onFileClicked'
-        @on-close='onClose'
-        @on-logout='onLogout'
-        @on-longtap="onLongTap"
-        @on-rating="onRating"
-        @client-changed="onClientChanged"
-        :mode='mode'
-        :client='client'
-        :opened='opened'
-        :channel='channel'
-        :replayed-msg="replayedMsg"
-        :scrollToMsg="scrollToMsg"
-        :rating="rating"
-        :closeSystemChat="closeSystemChat"
-        :doc-width=docWidth,
-      )
+        multi-messenger(
+          v-if="multiClient",
+          ref="multiMessenger",
+          @on-unread-changed='onUnreadChanged',
+          @on-message-received='onMessageReceived',
+          @on-file-clicked='onFileClicked',
+          @on-close='onClose',
+          @on-logout='onLogout',
+          @on-longtap="onLongTap",
+          @on-rating="onRating",
+          :mode='mode',
+          :multiClient='multiClient',
+          :opened='opened',
+          :channel='channel',
+          :replayed-msg="replayedMsg",
+          :scrollToMsg="scrollToMsg",
+          :rating="rating",
+          :closeSystemChat="closeSystemChat",
+          :doc-width="docWidth",
+          :chats="chats",
+        )
+      template(v-else)
+        template(v-if="!client")
+          client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :channel="channel" :requireName="requireName")
+          client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
+        messenger(v-if="client" ref="messenger"
+          @on-unread-changed='onUnreadChanged'
+          @on-message-received='onMessageReceived'
+          @on-file-clicked='onFileClicked'
+          @on-close='onClose'
+          @on-logout='onLogout'
+          @on-longtap="onLongTap"
+          @on-rating="onRating"
+          @client-changed="onClientChanged"
+          :mode='mode'
+          :client='client'
+          :opened='opened'
+          :channel='channel'
+          :replayed-msg="replayedMsg"
+          :scrollToMsg="scrollToMsg"
+          :rating="rating"
+          :closeSystemChat="closeSystemChat"
+          :doc-width=docWidth,
+          :app-error="appError",
+        )
 </template>
 
 <script>
 import config from '../config';
 import { clearCookie } from '../lib/web';
 import client from '../client';
+import { provide, ref, watch } from "vue";
+import ErrorBoundary from "./components/error-boundary.vue";
 
 export default {
   name: 'app',
+  components: { ErrorBoundary },
 
   computed: {
     'stylesURL': function () {
       return config.apiUrl('/widget/styles.css?channel=' + this.channel);
+    }
+  },
+
+  setup() {
+    let appError = ref(null);
+
+    const onClose = () => parent.postMessage({ type: 'iqchannels-widget-close' }, '*');
+    const onMessageReceived = () => parent.postMessage({ type: 'iqchannels-widget-message' }, '*');
+    const onFileClicked = (url) => parent.postMessage({ type: 'iqchannels-widget-file', data: url }, '*');
+    const onUnreadChanged = (count) => parent.postMessage({ type: 'iqchannels-widget-unread', data: count }, '*');
+    const onLongTap = (msg) => parent.postMessage({ type: 'iqchannels-widget-longtap', data: msg }, '*');
+    const onRating = (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*');
+    const onError = (error) => {
+      if (!error) {
+        appError.value = null;
+        parent.postMessage({ type: 'iqchannels-ready' }, "*");
+      } else appError.value = error;
+
+      parent.postMessage({ type: 'iqchannels-error', data: JSON.stringify(error) }, "*");
+    };
+
+    provide('client', client);
+
+    watch(
+        () => client.state.error,
+        (newError) => {
+          onError(newError);
+        }
+    );
+
+    return {
+      onClose,
+      onMessageReceived,
+      onFileClicked,
+      onUnreadChanged,
+      onLongTap,
+      onRating,
+      onError,
+
+      appError,
     }
   },
 
@@ -176,13 +221,6 @@ export default {
   },
 
   methods: {
-    onClose: () => parent.postMessage({ type: 'iqchannels-widget-close' }, '*'),
-    onMessageReceived: () => parent.postMessage({ type: 'iqchannels-widget-message' }, '*'),
-    onFileClicked: (url) => parent.postMessage({ type: 'iqchannels-widget-file', data: url }, '*'),
-    onUnreadChanged: (count) => parent.postMessage({ type: 'iqchannels-widget-unread', data: count }, '*'),
-    onLongTap: (msg) => parent.postMessage({ type: 'iqchannels-widget-longtap', data: msg }, '*'),
-    onRating: (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*'),
-
     onClientChanged(event) {
       this.client = event.Client
     },

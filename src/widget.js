@@ -263,6 +263,15 @@ class IQChannelsWidget extends EventEmitter {
 			case 'iqchannels-widget-rating':
 				this.emit('rating', data);
 				break;
+
+			case 'iqchannels-error':
+				this.emit('error', data);
+				break;
+
+			case 'iqchannels-ready':
+				this.emit('ready');
+				break;
+
 			default:
 				break;
 			// console.log(`Unknown frame event: type=${type}, data=${data}`);

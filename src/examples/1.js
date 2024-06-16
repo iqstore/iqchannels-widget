@@ -28,5 +28,11 @@ w.on('close', function () {
 w.on('open', function () {
   console.log('WIDGET OPENED');
 });
+widget.on('error', function (error) {
+  console.log('WIDGET ERROR: \n' + error);
+});
+widget.on('ready', function () {
+  console.log('WIDGET IS READY');
+});
 
 w.setIPhonePushToken('test-iphone-push-token0');
