@@ -58,19 +58,21 @@ function cleanIconOptions(iconOptions) {
 }
 
 class IQChannelsWidget extends EventEmitter {
-	constructor({
-		            url = null,
-		            channel = 'support',
-		            credentials,
-		            mode = 'web',
-		            project,
-		            width = 425,
-		            padBody = true,
-		            requireName = true,
-		            iconOptions = {},
-		            DOMIdentifier,
-		            chats = [],
-	            }) {
+	constructor(
+		{
+			url = null,
+			channel = 'support',
+			credentials,
+			mode = 'web',
+			project,
+			width = 425,
+			padBody = true,
+			requireName = true,
+			iconOptions = {},
+			DOMIdentifier,
+			chats = [],
+		}
+	) {
 		super();
 		url = url ? url : BASE_URL;
 
@@ -101,13 +103,26 @@ class IQChannelsWidget extends EventEmitter {
 
 		const iframe = document.createElement('iframe');
 		iframe.id = 'iqchannels-widget-iframe';
-		iframe.src = url;
-
-		widgetDiv.appendChild(iframe);
+		this.checkUrlAvailability(url).then((available) => {
+			if (available) {
+				this.available = true;
+				iframe.src = url;
+				widgetDiv.appendChild(iframe);
+				this.checkPageIsReady();
+			}
+		}).catch((error) => {
+			this.available = false;
+			this.checkPageIsReady();
+			this.handleError();
+			this.emit('error', error);
+		});
 
 		this.frameContainer.appendChild(widgetDiv);
-		// split
 
+		this.initIcon(iconOptions);
+	}
+
+	initIcon = (iconOptions) => {
 		this.icon = document.createElement('a');
 		this.icon.href = '#';
 		this.icon.id = 'iqchannels-widget-icon';
@@ -135,42 +150,81 @@ class IQChannelsWidget extends EventEmitter {
 				this.icon.style[property] = iconOptions.style[property];
 			}
 		}
+	}
 
-		document.addEventListener('DOMContentLoaded', () => {
-			document.body.appendChild(this.icon);
+	checkPageIsReady = () => {
+		switch (document.readyState) {
+			case "loading" || "interactive":
+				setTimeout(() => {
+					this.checkPageIsReady();
+				}, 100);
+				break;
+			case "complete":
+				this.available ? this.onDOMloaded() : this.appendWidgetsContainer();
+				break;
+		}
+	}
 
-			const widgetContainer = document.getElementById(this.DOMIdentifier);
-			const containerToAppend = widgetContainer || document.body;
-			containerToAppend.appendChild(this.frameContainer);
+	appendWidgetsContainer = () => {
+		document.body.appendChild(this.icon);
 
-			// Setup handlers
-			window.addEventListener('message', this.onFrameMessage);
+		const widgetContainer = document.getElementById(this.DOMIdentifier);
+		const containerToAppend = widgetContainer || document.body;
+		containerToAppend.appendChild(this.frameContainer);
 
-			this.icon.addEventListener('click', (e) => {
-				e.preventDefault();
-				this.toggle();
-			});
-
-			// Find and store frame window to post messages
-			const frame = document.getElementById('iqchannels-widget-iframe');
-			this.frameWindow = frame.contentWindow || frame.contentDocument.defaultView;
-
-			frame.addEventListener('load', () => {
-				const event = newChatEvent('init', {
-					channel: this.channel,
-					credentials: this.credentials,
-					mode: this.mode,
-					project: this.project,
-					requireName: this.requireName,
-					pushToken: this.pushToken,
-					docWidth: this.docWidth,
-					chats: this.chats,
-					isMultipleChats: this.isMultipleChats,
-				});
-				this.frameWindow.postMessage(JSON.stringify(event), '*');
-			});
+		this.icon.addEventListener('click', (e) => {
+			e.preventDefault();
+			this.toggle();
 		});
 	}
+
+	onDOMloaded = () => {
+		this.appendWidgetsContainer();
+
+		// Setup handlers
+		window.addEventListener('message', this.onFrameMessage);
+
+		// Find and store frame window to post messages
+		const frame = document.getElementById('iqchannels-widget-iframe');
+		this.frameWindow = frame.contentWindow || frame.contentDocument.defaultView;
+
+		frame.addEventListener('load', () => {
+			const event = newChatEvent('init', {
+				channel: this.channel,
+				credentials: this.credentials,
+				mode: this.mode,
+				project: this.project,
+				requireName: this.requireName,
+				pushToken: this.pushToken,
+				docWidth: this.docWidth,
+				chats: this.chats,
+				isMultipleChats: this.isMultipleChats,
+			});
+			this.frameWindow.postMessage(JSON.stringify(event), '*');
+		});
+	}
+
+	handleError = () => {
+		const widget = document.getElementById('iqchannels-widget');
+		const errorMessage = document.createElement('div');
+		errorMessage.classList.add('iqchannels-error-message');
+
+		const errorIco = document.createElement('span');
+		errorIco.textContent = '😢';
+		errorIco.classList.add('iqchannels-error-message_ico');
+		const errorTitle = document.createElement('span');
+		errorTitle.classList.add('iqchannels-error-message_title');
+		errorTitle.textContent = 'Чат временно не доступен';
+		const errorText = document.createElement('span');
+		errorText.classList.add('iqchannels-error-message_text');
+		errorText.textContent = 'Мы уже все исправляем. Обновите страницу или попробуйте позже.';
+
+		errorMessage.appendChild(errorIco);
+		errorMessage.appendChild(errorTitle);
+		errorMessage.appendChild(errorText);
+
+		widget.appendChild(errorMessage);
+	};
 
 	open = (text) => {
 		if (this.opened) {
@@ -188,15 +242,17 @@ class IQChannelsWidget extends EventEmitter {
 		this.icon.style.right = addPixels(currentRight, this.width);
 
 		const event = newChatEvent('open');
-		this.frameWindow.postMessage(JSON.stringify(event), '*');
+		this.frameWindow?.postMessage(JSON.stringify(event), '*');
 		this.frameContainer.style.display = 'block';
-		setTimeout(() => this.frameWindow.focus(), 200);
+		setTimeout(() => this.frameWindow?.focus(), 200);
 		this.emit('open');
 
 		if (text) {
 			this.appendText(text);
 		}
 	};
+
+	checkUrlAvailability = async (url) => (await fetch(url)).ok;
 
 	appendText = (text) => {
 		const event = newChatEvent('append_text', { text: text });
@@ -210,7 +266,7 @@ class IQChannelsWidget extends EventEmitter {
 
 		this.opened = false;
 		const event = newChatEvent('close');
-		this.frameWindow.postMessage(JSON.stringify(event), '*');
+		this.frameWindow?.postMessage(JSON.stringify(event), '*');
 		this.frameContainer.style.display = 'none';
 
 		if (this.padBody) {

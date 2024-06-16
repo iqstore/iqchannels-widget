@@ -58,6 +58,28 @@
   }
 }
 
+.iqchannels-error-message {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 25px;
+  height: 100%;
+
+  .iqchannels-error-message_ico {
+    font-size: 24px;
+  }
+
+  .iqchannels-error-message_title {
+    font-weight: 700;
+  }
+
+  .iqchannels-error-message_text {
+    margin-top: 5px;
+  }
+}
+
 @media (max-width: 768px) {
   #iqchannels-widget {
     width: 100% !important;

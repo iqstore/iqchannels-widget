@@ -78,7 +78,7 @@ export default {
     const onMessageReceived = () => parent.postMessage({ type: 'iqchannels-widget-message' }, '*');
     const onFileClicked = (url) => parent.postMessage({ type: 'iqchannels-widget-file', data: url }, '*');
     const onUnreadChanged = (count) => parent.postMessage({ type: 'iqchannels-widget-unread', data: count }, '*');
-    const onLongTap = (msg) => parent.postMessage({ type: 'iqchannels-widget-longtap', data: msg }, '*');
+    const onLongTap = (msg) => parent.postMessage({ type: 'iqchannels-widget-longtap', data: JSON.stringify(msg) }, '*');
     const onRating = (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*');
     const onError = (error) => {
       if (!error) {

@@ -647,3 +647,69 @@ $ make dist
 >     text-align: center;
 > }
 > ```
+
+Host error handling
+> ![img.png](./examples/error.png)
+> ```css
+> .iqchannels-error-message {
+>     display: flex;
+>     flex-flow: column;
+>     justify-content: center;
+>     align-items: center;
+>     text-align: center;
+>     padding: 0 25px;
+>     height: 100%;
+> }
+> 
+> .iqchannels-error-message_ico {
+>     font-size: 24px;
+> }
+> 
+> .iqchannels-error-message_title {
+>     font-weight: 700;
+> }
+> 
+> .iqchannels-error-message_text {
+>     margin-top: 5px;
+> }
+> ```
+
+Chat error handling (in case Vue app active)
+> ![img.png](./examples/chat-error.png)
+> ```scss
+> .app-error {
+>     padding: 0 35px;
+>     display: flex;
+>     flex-flow: column;
+>     align-items: center;
+>     
+>     b {
+>         margin-top: 10px;
+>         font-size: 1.125rem;
+>     }
+>     span {
+>         margin-top: 6px;
+>     }
+>     .small {
+>         font-size: 0.875rem;
+>     }
+> }
+> ```
+
+Chat loader (after 5 retries - Chat error handler)
+> ![img.png](./examples/chat-loader.png)
+> ```scss
+> .messenger-loading {
+>     display: flex;
+>     align-items: center;
+>     justify-content: center;
+>     width: 100%;
+>     height: 100%;
+> 
+>     .loader {
+>         height: 24px;
+>         width: 24px;
+>         top: 6px;
+>     }
+> }
+> ```

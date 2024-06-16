@@ -10,7 +10,7 @@ export default {
 </script>
 
 <template lang="pug">
-  div(v-if="error && error.retryAttempt > 2")
+  div(v-if="error && error.retryAttempt > 5")
     .full-screen
       .center
         .app-error
