@@ -313,7 +313,7 @@ class IQChannelsWidget extends EventEmitter {
 				break;
 
 			case 'iqchannels-widget-longtap':
-				this.emit('longtap', data);
+				this.emit('longtap', JSON.parse(data));
 				break;
 
 			case 'iqchannels-widget-rating':
@@ -321,7 +321,10 @@ class IQChannelsWidget extends EventEmitter {
 				break;
 
 			case 'iqchannels-error':
-				this.emit('error', data);
+				if (!JSON.parse(data)) {
+					break;
+				}
+				this.emit('error', JSON.parse(data));
 				break;
 
 			case 'iqchannels-ready':
