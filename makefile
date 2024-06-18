@@ -8,12 +8,10 @@ NODE_IMAGE = node:12.13
 main: dist
 
 clean:
-	rm -rf build/* \
-	rm -rf ./package-lock.json \
-  	rm -rf ./node_modules/
+	rm -rf build/*
 
 install:
-	npm i
+	npm ci
 
 run:
 	npm start
