@@ -1228,7 +1228,6 @@ export default {
       // Someone else's message
       if (!message.My) {
         this.appendMessage(message);
-        console.log("scrollToFoundMessage")
         this.scrollToFoundMessage(message.Id, 'end');
         return true;
       }
