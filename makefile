@@ -13,7 +13,7 @@ clean:
   	rm -rf ./node_modules/
 
 install:
-	npm install
+	npm ci
 
 run:
 	npm start
