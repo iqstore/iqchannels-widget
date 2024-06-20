@@ -288,6 +288,7 @@
   flex-flow: column;
   transition: all 0.3s;
   font-size: 14px;
+  touch-action: pan-y !important;
 }
 
 .img-button {
@@ -558,6 +559,7 @@
       .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
         .body()
           .message-wrapper(v-for="(msg, index) in group.Messages",
+            v-hammer:pan="(event) => swipeRight(event, msg)",
             :class="{ scroll_msg_animation_client: msg.My && animateMsgId === msg.Id, scroll_msg_animation_user: !msg.My && animateMsgId === msg.Id }"
             :id="msg.Id")
 
@@ -573,7 +575,6 @@
 
               .message.bubble(
                 v-touch:longtap="longtapEvent(msg)",
-                v-hammer:pan="(event) => swipeRight(event, msg)",
                 @contextmenu.prevent="($event) => showMsgContext($event, msg)",
                 :title="getTitle()",
 
