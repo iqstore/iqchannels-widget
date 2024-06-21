@@ -154,7 +154,8 @@ class IQChannelsWidget extends EventEmitter {
 
 	checkPageIsReady = () => {
 		switch (document.readyState) {
-			case "loading" || "interactive":
+			case "loading":
+			case "interactive":
 				setTimeout(() => {
 					this.checkPageIsReady();
 				}, 100);
