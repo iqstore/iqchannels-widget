@@ -8,7 +8,7 @@
   padding: 0.7rem 1rem 0.7rem 1rem;
   clear: both;
   max-width: 75%;
-  border-radius: 10px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
 
@@ -47,7 +47,7 @@
     font-weight: 700;
 
     &-client {
-      color: #488445;
+      color: #456b84;
     }
 
     &-user {
@@ -96,16 +96,11 @@
 }
 
 .received, .read {
-  color: #5F814A;
+  color: #456b84;
 }
 
-.read {
-  margin-left: -4px;
-  position: absolute;
-}
-
-.received {
-  margin-left: 4px;
+.received, .read {
+  margin-left: 5px;
 }
 
 .group {
@@ -140,6 +135,29 @@
     .received, .read {
       display: none;
     }
+
+    .body .message-wrapper .message-inner .message .message-data {
+      .time {
+        color: #656565;
+      }
+    }
+
+    .body > .message-wrapper {
+      &:first-child:not(:only-child) .message-inner .message {
+        border-top-left-radius: 14px;
+        border-bottom-left-radius: 4px;
+      }
+
+      &:last-child:not(:only-child) .message-inner .message {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 14px;
+      }
+
+      &:not(:first-child):not(:last-child):not(:only-child) .message-inner .message {
+        border-bottom-left-radius: 4px;
+        border-top-left-radius: 4px;
+      }
+    }
   }
 
   &.client {
@@ -152,8 +170,8 @@
     .message {
       float: right;
       margin-left: auto;
-      background-color: #DCF5C0;
-      color: #488445;
+      background-color: #cce4f7;
+      color: #456b84;
     }
 
     .bubble {
@@ -167,26 +185,57 @@
     }
 
     audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel {
-      background-color: #dcf5c0;
+      background-color: #cce4f7;
+    }
+
+    .body .message-wrapper .message-inner .message .message-data {
+      .time {
+        color: #456b84;
+      }
+    }
+
+    .body > .message-wrapper {
+      &:first-child:not(:only-child) .message-inner .message {
+        border-top-right-radius: 14px;
+        border-bottom-right-radius: 4px;
+      }
+
+      &:last-child:not(:only-child) .message-inner .message {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 14px;
+      }
+
+      &:not(:first-child):not(:last-child):not(:only-child) .message-inner .message {
+        border-bottom-right-radius: 4px;
+        border-top-right-radius: 4px;
+      }
+    }
+  }
+
+  .body > .message-wrapper {
+    .message-inner .message:only-child {
+      border-radius: 14px;
+    }
+  }
+
+  .body .message-wrapper .message-inner .message .message-data {
+    .time {
+      font-size: 10px;
+      white-space: nowrap;
+      clear: both;
+      margin: auto 0 0 12px;
+      position: relative;
     }
   }
 }
 
 .group-wrapper {
-  display: flex
-}
-
-.time {
-  font-size: 10px;
-  color: #5F814A;
-  white-space: nowrap;
-  clear: both;
-  margin: auto 0 0 12px;
-  position: relative;
+  display: flex;
+  flex-flow: column;
 }
 
 .message-wrapper .message-inner .sending {
-  background-color: rgba(212, 248, 186, 0.4);
+  background-color: rgba(204, 228, 247, 0.4);
 }
 
 .loader {
@@ -260,7 +309,7 @@
   font-size: 13px;
 
   &-client {
-    border-left: 2px solid #5F814A;
+    border-left: 2px solid #456b84;
   }
 
   &-user {
@@ -329,6 +378,7 @@
   width: 84%;
   margin-right: 5px;
   border-radius: 4px;
+  text-align: center;
   color: #fff;
   background-color: #ABB8C0;
   border: 1px solid #98A8B2;
@@ -366,7 +416,7 @@
   }
 
   &-client {
-    color: #488445;
+    color: #456b84;
   }
 }
 
@@ -479,20 +529,24 @@
 }
 
 .scroll_msg_animation_client {
-  animation: 1.5s afterScrollAnimateClient ease-out forwards;
+  animation: 2s afterScrollAnimateClient ease-out forwards;
 }
 
 .file_state-not_approved {
   text-align: center;
+
   .rejected {
     color: red;
   }
+
   .check_error {
     color: red;
   }
+
   .on_checking {
     color: #2D98F4;
   }
+
   .sent_for_checking {
     color: #2D98F4;
   }
@@ -511,7 +565,7 @@
 }
 
 .scroll_msg_animation_user {
-  animation: 1.5s afterScrollAnimateUser ease-out forwards;
+  animation: 2s afterScrollAnimateUser ease-out forwards;
 }
 
 @keyframes afterScrollAnimateUser {
@@ -560,7 +614,7 @@
         .body()
           .message-wrapper(v-for="(msg, index) in group.Messages",
             v-hammer:pan="(event) => swipeRight(event, msg)",
-            :class="{ scroll_msg_animation_client: msg.My && animateMsgId === msg.Id, scroll_msg_animation_user: !msg.My && animateMsgId === msg.Id }"
+            :class="{ scroll_msg_animation_client: msg.My && animateMsgIds[msg.Id], scroll_msg_animation_user: !msg.My && animateMsgIds[msg.Id] }"
             :id="msg.Id")
 
             .author(v-if="group.Messages[0].Id === msg.Id")
@@ -582,7 +636,7 @@
 
                 .reply-icon
                   svg(width='14' height='12' viewbox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg')
-                    path(d='M0.168205 5.31043L5.31015 0.16848C5.67006 -0.191429 6.28546 0.0634719 6.28546 0.572471V2.8604C9.55786 2.99642 12.4442 5.22457 13.359 8.39557C13.6644 9.45406 13.7406 10.3252 13.7166 11.2627C13.7135 11.3728 13.7128 11.4046 13.7128 11.4277C13.7128 12.0082 12.9474 12.2187 12.6505 11.7199C12.014 10.6504 11.291 9.82404 10.4991 9.21322C9.06731 8.10896 7.57668 7.78917 6.28549 7.91831V10.8564C6.28549 11.3654 5.67009 11.6203 5.31018 11.2604L0.168232 6.11841C-0.0549068 5.8953 -0.0549078 5.53354 0.168205 5.31043ZM5.14283 9.47707V7.4284C5.14283 7.16667 5.32068 6.93842 5.57446 6.87441C5.64398 6.85687 5.75946 6.83389 5.91613 6.81198C7.5345 6.58555 9.41461 6.93378 11.1969 8.3084C11.6353 8.64653 12.0529 9.03949 12.4473 9.48957L12.4385 9.44383C12.393 9.20926 12.3346 8.96702 12.2611 8.71231C11.4456 5.88536 8.77869 3.93434 5.82534 3.998C5.77542 3.99888 5.75699 3.99928 5.73388 4.00009C5.41082 4.01123 5.14285 3.75236 5.14285 3.42909V1.95177L1.38021 5.71442L5.14283 9.47707Z' fill='#C6E39F')
+                    path(d='M0.168205 5.31043L5.31015 0.16848C5.67006 -0.191429 6.28546 0.0634719 6.28546 0.572471V2.8604C9.55786 2.99642 12.4442 5.22457 13.359 8.39557C13.6644 9.45406 13.7406 10.3252 13.7166 11.2627C13.7135 11.3728 13.7128 11.4046 13.7128 11.4277C13.7128 12.0082 12.9474 12.2187 12.6505 11.7199C12.014 10.6504 11.291 9.82404 10.4991 9.21322C9.06731 8.10896 7.57668 7.78917 6.28549 7.91831V10.8564C6.28549 11.3654 5.67009 11.6203 5.31018 11.2604L0.168232 6.11841C-0.0549068 5.8953 -0.0549078 5.53354 0.168205 5.31043ZM5.14283 9.47707V7.4284C5.14283 7.16667 5.32068 6.93842 5.57446 6.87441C5.64398 6.85687 5.75946 6.83389 5.91613 6.81198C7.5345 6.58555 9.41461 6.93378 11.1969 8.3084C11.6353 8.64653 12.0529 9.03949 12.4473 9.48957L12.4385 9.44383C12.393 9.20926 12.3346 8.96702 12.2611 8.71231C11.4456 5.88536 8.77869 3.93434 5.82534 3.998C5.77542 3.99888 5.75699 3.99928 5.73388 4.00009C5.41082 4.01123 5.14285 3.75236 5.14285 3.42909V1.95177L1.38021 5.71442L5.14283 9.47707Z' fill='#456b84')
                 div(v-if="msg.ReplyToMessageId")
                   .reply(@click="goToMessage(msg)", v-for="replyMsg of getReplyMsg(msg)" :class="{ 'reply-client': msg.Author === 'client', 'reply-user': msg.Author === 'user' }" )
                     .reply-author(:class="{ 'reply-author-client': msg.Author === 'client', 'reply-author-user': msg.Author === 'user' }") {{ getAuthorAndText(msg).author }}
@@ -684,21 +738,26 @@
                       svg(xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512")
                         path(d="M256 80C149.9 80 62.4 159.4 49.6 262c9.4-3.8 19.6-6 30.4-6c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48c-44.2 0-80-35.8-80-80V384 336 288C0 146.6 114.6 32 256 32s256 114.6 256 256v48 48 16c0 44.2-35.8 80-80 80c-26.5 0-48-21.5-48-48V304c0-26.5 21.5-48 48-48c10.8 0 21 2.1 30.4 6C449.6 159.4 362.1 80 256 80z")
                     span(v-if="msg.Id") {{ msg.CreatedAt.toTimeString().slice(0, 5) }}
-                    span.received(v-if="msg.Id" title="Доставлено" :class="{'blue': msg.Listened}") ✓
-                    span.read(v-if="msg.Read" title="Прочитано") ✓
+                    span.received(v-if="msg.Id && !msg.Read" title="Доставлено" :class="{'blue': msg.Listened}")
+                      svg(width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg")
+                        path(d="M10.5 1L4 7.5L1 5" stroke="#1C91D2" stroke-opacity="0.64" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round")
 
+                    span.read(v-if="msg.Read" title="Прочитано")
+                      svg(width="16" height="9" viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg")
+                        path(d="M10.5 1L4 7.5L1 5" stroke="#1C91D2" stroke-opacity="0.64" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round")
+                        path(d="M15 1L8.5 7.5" stroke="#1C91D2" stroke-opacity="0.64" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round")
 
                     scale-loader.loader(v-if="!msg.Id" title="Отправляется" color="#999999" height="8px" width="1px")
-          div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
-            div
-                div.choice_box_dropdown(v-for="choice in group.LastMessage.SingleChoices")
-                    button.choice_button(type="button", style="text-align: center"
-                        v-if="!choice.Deleted",
-                        @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
-          div.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
-            button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
-              span {{ getProductMsgText(group.LastMessage) }}
-            button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
+        div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
+          div
+            div.choice_box_dropdown(v-for="choice in group.LastMessage.SingleChoices")
+              button.choice_button(type="button", style="text-align: center"
+                v-if="!choice.Deleted",
+                @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
+        div.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
+          button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
+            span {{ getProductMsgText(group.LastMessage) }}
+          button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
       rating(
         v-if="group.Rating",
         :rating="group.Rating",
@@ -735,7 +794,7 @@ import { humanDate, humanDateTime, humanSize } from '../../lib/filters';
 import MessageText from "./message-text.vue";
 
 export default {
-  components: {MessageText, inforequest, avatar, rating },
+  components: { MessageText, inforequest, avatar, rating },
 
   props: {
     mode: String,
@@ -753,8 +812,8 @@ export default {
       swipeRange: 100,
       showImageModal: false,
       modalImageMsg: null,
-      animateMsgId: 0,
-      docWidth: null,
+      animateMsgIds: {},
+      docWidth: Number,
     }
   },
 
@@ -762,11 +821,11 @@ export default {
     setTimeout(() => {
       this.scrollToLastMessage();
     }, 1500)
-    this.docWidth = this.$parent.$parent.docWidth;
+    this.docWidth = this.$parent.$parent.$parent.docWidth;
   },
 
   updated() {
-    this.docWidth = this.$parent.$parent.docWidth;
+    this.docWidth = this.$parent.$parent.$parent.docWidth;
   },
 
   methods: {
@@ -944,10 +1003,10 @@ export default {
     },
 
     animateMsgAfterScroll(msgId) {
-      this.animateMsgId = +msgId;
+      this.animateMsgIds[+msgId] = true;
       setTimeout(() => {
-        this.animateMsgId = 0;
-      }, 3500);
+        delete this.animateMsgIds[+msgId];
+      }, 5000);
     },
 
     getTitle() {

@@ -70,7 +70,6 @@
       :scrollToMsg="scrollToMsg",
       :rating="rating",
       :closeSystemChat="closeSystemChat",
-      :doc-width="docWidth",
       :is-multiple="true",
       :chat-type-prop="currentChatType",
     )
@@ -96,7 +95,6 @@ export default {
     typing: Object,
     rating: Number,
     multiClient: Object,
-    docWidth: Number,
     chats: Array,
   },
 

@@ -25,7 +25,6 @@
           :scrollToMsg="scrollToMsg",
           :rating="rating",
           :closeSystemChat="closeSystemChat",
-          :doc-width="docWidth",
           :chats="chats",
         )
       template(v-else)
@@ -49,7 +48,6 @@
           :scrollToMsg="scrollToMsg"
           :rating="rating"
           :closeSystemChat="closeSystemChat"
-          :doc-width=docWidth,
           :app-error="appError",
         )
 </template>

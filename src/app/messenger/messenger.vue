@@ -72,15 +72,16 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
 .scrollBottom {
   width: 32px;
   height: 32px;
-  position: sticky;
-  bottom: 0;
+  position: fixed;
+  bottom: 60px;
   background: #EBEBEB;
   border-radius: 50%;
   display: flex;
   z-index: 2;
-  left: 0;
+  right: 0;
   margin-right: 8px;
   margin-left: auto;
+  cursor: pointer;
 
   svg {
     margin: auto;
@@ -89,6 +90,7 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
 
 .chat-type-container {
   padding: 8px;
+  width: 100%;
 }
 
 .chat-type-select {
