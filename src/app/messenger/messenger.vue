@@ -721,7 +721,7 @@ export default {
               (msg.Id && msg.Id === message.Id) ||
               msg.LocalId === message.LocalId
           ) {
-            group.Messages[i] = message;
+            group.Messages[i] = {...message};
             if (i === group.Messages.length - 1) {
               group.LastMessage = message;
               this.singleChoices = group.LastMessage.SingleChoices
@@ -1182,6 +1182,9 @@ export default {
           case schema.ChatEventMessageListened:
             this.handleIncomingListened(event);
             break;
+          case schema.ChatEventMessageEdited:
+            event.Messages.forEach(msg => this.handleIncomingEdited(msg));
+            break;
           case schema.ChatEventMessageReceived:
             this.handleIncomingReceived(event);
             break;
@@ -1258,6 +1261,10 @@ export default {
       }
       message.Listened = message.Received = true;
       message.ListenedAt = message.ReceivedAt = event.CreatedAt;
+      this.replaceMessage(message);
+    },
+
+    handleIncomingEdited(message) {
       this.replaceMessage(message);
     },
 
