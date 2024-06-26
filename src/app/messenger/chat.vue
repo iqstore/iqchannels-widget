@@ -62,7 +62,7 @@
     font-size: 12px;
 
     &-client {
-      color: #84B074;
+      color: #456b84;
     }
 
     &-user {
@@ -263,7 +263,7 @@
 }
 
 .retry {
-  background-color: rgba(1, 138, 43, 0.4);
+  background-color: rgba(69, 107, 132, 0.7);
 }
 
 .message-inner {
@@ -428,7 +428,7 @@
   &-client {
     width: 32px !important;
     height: 32px !important;
-    color: #92BD83 !important
+    color: #456b84 !important
   }
 
   &-user {
