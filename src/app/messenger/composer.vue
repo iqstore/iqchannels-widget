@@ -265,6 +265,11 @@
   pointer-events: none;
 }
 
+.filename {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 </style>
 
@@ -293,7 +298,7 @@
             :href="msg.File.URL"
             target="_blank"
             @click="clickFile(msg, $event)")
-            .filename {{ msg.File.Name }}
+            span.filename {{ msg.File.Name }}
             .filesize {{ humanSize(msg.File.Size) }}
         audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
           :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
@@ -310,7 +315,7 @@
         a.button.csm-btn(id="record-cancel" v-if="recording || recordingStopped" @click="cancelRecording()", style="cursor:pointer")
           svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
             path(d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z")
-        a.button.upload(id="upload-btn" v-if="!recording && !recordingStopped", href="#" @click.prevent="trySendFile()" title="Загрузить файл")
+        a.button.upload(id="upload-btn" v-if="!recording && !recordingStopped", href="#" @click.prevent="$refs.uploadInput.click()" title="Загрузить файл")
           span.icon
         .d-flex.audio-msg-track(style="width:100%;" v-show="recording || recordingStopped")
           button.audio-msg-track--btn(aria-label="Воспроизвести" v-if="recordingStopped" @click="playAudio()")
@@ -749,8 +754,8 @@ export default {
     },
 
     uploadFile() {
-      const files =  Array.from(this.$refs.uploadInput.files).slice(0, 10);
-      this.currentFiles = files;
+      const files = Array.from(this.$refs.uploadInput.files).slice(0, 10);
+      this.currentFiles = [...this.currentFiles, ...files].slice(0, 10);
     },
 
     resetUploadFile(file) {

@@ -99,3 +99,8 @@ export function humanSize (value) {
       return `???`;
   }
 }
+
+export function sliceFileName(filename) {
+  if (filename.length > 40) return filename.slice(0, 35)+"..."+filename.slice(-5);
+  return filename;
+}
