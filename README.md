@@ -15,9 +15,9 @@ IQChannels Widget
     * [4\.3\. События](#43-события)
   * [5\. Push-уведомления](#5-push-уведомления)
   * [6\. Стилизация виджета](#6-стилизация-виджета)
+    * [6\.1\. Основные компоненты](#61-основные-компоненты)
 * [Разработка](#разработка)
 * [Зависимости](#зависимости)
-* [Стилизация](#стилизация)
 
 # Использование
 
@@ -112,7 +112,8 @@ var widget = new IQChannelsWidget({
         backgroundColor: "#FFFFFF",
         style: {}
     },
-    url: 'https://app.iqstore.ru/widget/'
+    url: 'https://app.iqstore.ru/widget/',
+    enableImgModals: true,
 });
 </script>
 ```
@@ -129,13 +130,13 @@ var widget = new IQChannelsWidget({
 * `iconOptions.backgroundColor` — цвет фона кнопки.
 * `url` — опциональный адрес сервера с виджетом, если не указан, то определяется автоматически.
 
-Для более глубокой стилизации виджета см. раздел "5. Стилизация виджета".
-
 Параметры для работы с кросс-сегментностью:
 * `channel, credentials` — убираются, переходят в раздел `chats`.
 * `chats` — поле для нескольких чатов, где передаются два параметра.
 * `chats.channel` — имя канала для подключения.
 * `chats.credentials` — авторизационные данные для авторизации клиента.
+
+Для более глубокой стилизации виджета см. раздел "6. Стилизация виджета".
 
 ## 4. Программное управление виджетом
 В случае если кнопка управления виджетом по умолчанию не устраивает, она может быть отключена 
@@ -352,6 +353,310 @@ widget.setAndroidToken(tokenString);
 } 
 ```
 
+### 6.1 Основные компоненты:
+![img.png](./examples/csm-btn.png)
+![img.png](./examples/btn-active.png)
+```css
+#record-start { /* your styles */ }
+#record-cancel { /* your styles */ }
+#send-msg-btn { /* your styles */ }
+#upload-btn { /* your styles */ }
+
+.csm-btn {
+    margin-left: 5px;
+    height: 35px;
+    min-width: 35px;
+ }
+
+.button {
+    border-radius: 50%;
+    color: #ffffff;
+    fill: #ffffff;
+    background: #EBEBEB;
+    display: flex;
+    min-width: 32px;
+    height: 32px;
+    margin-right: 3px;
+    align-self: end;
+}
+.button.button-active:hover {
+    background-color: #DCF5C0;
+}
+
+.button:hover, .button:active {
+    background-color: #dddddd;
+}
+.button.button-active {
+    background-color: #C6E39F;
+}
+```
+
+![img.png](./examples/textarea.png)
+```css
+#message-textarea { /* your styles */ } 
+.composer .textarea {
+    background: #F2F3F5;
+    width: 80%;
+    position: relative;
+    border: 2px solid #EBEBEB;
+    border-radius: 10px;
+}
+.composer textarea {
+    background-color: transparent;
+    padding: 8px 32px 8px 8px;
+    border: 0;
+    width: 100%;
+    outline: none;
+    color: #000000;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    float: right;
+    clear: both;
+    height: 34px;
+}
+```
+
+![img.png](./examples/msgs.png)
+```css
+#chat {
+    width: 100%;
+    background-color: white;
+    overflow-y: scroll;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    flex: 1;
+}
+
+#list { /* messages list block */ }
+
+.group.client .message {
+    float: right;
+    margin-left: auto;
+    background-color: #DCF5C0;
+    color: #488445;
+}
+.group.user .message {
+    float: left;
+    background-color: #f3f3f3;
+    color: #656565;
+}
+.message {
+    margin: 2px 8px;
+    padding: 0.7rem 1rem 0.7rem 1rem;
+    clear: both;
+    max-width: 75%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.avatar {
+    margin-left: 8px;
+    display: flex;
+    align-items: end;
+}
+.group.user .author {
+    float: left;
+    margin-top: 8px;
+    margin-left: 58px;
+}
+
+.author {
+    font-size: 13px;
+    color: #333333;
+    margin-bottom: 5px;
+    white-space: nowrap;
+}
+.group.client .author {
+    display: none;
+}
+.time {
+    font-size: 10px;
+    color: #5F814A;
+    white-space: nowrap;
+    clear: both;
+    margin: auto 0 0 12px;
+    position: relative;
+}
+.received {
+    margin-left: 4px;
+}
+.read {
+    margin-left: -4px;
+    position: absolute;
+}
+.received, .read {
+    color: #5F814A;
+}
+```
+
+![img.png](./examples/context.png)
+```css
+.vue-simple-context-menu__item {
+    align-items: center;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    padding: 5px 15px;
+}
+.vue-simple-context-menu .context-menu-option {
+    transition: 0.1s ease;
+}
+.vue-simple-context-menu .context-menu-option:hover {
+    background-color: #dedede;
+    color: black;
+}
+```
+![img.png](./examples/chat.png)
+```css
+.circle-chat {
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+```
+
+![img.png](./examples/header.png)
+```css
+.header {
+    width: 100%;
+    background-color: #f0f0f0;
+    text-align: center;
+    display: flex;
+}
+.header .content {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    flex: 1;
+}
+.header .content .client-name-container {
+    display: block;
+}
+.chat-type-select {
+    width: 100%;
+    color: inherit;
+    background-color: inherit;
+    border-radius: 0.25rem;
+    border: 1px solid #ced4da;
+    padding: .375rem 2.25rem .375rem .75rem;
+}
+```
+
+![img.png](./examples/file-err.png)
+![img.png](./examples/file-load.png)
+```css
+.message-wrapper .message-inner .sending {
+    background-color: rgba(212, 248, 186, 0.4);
+}
+.loader {
+    display: inline-block;
+    float: right;
+}
+.v-spinner {
+    text-align: center;
+}
+.message .filename {
+    display: block;
+    font-weight: 700;
+}
+.message .filesize {
+    margin-top: 6px;
+    display: block;
+    font-weight: 200;
+    font-size: 12px;
+}
+.cancel {
+    background-color: rgba(255, 0, 0, 0.4);
+}
+.retry {
+    background-color: rgba(1, 138, 43, 0.4);
+}
+.message .error {
+    margin-top: 8px;
+}
+```
+
+![img.png](./examples/loader.png)
+```css
+.v-spinner {
+    text-align: center;
+}
+```
+
+![img.png](./examples/error.png)
+<br>Обработка ошибок хоста
+```css
+.iqchannels-error-message {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 25px;
+    height: 100%;
+}
+
+.iqchannels-error-message_ico {
+    font-size: 24px;
+}
+
+.iqchannels-error-message_title {
+    font-weight: 700;
+}
+
+.iqchannels-error-message_text {
+    margin-top: 5px;
+}
+```
+
+![img.png](./examples/chat-error.png)
+<br>Обработчик ошибок в чате (в случае, если приложение Vue активно)
+```scss
+.app-error {
+    padding: 0 35px;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    
+    b {
+        margin-top: 10px;
+        font-size: 1.125rem;
+    }
+    span {
+        margin-top: 6px;
+    }
+    .small {
+        font-size: 0.875rem;
+    }
+}
+```
+
+![img.png](./examples/chat-loader.png)
+<br>Лоадер чата (после 5 попыток - Обработчик ошибок чата)
+```scss
+.messenger-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    .loader {
+        height: 24px;
+        width: 24px;
+        top: 6px;
+    }
+}
+```
 
 # Разработка
 
@@ -423,315 +728,3 @@ $ make dist
 ### Другие:
 > - v-wave: Библиотека для создания анимированных волн на основе SVG.
 > - wavesurfer.js: Библиотека для визуализации и воспроизведения аудио в веб-браузерах.
-
-# Стилизация
-
-> Стилизация осуществляется в настройках канала Внутреннего чата, где можно задавать CSS-стили для данного виджета.
-> #### Некоторые из классов для стилизации компонентов:
->
-> ![img.png](./examples/csm-btn.png)
-> ![img.png](./examples/btn-active.png)
-> ```css
-> #record-start { /* your styles */ }
-> #record-cancel { /* your styles */ }
-> #send-msg-btn { /* your styles */ }
-> #upload-btn { /* your styles */ }
-> 
-> .csm-btn {
->     margin-left: 5px;
->     height: 35px;
->     min-width: 35px;
->  }
-> 
-> .button {
->     border-radius: 50%;
->     color: #ffffff;
->     fill: #ffffff;
->     background: #EBEBEB;
->     display: flex;
->     min-width: 32px;
->     height: 32px;
->     margin-right: 3px;
->     align-self: end;
-> }
-> .button.button-active:hover {
->     background-color: #DCF5C0;
-> }
-> 
-> .button:hover, .button:active {
->     background-color: #dddddd;
-> }
-> .button.button-active {
->     background-color: #C6E39F;
-> }
-> ```
-
-> ![img.png](./examples/textarea.png)
-> ```css
-> #message-textarea { /* your styles */ } 
->
-> .composer .textarea {
->     background: #F2F3F5;
->     width: 80%;
->     position: relative;
->     border: 2px solid #EBEBEB;
->     border-radius: 10px;
-> }
-> .composer textarea {
->     background-color: transparent;
->     padding: 8px 32px 8px 8px;
->     border: 0;
->     width: 100%;
->     outline: none;
->     color: #000000;
->     -moz-box-sizing: border-box;
->     -webkit-box-sizing: border-box;
->     box-sizing: border-box;
->     float: right;
->     clear: both;
->     height: 34px;
-> }
-> ```
-
-> ![img.png](./examples/msgs.png)
-> ```css
-> #chat {
->     width: 100%;
->     background-color: white;
->     overflow-y: scroll;
->     -webkit-touch-callout: none;
->     -webkit-user-select: none;
->     -khtml-user-select: none;
->     -moz-user-select: none;
->     -ms-user-select: none;
->     user-select: none;
->     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
->     flex: 1;
-> }
-> 
-> #list { /* messages list block */ }
-> 
-> .group.client .message {
->     float: right;
->     margin-left: auto;
->     background-color: #DCF5C0;
->     color: #488445;
-> }
-> .group.user .message {
->     float: left;
->     background-color: #f3f3f3;
->     color: #656565;
-> }
-> .message {
->     margin: 2px 8px;
->     padding: 0.7rem 1rem 0.7rem 1rem;
->     clear: both;
->     max-width: 75%;
->     border-radius: 10px;
->     display: flex;
->     flex-direction: column;
-> }
-> .avatar {
->     margin-left: 8px;
->     display: flex;
->     align-items: end;
-> }
-> .group.user .author {
->     float: left;
->     margin-top: 8px;
->     margin-left: 58px;
-> }
-> 
-> .author {
->     font-size: 13px;
->     color: #333333;
->     margin-bottom: 5px;
->     white-space: nowrap;
-> }
-> .group.client .author {
->     display: none;
-> }
-> .time {
->     font-size: 10px;
->     color: #5F814A;
->     white-space: nowrap;
->     clear: both;
->     margin: auto 0 0 12px;
->     position: relative;
-> }
-> .received {
->     margin-left: 4px;
-> }
-> .read {
->     margin-left: -4px;
->     position: absolute;
-> }
-> .received, .read {
->     color: #5F814A;
-> }
-> ```
-
-> ![img.png](./examples/context.png)
-> ```css
-> .vue-simple-context-menu__item {
->     align-items: center;
->     color: #333;
->     cursor: pointer;
->     display: flex;
->     padding: 5px 15px;
-> }
-> .vue-simple-context-menu .context-menu-option {
->     transition: 0.1s ease;
-> }
-> .vue-simple-context-menu .context-menu-option:hover {
->     background-color: #dedede;
->     color: black;
-> }
-> ```
-
-> ![img.png](./examples/chat.png)
-> ```css
-> .circle-chat {
->     width: 35px;
->     height: 35px;
->     border-radius: 100%;
->     display: flex;
->     align-items: center;
->     justify-content: center;
-> }
-> ```
-
-> ![img.png](./examples/header.png)
-> ```css
-> .header {
->     width: 100%;
->     background-color: #f0f0f0;
->     text-align: center;
->     display: flex;
-> }
-> .header .content {
->     display: table-cell;
->     vertical-align: middle;
->     text-align: center;
->     flex: 1;
-> }
-> .header .content .client-name-container {
->     display: block;
-> }
-> .chat-type-select {
->     width: 100%;
->     color: inherit;
->     background-color: inherit;
->     border-radius: 0.25rem;
->     border: 1px solid #ced4da;
->     padding: .375rem 2.25rem .375rem .75rem;
-> }
-> ```
-
-> ![img.png](./examples/file-err.png)
-> ![img.png](./examples/file-load.png)
-> ```css
-> .message-wrapper .message-inner .sending {
->     background-color: rgba(212, 248, 186, 0.4);
-> }
-> .loader {
->     display: inline-block;
->     float: right;
-> }
-> .v-spinner {
->     text-align: center;
-> }
-> .message .filename {
->     display: block;
->     font-weight: 700;
-> }
-> .message .filesize {
->     margin-top: 6px;
->     display: block;
->     font-weight: 200;
->     font-size: 12px;
-> }
-> .cancel {
->     background-color: rgba(255, 0, 0, 0.4);
-> }
-> .retry {
->     background-color: rgba(1, 138, 43, 0.4);
-> }
-> .message .error {
->     margin-top: 8px;
-> }
-> ```
-
-> ![img.png](./examples/loader.png)
-> 
-> ```css
-> .v-spinner {
->     text-align: center;
-> }
-> ```
-
-Host error handling
-> ![img.png](./examples/error.png)
-> ```css
-> .iqchannels-error-message {
->     display: flex;
->     flex-flow: column;
->     justify-content: center;
->     align-items: center;
->     text-align: center;
->     padding: 0 25px;
->     height: 100%;
-> }
-> 
-> .iqchannels-error-message_ico {
->     font-size: 24px;
-> }
-> 
-> .iqchannels-error-message_title {
->     font-weight: 700;
-> }
-> 
-> .iqchannels-error-message_text {
->     margin-top: 5px;
-> }
-> ```
-
-Chat error handling (in case Vue app active)
-> ![img.png](./examples/chat-error.png)
-> ```scss
-> .app-error {
->     padding: 0 35px;
->     display: flex;
->     flex-flow: column;
->     align-items: center;
->     
->     b {
->         margin-top: 10px;
->         font-size: 1.125rem;
->     }
->     span {
->         margin-top: 6px;
->     }
->     .small {
->         font-size: 0.875rem;
->     }
-> }
-> ```
-
-Chat loader (after 5 retries - Chat error handler)
-> ![img.png](./examples/chat-loader.png)
-> ```scss
-> .messenger-loading {
->     display: flex;
->     align-items: center;
->     justify-content: center;
->     width: 100%;
->     height: 100%;
-> 
->     .loader {
->         height: 24px;
->         width: 24px;
->         top: 6px;
->     }
-> }
-> ```

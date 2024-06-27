@@ -71,6 +71,7 @@ class IQChannelsWidget extends EventEmitter {
 			iconOptions = {},
 			DOMIdentifier,
 			chats = [],
+			enableImgModals = true,
 		}
 	) {
 		super();
@@ -86,7 +87,7 @@ class IQChannelsWidget extends EventEmitter {
 		this.pushToken = null;
 		this.opened = false;
 		this.DOMIdentifier = DOMIdentifier || null;
-		this.docWidth = document.documentElement.offsetWidth;
+		this.enableImgModals = enableImgModals;
 		this.chats = chats;
 		this.isMultipleChats = this.chats.length > 0;
 
@@ -197,7 +198,7 @@ class IQChannelsWidget extends EventEmitter {
 				project: this.project,
 				requireName: this.requireName,
 				pushToken: this.pushToken,
-				docWidth: this.docWidth,
+				enableImgModals: this.enableImgModals,
 				chats: this.chats,
 				isMultipleChats: this.isMultipleChats,
 			});

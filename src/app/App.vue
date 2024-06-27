@@ -125,7 +125,7 @@ export default {
       replayedMsg: null,
       scrollToMsg: null,
       rating: null,
-      docWidth: null,
+      enableImgModals: null,
       chats: null,
       isMultipleChats: false,
       multiClient: null,
@@ -149,7 +149,7 @@ export default {
           this.project = event.data.project;
           this.requireName = event.data.requireName;
           this.pushToken = event.data.pushToken;
-          this.docWidth = event.data.docWidth;
+          this.enableImgModals = event.data.enableImgModals;
           this.chats = event.data.chats;
           this.isMultipleChats = event.data.isMultipleChats;
 

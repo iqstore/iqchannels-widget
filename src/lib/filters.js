@@ -38,7 +38,7 @@ function formatDateTime (value) {
 
 function formatTime (value) {
   const hours = value.getHours();
-  const mins = value.getMinutes();
+  const mins = value.getMinutes() < 10 ? `0${value.getMinutes()}` : value.getMinutes();
   return hours + ':' + mins;
 }
 

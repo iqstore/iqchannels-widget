@@ -650,14 +650,14 @@
                         v-for="action of replyMsg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                     div(v-else-if="replyMsg.File && replyMsg.File.Type === 'image'")
                       a.image(
-                        v-if="docWidth > 1024",
+                        v-if="!enableImgModals",
                         :href="replyMsg.File.URL",
                         target="_blank",
                         @click="clickFile(replyMsg, $event)"
                       )
                         img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                       .image(
-                        v-else-if="docWidth <= 1024",
+                        v-else-if="enableImgModals",
                         @click="clickFileImage(replyMsg, $event)"
                       )
                         img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
@@ -696,14 +696,14 @@
                       v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                   div(v-else-if="(msg.File && msg.File.Type === 'image') || msg.Payload === 'card'")
                     a.image(
-                      v-if="docWidth > 1024 && msg.File",
+                      v-if="!enableImgModals && msg.File",
                       :href="msg.File.URL",
                       target="_blank",
                       @click="clickFile(msg, $event)"
                     )
                       img.bubble(v-if="msg.File && msg.File.Type === 'image'" :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                     .image(
-                      v-else-if="docWidth <= 1024 && msg.File",
+                      v-else-if="enableImgModals && msg.File",
                       @click="clickFileImage(msg, $event)"
                     )
                       img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
@@ -818,7 +818,7 @@ export default {
       showImageModal: false,
       modalImageMsg: null,
       animateMsgIds: {},
-      docWidth: Number,
+      enableImgModals: Boolean,
     }
   },
 
@@ -826,11 +826,11 @@ export default {
     setTimeout(() => {
       this.scrollToLastMessage();
     }, 1500)
-    this.docWidth = this.$parent.$parent.$parent.docWidth;
+    this.enableImgModals = this.$parent.$parent.$parent.enableImgModals;
   },
 
   updated() {
-    this.docWidth = this.$parent.$parent.$parent.docWidth;
+    this.enableImgModals = this.$parent.$parent.$parent.enableImgModals;
   },
 
   methods: {
@@ -1095,7 +1095,7 @@ export default {
     },
 
     clickFileImage(msg, event) {
-      if (this.docWidth <= 1024) {
+      if (this.enableImgModals) {
         this.showImageModal = true;
         this.modalImageMsg = msg;
       }
