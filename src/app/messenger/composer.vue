@@ -333,11 +333,12 @@
 
 </template>
 <script>
-import WaveSurfer from "wavesurfer.js";
-import lamejs from "lamejs";
+let WaveSurfer;
+let lamejs;
+let MicrophonePlugin;
+
 import client from '../../client';
 import { humanSize } from '../../lib/filters';
-import MicrophonePlugin from "wavesurfer.js/dist/plugin/wavesurfer.microphone.js";
 import UploadFile from "../components/upload-file.vue";
 const TYPING_INTERVAL = 2000;
 const TEXTAREA_HEIGHT = '32px';
@@ -409,6 +410,18 @@ export default {
     }
   },
 
+  created() {
+    import(/* webpackChunkName: "wavesurfer" */ 'wavesurfer.js').then(module => {
+      WaveSurfer = module.default;
+    });
+    import(/* webpackChunkName: "lamejs" */ 'lamejs').then(module => {
+      lamejs = module.default;
+    });
+    import(/* webpackChunkName: "wavesurfer" */ "wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js").then(module => {
+      MicrophonePlugin = module.default;
+    })
+  },
+
   mounted() {
     this.timer = setInterval(this.tryStopTyping, TYPING_INTERVAL);
     client.checkIfAudioMsgEnabled(this.channel).then(r => {
@@ -459,6 +472,9 @@ export default {
       this.handleChange();
     },
     loadWs() {
+      if (!WaveSurfer || !MicrophonePlugin || !lamejs) {
+        return;
+      }
       this.ws = WaveSurfer.create({
         container: "#waveform",
         waveColor: "#FFFFFF",

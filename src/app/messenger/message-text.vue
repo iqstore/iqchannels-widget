@@ -2,22 +2,22 @@
   pre.text(v-html="displayText()", @click.prevent="scrollToMessage(msg, $event)")
 </template>
 <script>
-import markdownit from "markdown-it";
 import { linkify } from "../../lib/linkify";
 
 export default {
   props: {
-    msg: Object
+    msg: Object,
+    md: null,
   },
 
   methods: {
     transformMarkdown(text) {
-      const md = markdownit({
-        html: true,
-        linkify: true,
-        typographer: true
-      })
-      return md.render(text);
+      if (!this.md) {
+        this.loadMarkdownIt().then(() => {
+          this.md.render(text);
+        });
+      }
+      return this.md.render(text);
     },
 
     displayText() {
@@ -33,6 +33,19 @@ export default {
 
     scrollToMessage(msg, event) {
       this.$emit("scroll-to-message", msg, event);
+    },
+
+    async loadMarkdownIt() {
+      try {
+        const { default: markdownit } = await import(/* webpackChunkName: "markdownit" */ 'markdown-it');
+        this.md = markdownit({
+          html: true,
+          linkify: true,
+          typographer: true
+        });
+      } catch (error) {
+        console.error('Failed to load markdown-it:', error);
+      }
     },
   }
 }

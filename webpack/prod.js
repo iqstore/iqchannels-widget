@@ -21,6 +21,34 @@ module.exports = webpackMerge.merge(commonConfig, {
 	optimization: {
 		usedExports: true,
 		minimize: true,
+		splitChunks: {
+			minSize: 20000,
+			cacheGroups: {
+				wavesurfer: {
+					test: /[\\/]node_modules[\\/]wavesurfer\.js[\\/]/,
+					name: 'wavesurfer',
+					chunks: 'all',
+					priority: 10
+				},
+				lamejs: {
+					test: /[\\/]node_modules[\\/]lamejs[\\/]/,
+					name: 'lamejs',
+					chunks: 'all',
+					priority: 10
+				},
+				markdownit: {
+					test: /[\\/]node_modules[\\/](markdown-it|entities[\\/]lib[\\/]esm)[\\/]/,
+					name: 'markdownit',
+					chunks: 'all',
+					priority: 10
+				},
+				default: {
+					minChunks: 2,
+					priority: -20,
+					reuseExistingChunk: true,
+				},
+			}
+		},
 		minimizer: [
 			new TerserPlugin(),
 		],
