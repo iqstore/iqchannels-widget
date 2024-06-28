@@ -11,6 +11,7 @@ declare class IQChannelsWidget extends EventEmitter {
         iconOptions?: IconOptions;
         DOMIdentifier?: string;
         chats?: Chat[];
+        enableImgModals?: boolean;
     });
 
     open(text?: string): void;
