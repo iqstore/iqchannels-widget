@@ -210,8 +210,8 @@
         input(type="checkbox" v-model="request.ClientConsent").checkbox-custom
         span Согласие на обработку
           a(style="text-decoration:underline" :href="request.ProcessingDataLink" target="_blank") &nbsp;персональных данных
-    .buttons
-      .ignore(@click="ignoreInfo") Отмена
+    .button
+      .ignore(v-if="!disableIgnore", @click="ignoreInfo") Отмена
       .submit(@click="sendInfo", :class="{'disabled': !request.ClientConsent}") Отправить
 
 </template>
@@ -224,7 +224,8 @@ const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\")
 const DOBRegex = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/i
 export default {
   props: {
-    request: Object
+    request: Object,
+    disableIgnore: Boolean
   },
 
   data: function() {
@@ -285,8 +286,8 @@ export default {
         }
 
       }
-      this.$emit("send-info", this.request)
       this.request.State = 'finished';
+      this.$emit("send-info", this.request)
     },
 
     ignoreInfo() {

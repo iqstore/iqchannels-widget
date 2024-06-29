@@ -64,34 +64,48 @@ input[type="text"] {
       p.text Подключение
         scale-loader(color="#ee5c13")
 
-  .center(v-else="checking")
-    div
-        p.text
-            strong {{ this.greetings?.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
-            br
-            span {{ this.greetings?.Greeting ? this.greetings.Greeting : "желательно указать" }}
-            br
-            span {{ !this.greetings?.Greeting ? "фамилию и имя:" : "" }}
-        input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create" v-model="clientName")
-        div.client-consent
-            input(type="checkbox" v-model="personalDataConsent").checkbox-custom
-            span Согласие на обработку
-                a(style="text-decoration:underline" :href="processDataLink" target="_blank") &nbsp;персональных данных
-    button.button(v-if="!creating" :disabled="!personalDataConsent || !clientName || clientName === ''" @click.prevent="create" href="#") Начать чат
-    a.button(v-if="creating" @click.prevent="" href="#")
-        scale-loader.loader(v-if="creating" color="#ffffff" height="24px")
+  .center(v-else)
+    div(v-if="personalDataForm")
+        inforequest(
+            :request="personalDataForm",
+            :disableIgnore="true",
+            @send-info="sendInfo",
+        )
+    div(v-if="!personalDataForm")
+        div
+            p.text
+                strong {{ this.greetings?.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
+                br
+                span {{ this.greetings?.Greeting ? this.greetings.Greeting : "желательно указать" }}
+                br
+                span {{ !this.greetings?.Greeting ? "фамилию и имя:" : "" }}
+            input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create" v-model="clientName")
+            div.client-consent
+                input(type="checkbox" v-model="personalDataConsent").checkbox-custom
+                span Согласие на обработку
+                    a(style="text-decoration:underline" :href="processDataLink" target="_blank") &nbsp;персональных данных
+        button.button(v-if="!creating" :disabled="!personalDataConsent || !clientName || clientName === ''" @click.prevent="create" href="#") Начать чат
+        a.button(v-if="creating" @click.prevent="" href="#")
+            scale-loader.loader(v-if="creating" color="#ffffff" height="24px")
 
-    p.error &nbsp;{{ error }}
+        p.error &nbsp;{{ error }}
+
+
 </template>
 
 <script>
 import client from "../client";
+import inforequest from "./messenger/info-request.vue";
+
 
 export default {
+  components: { inforequest },
+
   props: {
     channel: String,
     greetings: Object,
-    requireName: true
+    requireName: true,
+    personalDataForm: Object,
   },
 
   data() {
@@ -117,7 +131,7 @@ export default {
       .then(client => {
         this.$emit("on-client-created", client);
       })
-      .catch(error => {
+      .catch(_ => {
         this.checking = false;
       });
   },
@@ -127,7 +141,7 @@ export default {
       this.error = null;
 
       this.creating = client
-        .anonymousSignup(this.clientName, this.channel)
+        .anonymousSignup(this.clientName, this.channel, this.personalDataForm)
         .then(client => {
           this.$emit("on-client-created", client);
         })
@@ -146,6 +160,11 @@ export default {
         event.preventDefault();
         this.create();
       }
+    },
+
+    sendInfo(info) {
+        this.clientName = info.Form.Fields.find((field) => field.Name === 'Имя').CorrespondingField
+        this.create();
     },
   },
 };
