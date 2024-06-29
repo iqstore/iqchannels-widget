@@ -773,6 +773,7 @@
       inforequest(
         v-if="group.InfoRequest",
         :request="group.InfoRequest",
+        :client="client",
         @send-info="sendInfo",
         @ignore-info="ignoreInfo"
       )

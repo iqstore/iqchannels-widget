@@ -225,7 +225,8 @@ const DOBRegex = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)
 export default {
   props: {
     request: Object,
-    disableIgnore: Boolean
+    disableIgnore: Boolean,
+    client: Object,
   },
 
   data: function() {
@@ -234,6 +235,40 @@ export default {
       comment: null,
       dataError: null,
     };
+  },
+
+  mounted() {
+    if (!this.client?.Details) return;
+    console.log({d: this.client});
+    
+
+    for (let f of this.request.Form.Fields){
+        switch (f.Name){
+            case 'Телефон':
+                f.CorrespondingField = this.client?.Details.Cellphone;
+                break;
+            case 'Email':
+                f.CorrespondingField = this.client?.Details.Email;
+              break
+            case 'Дата Рождения':
+                f.CorrespondingField = this.client?.Details.BirthDay;
+              break;
+            case 'Имя':
+                f.CorrespondingField = this.client?.Details.FirstName;
+                break;
+            case 'ИНН':
+                f.CorrespondingField = this.client?.Details.INN;
+                break;
+            case 'Фамилия':
+                f.CorrespondingField = this.client?.Details.LastName
+                break;
+            case 'Отчество':
+                f.CorrespondingField = this.client?.Details.MiddleName
+                break;
+            default:
+                f.CorrespondingField = this.client?.Details.Fields.find((field) => field.Name == f.Label || field.Name === f.Name)?.Value;
+          }
+    }
   },
 
   methods: {
