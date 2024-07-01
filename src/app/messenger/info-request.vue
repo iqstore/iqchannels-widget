@@ -11,6 +11,11 @@
   text-align: center;
 }
 
+.inner {
+    margin-top: 10px;
+    padding: 10px;
+}
+
 .pending {
   border-radius: 15px;
   box-shadow: 2px 2px 8px 0 rgba(0,0,0,0.2);
@@ -23,7 +28,6 @@
   top: 0;
   margin: auto 40px;
   display: flex;
-  padding: 10px;
   flex-direction: column;
   justify-content: space-between;
   height: fit-content;
@@ -201,7 +205,7 @@
   .pending(v-if="request.State === 'pending'")
     .title Пожалуйста, укажите Ваши данные
     .data-error(v-if="dataError") {{ dataError }}
-    .div(style="margin-top:10px")
+    .innner
       div(v-for="field in request.Form.Fields")
         label(:for="field.Label").label-custom {{ field.Label }}
         input.input-custom(:name="field.Label" :id="field.Label" @input="inputChange" v-model="field.CorrespondingField" )
@@ -210,7 +214,7 @@
         input(type="checkbox" v-model="request.ClientConsent").checkbox-custom
         span Согласие на обработку
           a(style="text-decoration:underline" :href="request.ProcessingDataLink" target="_blank") &nbsp;персональных данных
-    .button
+    .buttons
       .ignore(v-if="!disableIgnore", @click="ignoreInfo") Отмена
       .submit(@click="sendInfo", :class="{'disabled': !request.ClientConsent}") Отправить
 
@@ -239,8 +243,6 @@ export default {
 
   mounted() {
     if (!this.client?.Details) return;
-    console.log({d: this.client});
-    
 
     for (let f of this.request.Form.Fields){
         switch (f.Name){
