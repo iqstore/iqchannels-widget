@@ -205,7 +205,7 @@
   .pending(v-if="request.State === 'pending'")
     .title Пожалуйста, укажите Ваши данные
     .data-error(v-if="dataError") {{ dataError }}
-    .innner
+    .inner
       div(v-for="field in request.Form.Fields")
         label(:for="field.Label").label-custom {{ field.Label }}
         input.input-custom(:name="field.Label" :id="field.Label" @input="inputChange" v-model="field.CorrespondingField" )
