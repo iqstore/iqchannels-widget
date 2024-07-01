@@ -29,7 +29,7 @@
         )
       template(v-else)
         template(v-if="!client")
-          client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :channel="channel" :requireName="requireName")
+          client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :personalDataForm="personalDataForm" :channel="channel" :requireName="requireName")
           client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
         messenger(v-if="client" ref="messenger"
           @on-unread-changed='onUnreadChanged'
@@ -118,6 +118,7 @@ export default {
       channel: null,
       credentials: null,
       greetings: null,
+      personalDataForm: null,
       project: null,
       requireName: true,
       client: null,
@@ -265,10 +266,26 @@ export default {
       client.refreshClient(this.credentials);
     },
     getGreetings() {
-      client.getWidgetGreetings(this.channel).then(res => {
-        this.greetings = res.Data;
+      client.getWidgetGreetingsWithRequestType(this.channel).then(res => {
+        this.greetings = {
+            Greeting: res.Data.Greeting,
+            GreetingBold: res.Data.GreetingBold
+        };
+        
+        if (res.Data.PersonalDataRequestType === 'full_form') {
+            this.getPersonalDataForm()
+        }
       });
-    }
+    },
+    getPersonalDataForm() {
+        client.getWidgetPersonalDataForm(this.channel).then(res => {
+
+        this.personalDataForm = {
+            State: 'pending',
+            Form: res.Data
+        };
+      });
+    },
   }
 };
 </script>

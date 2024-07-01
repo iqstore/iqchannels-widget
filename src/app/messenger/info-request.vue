@@ -11,6 +11,11 @@
   text-align: center;
 }
 
+.inner {
+    margin-top: 10px;
+    padding: 10px;
+}
+
 .pending {
   border-radius: 15px;
   box-shadow: 2px 2px 8px 0 rgba(0,0,0,0.2);
@@ -23,7 +28,6 @@
   top: 0;
   margin: auto 40px;
   display: flex;
-  padding: 10px;
   flex-direction: column;
   justify-content: space-between;
   height: fit-content;
@@ -201,7 +205,7 @@
   .pending(v-if="request.State === 'pending'")
     .title Пожалуйста, укажите Ваши данные
     .data-error(v-if="dataError") {{ dataError }}
-    .div(style="margin-top:10px")
+    .inner
       div(v-for="field in request.Form.Fields")
         label(:for="field.Label").label-custom {{ field.Label }}
         input.input-custom(:name="field.Label" :id="field.Label" @input="inputChange" v-model="field.CorrespondingField" )
@@ -211,7 +215,7 @@
         span Согласие на обработку
           a(style="text-decoration:underline" :href="request.ProcessingDataLink" target="_blank") &nbsp;персональных данных
     .buttons
-      .ignore(@click="ignoreInfo") Отмена
+      .ignore(v-if="!disableIgnore", @click="ignoreInfo") Отмена
       .submit(@click="sendInfo", :class="{'disabled': !request.ClientConsent}") Отправить
 
 </template>
@@ -224,7 +228,9 @@ const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\")
 const DOBRegex = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/i
 export default {
   props: {
-    request: Object
+    request: Object,
+    disableIgnore: Boolean,
+    client: Object,
   },
 
   data: function() {
@@ -233,6 +239,38 @@ export default {
       comment: null,
       dataError: null,
     };
+  },
+
+  mounted() {
+    if (!this.client?.Details) return;
+
+    for (let f of this.request.Form.Fields){
+        switch (f.Name){
+            case 'Телефон':
+                f.CorrespondingField = this.client?.Details.Cellphone;
+                break;
+            case 'Email':
+                f.CorrespondingField = this.client?.Details.Email;
+              break
+            case 'Дата Рождения':
+                f.CorrespondingField = this.client?.Details.BirthDay;
+              break;
+            case 'Имя':
+                f.CorrespondingField = this.client?.Details.FirstName;
+                break;
+            case 'ИНН':
+                f.CorrespondingField = this.client?.Details.INN;
+                break;
+            case 'Фамилия':
+                f.CorrespondingField = this.client?.Details.LastName
+                break;
+            case 'Отчество':
+                f.CorrespondingField = this.client?.Details.MiddleName
+                break;
+            default:
+                f.CorrespondingField = this.client?.Details.Fields.find((field) => field.Name == f.Label || field.Name === f.Name)?.Value;
+          }
+    }
   },
 
   methods: {
@@ -285,8 +323,8 @@ export default {
         }
 
       }
-      this.$emit("send-info", this.request)
       this.request.State = 'finished';
+      this.$emit("send-info", this.request)
     },
 
     ignoreInfo() {
