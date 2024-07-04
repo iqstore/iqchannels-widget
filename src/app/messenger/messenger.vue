@@ -401,10 +401,9 @@ export default {
   computed: {
     incomingMessages: function () {
       if (!this.client) return [];
-      const clientId = this.client.Id;
       return this.groups.reduce(
           (result, group) =>
-              result.concat(group.Messages.filter(m => m.ClientId !== clientId)),
+              result.concat(group.Messages.filter(m => m.ClientId !== this.client.Id)),
           []
       );
     },
@@ -643,8 +642,6 @@ export default {
     },
 
     appendMessage(message) {
-      // IQ-276 Duplicate messages.
-      // A quick fix.
       if (message.Id) {
         for (let group of this.groups) {
           for (let m of group.Messages) {
@@ -780,19 +777,23 @@ export default {
             message.CreatedAt - lastMessage.CreatedAt < 60000 &&
             isSameDate(message.CreatedAt, lastMessage.CreatedAt)
         ) {
-          group.Messages.push(message);
-          group.LastMessage = message;
-          this.singleChoices = group.LastMessage.SingleChoices
-          if (group.LastMessage.DisableFreeText) {
-            this.disableFreeText = true
-          } else {
-            this.disableFreeText = false
-          }
-          if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
-            group.InfoRequest = message.InfoRequest;
-          }
-          this.maybeEnableFreeText();
-          return;
+            if (message.Read && message.UserId || message.ClientId) {
+                group.Messages.push(message);
+            } else {
+                if (!group.UnreadMessages) {
+                    group.UnreadMessages = [] 
+                }
+                group.UnreadMessages.push(message)
+            }
+            group.LastMessage = message;
+            this.singleChoices = group.LastMessage.SingleChoices
+            this.disableFreeText = group.LastMessage.DisableFreeText
+            
+            if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
+                group.InfoRequest = message.InfoRequest;
+            }
+            this.maybeEnableFreeText();
+            return;
         }
       }
 

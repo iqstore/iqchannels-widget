@@ -375,43 +375,15 @@ export default {
       this.titleVisible = true;
     },
 
-    getAuthorAndText: function (message) {
-      const messages = this.groups.map(x => x.Messages).reduce((x, acc) => [...acc, ...x]);
-      const msg = messages.find(msg => message.ReplyToMessageId === msg.Id);
-      if (msg) {
-        return {
-          author: msg.Author === 'client' ? 'Вы' : msg.User.DisplayName,
-          text: msg.Text
-        }
-      } else return {
-        author: '',
-        text: ''
-      };
-    },
+    
 
-    getReplyMsg: function (message) {
-      const messages = this.groups.map(x => x.Messages).reduce((x, acc) => [...acc, ...x]);
-      const msg = messages.find(msg => message.ReplyToMessageId === msg.Id);
-      if (msg) {
-        return [msg];
-      } else {
-        return [];
-      }
-    },
+    
 
     isTextPayload(payload) {
       return payload === 'text' || payload === 'single-choice' || payload === 'product' || payload === 'link'
     },
 
-    goToMessage(msg) {
-      if (!this.searching) {
-        return
-      }
-      document.getElementById(msg.ReplyToMessageId).scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      })
-    },
+    
 
     scrollToMessage(msg, event) {
       if (event.target.href) {
@@ -490,32 +462,9 @@ export default {
       };
     },
 
-    swipeRight(event, item) {
-      const eventType = event.changedPointers[0].type;
-      const closest = event.target.closest('.message-wrapper');
+    
 
-      if (eventType === 'pointerup') {
-        this.resetSwipeRight(closest);
-      } else {
-        const done = event.deltaX < this.swipeRange ? event.deltaX : this.swipeRange;
-
-        if (done < 15) {
-          event.preventDefault();
-          return;
-        }
-
-        closest.style.transform = `translateX(${done}px)`;
-
-        if (done >= this.swipeRange) {
-          this.$emit("reply-msg", item);
-          this.resetSwipeRight(closest);
-        }
-      }
-    },
-
-    showMsgContext(event, msg) {
-      this.$refs.msgContextMenu.showMenu(event, msg);
-    },
+    
 
     animateMsgAfterScroll(msgId) {
       this.animateMsgIds[+msgId] = true;
@@ -524,12 +473,7 @@ export default {
       }, 5000);
     },
 
-    getTitle() {
-      if (this.searching) {
-        return "Перейти к сообщению"
-      }
-      return "Сообщение"
-    },
+    
 
     optionClicked(event) {
       switch (event.option.name) {
@@ -553,11 +497,7 @@ export default {
       return ['fas', 'fa-file'];
     },
 
-    resetSwipeRight(closest) {
-      setTimeout(() => {
-        closest.style.transform = 'none';
-      }, 100);
-    },
+    
 
     cancelUpload(localId) {
       this.$emit("cancel-upload", localId);
