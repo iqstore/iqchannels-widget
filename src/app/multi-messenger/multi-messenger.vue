@@ -28,6 +28,7 @@
   transform: translateY(-50%);
   transition: all 0.25s ease;
   visibility: hidden;
+  overflow-x: hidden;
   z-index: 1;
 }
 
@@ -41,17 +42,18 @@
 <template lang="pug">
   .chats
     template(v-for="(value, name) in multiClient")
-      .chat(v-wave, @click.prevent="setCurrentChat(name, 'regular')")
+      .chat(v-wave, :id="'channel-'+getChatType(value)+'-'+name", @click.prevent="setCurrentChat(name, 'regular')")
         chat-container(:chat="value" :chat-name="name")
       .chat(
         v-wave,
+        :id="'channel-'+getChatType(value)+'-'+name",
         @click.prevent="setCurrentChat(name, 'personal_manager')",
         v-if="value.PersonalManagerId && value.MultiChatsInfo?.EnableForPersonalManagers"
       )
         chat-container(:chat="value", :chat-name="name", :is-with-personal-manager="true")
 
   .offscreen-block(:class="{ 'visible-block': chatSelected }")
-    messenger(
+    messenger#messenger(
       ref="messenger",
       v-if="multiClient && currentChannel",
       @on-unread-changed="onUnreadChanged",
@@ -153,6 +155,11 @@ export default {
 
     appendText(text) {
       this.$refs.messenger.appendText(text);
+    },
+
+    getChatType(value) {
+      return value.PersonalManagerId && value.MultiChatsInfo?.EnableForPersonalManagers ?
+          'personal_manager' : 'regular';
     },
   }
 }

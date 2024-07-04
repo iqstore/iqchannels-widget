@@ -1,5 +1,5 @@
 <template lang="pug">
-  .full-screen
+  .full-screen#client_auth
     .center(v-if="authorizing")
       p Подключение
       scale-loader(color="#ee5c13")

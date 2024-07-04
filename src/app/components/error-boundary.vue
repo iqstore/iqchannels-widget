@@ -13,7 +13,7 @@ export default {
   div(v-if="error && error.retryAttempt > 5")
     .full-screen
       .center
-        .app-error
+        .app-error#app_error
           svg(width="64px" height="64px" viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg")
             g(stroke-width="0")
             g(stroke-linecap="round" stroke-linejoin="round")

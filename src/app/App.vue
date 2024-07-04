@@ -7,7 +7,7 @@
         template(v-if="!multiClient")
           client-auth(@on-client-multiple-authorized='onMultiLogin' :greetings="greetings" :multiChatData="chats")
 
-        multi-messenger(
+        multi-messenger#multi-messenger(
           v-if="multiClient",
           ref="multiMessenger",
           @on-unread-changed='onUnreadChanged',
@@ -31,7 +31,8 @@
         template(v-if="!client")
           client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :personalDataForm="personalDataForm" :channel="channel" :requireName="requireName")
           client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
-        messenger(v-if="client" ref="messenger"
+        messenger#messenger(v-if="client",
+          ref="messenger"
           @on-unread-changed='onUnreadChanged'
           @on-message-received='onMessageReceived'
           @on-file-clicked='onFileClicked'
@@ -271,7 +272,7 @@ export default {
             Greeting: res.Data.Greeting,
             GreetingBold: res.Data.GreetingBold
         };
-        
+
         if (res.Data.PersonalDataRequestType === 'full_form') {
             this.getPersonalDataForm()
         }

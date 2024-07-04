@@ -211,12 +211,12 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
 
 <template lang="pug">
   .messenger(:class="{ 'messenger_absolute': !isMultiple }")
-    .header(v-if="appError")
+    .header#header-loading(v-if="appError")
       .messenger-loading
         fade-loader.loader(:height="'6px'" :width="'2px'" :radius="'7px'" :color="'#b9b9b9'")
         p Ожидание сети...
-    .header(v-else)
-      .content(v-if="!isMultiple")
+    .header#header(v-else)
+      .content#header-content(v-if="!isMultiple")
         div.client-name-container(v-if="mode !== 'mobile'")
           p {{ client.Name }}
           p(v-if="anonymous")
@@ -236,7 +236,7 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
               option(value="personal_manager") Чат с персональным менеджером
 
       .content(v-if="isMultiple")
-        .nav-container(v-if="isMultiple && !searching")
+        .nav-container#header-multiple-content(v-if="isMultiple && !searching")
           .nav-item
             span.fa-icon.back-icon(@click.prevent="() => $emit('on-back')")
               font-awesome-icon(:icon="['fas', 'fa-arrow-left']")
@@ -245,7 +245,7 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
           .nav-item.fa-icon.options-icon(v-wave, @click.prevent.stop="handleMenuContext($event)")
             font-awesome-icon(:icon="['fas', 'fa-ellipsis-vertical']")
 
-        .nav-container(v-if="searching")
+        .nav-container#header-multiple-content_search(v-if="searching")
           .nav-item
             span.fa-icon(title="Отменить", @click.prevent="cancelSearch()")
               font-awesome-icon(:icon="['fas', 'fa-times']")
@@ -280,10 +280,10 @@ a.logout, a.logout:active, a.logout:visited, a.logout:focus {
         @click-file="clickFile",
         @download-file="downloadFile",
       )
-      .scrollBottom(v-if="!isBottom && !this.searching" @click="scrollToLastMessage(false)")
+      .scrollBottom#scroll-bottom(v-if="!isBottom && !this.searching" @click="scrollToLastMessage(false)")
         svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
           path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
-      .div(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
+      .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
         div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
           button.choice_button(type="button",
             v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
@@ -496,7 +496,7 @@ export default {
       this.searching = false;
       client.channelMessages(this.channel, this.chatType, null, id).then(messages => {
         this.appendMessages(messages);
-        const msgElement = document.getElementById(id);
+        const msgElement = document.getElementById("message-"+id);
         msgElement.scrollIntoView({
           behavior: 'smooth',
           block: block ?? 'center'
@@ -506,7 +506,7 @@ export default {
       });
     },
     scrollToPushMessage(msg) {
-      document.getElementById(msg).scrollIntoView({
+      document.getElementById("message-"+msg).scrollIntoView({
         behavior: 'smooth',
         block: 'center'
       })
