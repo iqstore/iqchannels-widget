@@ -1,6 +1,10 @@
 <style lang="scss" scoped>
 .messages {
   height: inherit;
+
+  &.empty {
+    height: 100%;
+  }
 }
 
 .message {
@@ -219,12 +223,20 @@
   }
 
   .body .message-wrapper .message-inner .message .message-data {
+    &.audio-message-data {
+      flex-flow: column;
+    }
+
     .time {
       font-size: 10px;
       white-space: nowrap;
       clear: both;
       margin: auto 0 0 12px;
       position: relative;
+
+      &.audio-time {
+        text-align: end;
+      }
     }
   }
 }
@@ -424,6 +436,10 @@
   }
 }
 
+.img-caption {
+  margin-top: 10px;
+}
+
 .message_file {
   display: flex;
   align-items: center;
@@ -508,12 +524,29 @@
   }
 }
 
+.no-messages-outer {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  .no-messages {
+    font-style: italic;
+    font-weight: lighter;
+    opacity: 60%;
+  }
+}
+
 </style>
 
 <template lang="pug">
-  .messages#list
+  .messages#list(:class="{ 'empty': (groups.length === 0) }")
 
     modal-img#modal-img(@close="closeModalImg", :modal-image-msg="modalImageMsg", :show-image-modal="showImageModal")
+
+    .no-messages-outer(v-if="groups.length === 0")
+      span.no-messages Сообщений не найдено
 
     .group(v-for="group in groups" :class="{ client: group.ClientId, user: group.UserId }" )
       .date(v-if="group.IsNewDay")
@@ -579,7 +612,7 @@
                       :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
                     .reply-text {{ getAuthorAndText(msg).text }}
 
-                .message-data
+                .message-data(:class="{ 'audio-message-data': (msg.File && msg.File.Type === 'audio') }")
                   message-text(v-if="isTextPayload(msg.Payload)",
                     v-bind:msg="msg",
                     @scroll-to-message="scrollToMessage")
@@ -642,7 +675,7 @@
                     :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
                   div
 
-                  .time
+                  .time(:class="{ 'audio-time': (msg.File && msg.File.Type === 'audio') }")
                     span.edited(v-if="msg.EditedAt" title="Изменено") изменено
                     span.listened-flag(v-if="msg.Listened" title="Прослушано")
                       svg(xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512")

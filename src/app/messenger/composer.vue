@@ -721,7 +721,7 @@ export default {
       this.recordingStopped = false;
       setTimeout(() => {
         const mp3Blob = this.analyzeAudioBuffer(this.ws.backend.buffer);
-        this.$emit("file-selected", mp3Blob, "", null);
+        this.$emit("file-selected", [mp3Blob], "", null);
         this.audioChunks = [];
       }, 100);
     },
@@ -772,6 +772,7 @@ export default {
     uploadFile() {
       const files = Array.from(this.$refs.uploadInput.files).slice(0, 10);
       this.currentFiles = [...this.currentFiles, ...files].slice(0, 10);
+      document.getElementById("message-textarea").focus();
     },
 
     resetUploadFile(file) {
