@@ -406,9 +406,7 @@
 }
 
 .listened-flag {
-  position: absolute;
-  top: -40px;
-  left: 25px;
+  margin-right: 8px;
   cursor: pointer;
   color: #2EB8FE;
 }
