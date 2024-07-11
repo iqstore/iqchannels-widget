@@ -709,6 +709,7 @@ export default {
         this.resetUploadFiles();
       }
       this.$refs.text.value = "";
+      this.textTyped = "";
       this.titleVisible = true;
     },
 
@@ -800,7 +801,7 @@ export default {
         case "text":
           const textarea = this.$refs.text;
           textarea.value += data;
-          this.adjustTextareaHeight();
+          this.handleChange();
           break;
         case "image":
           this.currentFiles.push(data);
