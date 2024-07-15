@@ -4,7 +4,7 @@ export function linkify(plainText) {
     // Email pattern
     const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b/gim;
     // Phone pattern (only digits and common phone characters, not starting with "tel" or "mailto" to avoid conflicts with URLs)
-    const phonePattern = /(^|\s)[\+]?[\d\-\(\)\ ]{10,20}(?=\s|$)/gim;
+    const phonePattern = /(^|\s)(\+7|8|7)?[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}(?=\s|$)/gim;
     // URL pattern (refined)
     const urlPattern = /\b(?:https?:\/\/)?[^\s<>\[\]]+?\.[^\s<>\[\]]+?(?=[.,?!]*(?:["'\]]?\s|$))/gim;
 
