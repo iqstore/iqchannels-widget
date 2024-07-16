@@ -1,5 +1,6 @@
 <style lang="scss">
 .message-wrapper {
+
     display: flex;
     flex-flow: column;
     transition: all 0.3s;

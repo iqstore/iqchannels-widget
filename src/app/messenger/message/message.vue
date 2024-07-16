@@ -200,6 +200,10 @@
     word-break: keep-all;
 }
 
+.img-caption {
+    margin-top: 10px;
+}
+
 .loader {
     display: inline-block;
     float: right;
@@ -241,11 +245,11 @@
 .message-data {
     display: flex;
     justify-content: space-between;
+
+    &.audio-message-data {
+        flex-flow: column;
+    }
 }
-
-
-
-
 
 .img-button {
     width: 100%;
@@ -258,9 +262,8 @@
 
 
 .listened-flag {
-    position: absolute;
-    top: -40px;
-    left: 25px;
+    margin-right: 8px;
+
     cursor: pointer;
     color: #2EB8FE;
 }
@@ -345,7 +348,7 @@
             @click-file-image="clickFileImage"
         )
 
-        .message-data
+        .message-data(:class="{ 'audio-message-data': (msg.File && msg.File.Type === 'audio') }")
             message-text(v-if="isTextPayload(msg.Payload)",
                 v-bind:msg="msg",
                 @scroll-to-message="scrollToMessage")

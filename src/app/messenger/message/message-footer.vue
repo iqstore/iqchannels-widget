@@ -5,6 +5,10 @@
     clear: both;
     margin: auto 0 0 12px;
     position: relative;
+
+    &.audio-time {
+        text-align: end;
+    }
 }
 
 .group {
@@ -34,7 +38,7 @@
 </style>
 
 <template lang="pug">
-.footer
+.footer(:class="{ 'audio-time': (msg.File && msg.File.Type === 'audio') }")
     span.edited(v-if="msg.EditedAt" title="Изменено") изменено
     span.listened-flag(v-if="msg.Listened" title="Прослушано")
         svg(xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512")

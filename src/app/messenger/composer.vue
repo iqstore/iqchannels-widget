@@ -708,6 +708,7 @@ export default {
                 this.resetUploadFiles();
             }
             this.$refs.text.value = "";
+            this.textTyped = "";
             this.titleVisible = true;
         },
 
@@ -798,7 +799,7 @@ export default {
 
             switch (type) {
                 case "text": this.$refs.text.value += data;
-                    this.resizeTextarea();
+                    this.handleChange();
                     break;
                 case "image":
                     this.currentFiles.push(data);
