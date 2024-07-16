@@ -7,50 +7,50 @@ div(v-if="initialized")
             template(v-if="!multiClient")
                 client-auth(@on-client-multiple-authorized='onMultiLogin' :greetings="greetings" :multiChatData="chats")
 
-    multi-messenger#multi-messenger(
-        v-if="multiClient",
-        ref="multiMessenger",
-        @on-unread-changed='onUnreadChanged',
-        @on-message-received='onMessageReceived',
-        @on-file-clicked='onFileClicked',
-        @on-close='onClose',
-        @on-logout='onLogout',
-        @on-longtap="onLongTap",
-        @on-rating="onRating",
-        :mode='mode',
-        :multiClient='multiClient',
-        :opened='opened',
-        :channel='channel',
-        :replayed-msg="replayedMsg",
-        :scrollToMsg="scrollToMsg",
-        :rating="rating",
-        :closeSystemChat="closeSystemChat",
-        :chats="chats",
-    )
-template(v-else)
-    template(v-if="!client")
-        client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :personalDataForm="personalDataForm" :channel="channel" :requireName="requireName")
-        client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
-    messenger#messenger(v-if="client",
-        ref="messenger"
-        @on-unread-changed='onUnreadChanged'
-        @on-message-received='onMessageReceived'
-        @on-file-clicked='onFileClicked'
-        @on-close='onClose'
-        @on-logout='onLogout'
-        @on-longtap="onLongTap"
-        @on-rating="onRating"
-        @client-changed="onClientChanged"
-        :mode='mode'
-        :client='client'
-        :opened='opened'
-        :channel='channel'
-        :replayed-msg="replayedMsg"
-        :scrollToMsg="scrollToMsg"
-        :rating="rating"
-        :closeSystemChat="closeSystemChat"
-        :app-error="appError",
-    )
+            multi-messenger#multi-messenger(
+                v-if="multiClient",
+                ref="multiMessenger",
+                @on-unread-changed='onUnreadChanged',
+                @on-message-received='onMessageReceived',
+                @on-file-clicked='onFileClicked',
+                @on-close='onClose',
+                @on-logout='onLogout',
+                @on-longtap="onLongTap",
+                @on-rating="onRating",
+                :mode='mode',
+                :multiClient='multiClient',
+                :opened='opened',
+                :channel='channel',
+                :replayed-msg="replayedMsg",
+                :scrollToMsg="scrollToMsg",
+                :rating="rating",
+                :closeSystemChat="closeSystemChat",
+                :chats="chats",
+            )
+        template(v-else)
+            template(v-if="!client")
+                client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :personalDataForm="personalDataForm" :channel="channel" :requireName="requireName")
+                client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
+            messenger#messenger(v-if="client",
+                ref="messenger"
+                @on-unread-changed='onUnreadChanged'
+                @on-message-received='onMessageReceived'
+                @on-file-clicked='onFileClicked'
+                @on-close='onClose'
+                @on-logout='onLogout'
+                @on-longtap="onLongTap"
+                @on-rating="onRating"
+                @client-changed="onClientChanged"
+                :mode='mode'
+                :client='client'
+                :opened='opened'
+                :channel='channel'
+                :replayed-msg="replayedMsg"
+                :scrollToMsg="scrollToMsg"
+                :rating="rating"
+                :closeSystemChat="closeSystemChat"
+                :app-error="appError",
+            )
 </template>
 
 <script>
@@ -87,10 +87,6 @@ export default {
 
             parent.postMessage({ type: 'iqchannels-error', data: JSON.stringify(error) }, "*");
         };
-
-        if (res.Data.PersonalDataRequestType === 'full_form') {
-            this.getPersonalDataForm()
-        }
 
         provide('client', client);
 
@@ -138,7 +134,7 @@ export default {
         };
     },
 
-    created() {
+    mounted() {
         window.addEventListener('message', (e) => {
             const { type, data } = e;
             if (type !== 'message') {

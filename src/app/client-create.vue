@@ -21,7 +21,6 @@ input[type="text"] {
 
     background-color: #ee5c13;
     color: white;
-
     width: 246px;
     margin: 16px 0 5px 0;
 
@@ -77,26 +76,26 @@ input[type="text"] {
         p.text Подключение
             scale-loader(color="#ee5c13")
 
-.center(v-else)
-    div(v-if="personalDataForm")
-        inforequest(
-            :request="personalDataForm",
-            :disableIgnore="true",
-            @send-info="sendInfo",
-        )
-    div(v-if="!personalDataForm")
-        div.default-form-wrapper
-            p.text
-                strong {{ this.greetings?.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
-                br
-                span {{ this.greetings?.Greeting ? this.greetings.Greeting : "желательно указать" }}
-                br
-                span {{ !this.greetings?.Greeting ? "фамилию и имя:" : "" }}
-            input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create" v-model="clientName")
-            div.client-consent
-                input(type="checkbox" v-model="personalDataConsent").checkbox-custom
-                span Согласие на обработку
-                    a(style="text-decoration:underline" :href="processDataLink" target="_blank") &nbsp;персональных данных
+    .center(v-else)
+        div(v-if="personalDataForm")
+            inforequest(
+                :request="personalDataForm",
+                :disableIgnore="true",
+                @send-info="sendInfo",
+            )
+        div(v-if="!personalDataForm")
+            div.default-form-wrapper
+                p.text
+                    strong {{ this.greetings?.GreetingBold  ? this.greetings.GreetingBold : "Представьтесь, пожалуйста,"  }}
+                    br
+                    span {{ this.greetings?.Greeting ? this.greetings.Greeting : "желательно указать" }}
+                    br
+                    span {{ !this.greetings?.Greeting ? "фамилию и имя:" : "" }}
+                input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create" v-model="clientName")
+                div.client-consent
+                    input(type="checkbox" v-model="personalDataConsent").checkbox-custom
+                    span Согласие на обработку
+                        a(style="text-decoration:underline" :href="processDataLink" target="_blank") &nbsp;персональных данных
             button.button(:disabled="!personalDataConsent || !clientName || clientName === ''" @click.prevent="create" href="#") 
                 span(v-if="!creating") Начать чат
                 scale-loader.loader(v-if="creating", color="#fff", height="12px")
@@ -166,7 +165,6 @@ export default {
         onCloseClicked() {
             this.$emit("on-close-clicked");
         },
-
 
         onEnterPressed(event) {
             if (!event.shiftKey) {
