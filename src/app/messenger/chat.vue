@@ -288,7 +288,6 @@
 <script>
 import avatar from './avatar.vue';
 import rating from './rating.vue';
-import { linkify } from "../../lib/linkify";
 import client from '../../client';
 import inforequest from './info-request.vue';
 import { humanDate, humanDateTime, humanSize } from '../../lib/filters';
@@ -487,17 +486,6 @@ export default {
             }, 100);
         },
 
-        getIcon(msg) {
-            const splittedPath = msg.File.Path.split(".");
-            const fileType = splittedPath[splittedPath.length - 1];
-
-            if (fileType.includes("doc")) return ['fas', 'fa-file-word'];
-            if (fileType.includes("xls")) return ['fas', 'fa-file-excel'];
-            if (fileType.includes("pdf")) return ['fas', 'fa-file-pdf'];
-
-            return ['fas', 'fa-file'];
-        },
-
         cancelUpload(localId) {
             this.$emit("cancel-upload", localId);
         },
@@ -580,10 +568,6 @@ export default {
 
             event.preventDefault();
             this.$emit("click-file", { href: event.target.href });
-        },
-
-        linkifyText(text) {
-            return linkify(text);
         }
     }
 };

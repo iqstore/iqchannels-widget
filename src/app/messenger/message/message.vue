@@ -428,6 +428,10 @@
 
 import MessageText from "../message-text.vue";
 import messageAvatar from "./message-avatar.vue";
+import { humanSize } from '../../../lib/filters';
+import { linkify } from "../../../lib/linkify";
+
+
 import reply from "./reply.vue";
 import time from "./time.vue"
 
@@ -443,6 +447,7 @@ export default {
     },
 
     methods: {
+        humanSize,
         getTitle() {
             if (this.searching) {
                 return "Перейти к сообщению"
@@ -452,6 +457,21 @@ export default {
 
         showMsgContext(event, msg) {
             this.$refs.msgContextMenu.showMenu(event, msg);
+        },
+
+        linkifyText(text) {
+            return linkify(text);
+        },
+
+        getIcon(msg) {
+            const splittedPath = msg.File.Path.split(".");
+            const fileType = splittedPath[splittedPath.length - 1];
+
+            if (fileType.includes("doc")) return ['fas', 'fa-file-word'];
+            if (fileType.includes("xls")) return ['fas', 'fa-file-excel'];
+            if (fileType.includes("pdf")) return ['fas', 'fa-file-pdf'];
+
+            return ['fas', 'fa-file'];
         },
 
         sendMessage(messageText, botpressPayload, url) {
