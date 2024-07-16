@@ -686,6 +686,7 @@ export default {
                 window.open(url, "_blank")
                 return;
             }
+            if (!this.$refs.text.value?.length && !this.currentFiles.length) return;
             const messageText = this.$refs.text.value
                 .replace(/[\r\n]{2,}/g, "\n")
                 .replace(/^[\s]+|[\s]+$/gm, "");

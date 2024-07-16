@@ -82,11 +82,7 @@
     white-space: nowrap;
 }
 
-.received,
-.read {
-    margin-left: 5px;
-    color: #456b84;
-}
+
 
 
 .group {
@@ -113,11 +109,6 @@
             &.last {
                 margin-bottom: 0;
             }
-        }
-
-        .received,
-        .read {
-            display: none;
         }
 
 
@@ -356,8 +347,8 @@
 
         .message-data
             message-text(v-if="isTextPayload(msg.Payload)",
-            v-bind:msg="msg",
-            @scroll-to-message="scrollToMessage")
+                v-bind:msg="msg",
+                @scroll-to-message="scrollToMessage")
 
             .file.text(v-if="msg.Upload")
                 div(v-if="msg.Uploading")
@@ -416,8 +407,8 @@
             audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
                 :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
 
-            time(
-                :msg="msg"
+            messageFooter(
+                v-bind:msg="msg",
             )
 
 </template>
@@ -431,11 +422,11 @@ import { linkify } from "../../../lib/linkify";
 
 
 import reply from "./reply.vue";
-import time from "./time.vue"
+import messageFooter from "./message-footer.vue";
 
 
 export default {
-    components: { MessageText, messageAvatar, reply, time },
+    components: { MessageText, messageAvatar, reply, messageFooter },
 
     props: {
         searching: Boolean,
