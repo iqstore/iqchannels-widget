@@ -17,7 +17,7 @@ export default {
 </script>
 
 <template lang="pug">
-.backdrop(v-if="showImageModal")
+  .backdrop(v-if="showImageModal")
     .pending(v-if="showImageModal")
         .modal_img_header
             .modal_img_header-icon
