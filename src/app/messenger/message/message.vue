@@ -21,8 +21,6 @@
         white-space: pre-wrap;
         /* Opera 4-6 */
         white-space: -o-pre-wrap;
-        /* Opera 7 */
-        word-wrap: break-word;
         /* Internet Explorer 5.5+ */
         font-family: inherit;
         font-size: inherit;
@@ -325,6 +323,7 @@
     .sent_for_checking {
         color: #2D98F4;
     }
+
 }
 </style>
 

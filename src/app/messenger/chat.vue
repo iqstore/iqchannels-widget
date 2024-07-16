@@ -241,6 +241,7 @@
                     :searching="searching",
                     :group="group", 
                     :groups="groups",
+                    :firstUnreadMessageId="firstUnreadMessageId",
                     @swipe-rigth="swipeRight",
                     @send-message="trySendMessage",
                     @click-file="clickFile",
@@ -306,6 +307,7 @@ export default {
         rating: Object,
         client: Object,
         channel: String,
+        firstUnreadMessageId: Number,
     },
 
     data: function () {

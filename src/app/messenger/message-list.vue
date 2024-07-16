@@ -1,66 +1,89 @@
-
 <style lang="scss">
-
 .message-wrapper {
-  display: flex;
-  flex-flow: column;
-  transition: all 0.3s;
-  font-size: 14px;
-  touch-action: pan-y !important;
+    display: flex;
+    flex-flow: column;
+    transition: all 0.3s;
+    font-size: 14px;
+    touch-action: pan-y !important;
 }
 
 .scroll_msg_animation_user {
-  animation: 2s afterScrollAnimateUser ease-out forwards;
+    animation: 2s afterScrollAnimateUser ease-out forwards;
 }
 
 @keyframes afterScrollAnimateUser {
-  0% {
-    background: none;
-  }
-  50% {
-    background: var(--color-after-scroll-animation_user);
-  }
-  100% {
-    background: none;
-  }
+    0% {
+        background: none;
+    }
+
+    50% {
+        background: var(--color-after-scroll-animation_user);
+    }
+
+    100% {
+        background: none;
+    }
 }
 
 .scroll_msg_animation_client {
-  animation: 2s afterScrollAnimateClient ease-out forwards;
+    animation: 2s afterScrollAnimateClient ease-out forwards;
 }
 
 .file_state-not_approved {
-  text-align: center;
+    text-align: center;
 
-  .rejected {
-    color: red;
-  }
+    .rejected {
+        color: red;
+    }
 
-  .check_error {
-    color: red;
-  }
+    .check_error {
+        color: red;
+    }
 
-  .on_checking {
-    color: #2D98F4;
-  }
+    .on_checking {
+        color: #2D98F4;
+    }
 
-  .sent_for_checking {
-    color: #2D98F4;
-  }
+    .sent_for_checking {
+        color: #2D98F4;
+    }
 }
 
 @keyframes afterScrollAnimateClient {
-  0% {
-    background: none;
-  }
-  50% {
-    background: var(--color-after-scroll-animation_client);
-  }
-  100% {
-    background: none;
-  }
+    0% {
+        background: none;
+    }
+
+    50% {
+        background: var(--color-after-scroll-animation_client);
+    }
+
+    100% {
+        background: none;
+    }
 }
 
+.unread-divider {
+    margin: 10px 0 10px 0;
+    color: #656565;
+    text-align: center;
+    font-size: 14px;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    white-space: nowrap;
+
+    span {
+        padding: 4px;
+    }
+
+    &::before,
+    &::after {
+        content: "";
+        width: 100%;
+        border-top: 0.5px #656565 solid;
+    }
+}
 </style>
 
 <template lang="pug">
@@ -69,11 +92,16 @@
     :class="{ scroll_msg_animation_client: msg.My && animateMsgIds[msg.Id], scroll_msg_animation_user: !msg.My && animateMsgIds[msg.Id] }",
     :id="msg.Id")
 
+    .unread-divider(v-if="firstUnreadMessageId === msg.Id")
+        span Непрочитанные сообщения
+
     message(
         :group="group",
         :groups="groups",
         :msg="msg"
-    )    
+    )
+
+    
 </template>
 
 <script>
@@ -82,14 +110,15 @@ import Message from "./message/message.vue";
 
 export default {
     components: { Message },
-    
+
     props: {
-            searching: Boolean,
-            group: Object,
-            groups: Array
+        searching: Boolean,
+        group: Object,
+        groups: Array,
+        firstUnreadMessageId: Number,
     },
 
-    data: function() {
+    data: function () {
         return {
             animateMsgIds: {},
         }
