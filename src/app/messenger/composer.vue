@@ -9,8 +9,11 @@
 
     &-inputs {
         display: flex;
-        width: 100%;
+        gap: 6px;
         align-items: center;
+        justify-content: center;
+
+        width: 100%;
     }
 
     textarea {
@@ -65,8 +68,6 @@
     display: flex;
     min-width: 32px;
     height: 32px;
-    margin-right: 3px;
-    align-self: end;
 
     &.button-active {
         background-color: #456b84;
@@ -184,10 +185,7 @@
 }
 
 .csm-btn {
-    margin-left: 5px;
-    height: 35px;
     min-width: 35px;
-
 }
 
 .audio-msg-track {
@@ -257,8 +255,6 @@
 .audio-msg-track--wave-wrapper {
     width: 250px;
 }
-
-.audio-msg-track--wave {}
 
 .waveform {
     margin-left: 5px;

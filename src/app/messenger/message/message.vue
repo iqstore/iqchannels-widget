@@ -204,8 +204,6 @@
     text-decoration: none;
     font-size: 13px;
     color: white;
-    margin-top: 8px !important;
-    margin-right: 8px !important;
     float: left;
     white-space: nowrap;
     word-break: keep-all;
