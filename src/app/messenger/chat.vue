@@ -244,6 +244,7 @@
                     :group="group", 
                     :groups="groups",
                     :firstUnreadMessageId="firstUnreadMessageId",
+                    :animateMsgIds="animateMsgIds",
                     @reply-msg="optionClicked",
                     @swipe-rigth="swipeRight",
                     @send-message="trySendMessage",

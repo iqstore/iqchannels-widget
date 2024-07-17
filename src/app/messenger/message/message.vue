@@ -317,6 +317,10 @@
     }
 
 }
+
+.scroll {
+    cursor: pointer;
+}
 </style>
 
 <template lang="pug">

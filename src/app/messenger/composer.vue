@@ -9,7 +9,7 @@
 
     &-inputs {
         display: flex;
-        gap: 6px;
+        gap: 3px;
         align-items: center;
         justify-content: center;
 
@@ -185,9 +185,10 @@
 }
 
 .csm-btn {
-    height: 35px;
-    min-width: 35px;
-    margin-left: 5px;
+    height: 38px;
+    width: 38px;
+    min-width: 38px;
+    box-sizing: border-box;
 }
 
 .audio-msg-track {

@@ -97,9 +97,11 @@
 
     message(
         @reply-msg="optionClicked",
+        @scroll-to-message="scrollToMessage",
         :group="group",
         :groups="groups",
         :msg="msg",
+        :searching="searching",
         :enableImgModals="enableImgModals",
     )
 
@@ -119,7 +121,7 @@ export default {
         groups: Array,
         firstUnreadMessageId: Number,
         enableImgModals: Boolean,
-
+        animateMsgIds: Array
     },
 
     data: function () {
@@ -135,7 +137,12 @@ export default {
 
         optionClicked(event) {
             this.$emit("reply-msg", event);
-        }
+        },
+
+        scrollToMessage(msg, event) {
+            this.$emit("scroll-to-message", msg, event)
+        },
+
     }
 }
 
