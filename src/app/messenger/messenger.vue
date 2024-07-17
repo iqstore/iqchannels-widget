@@ -543,7 +543,7 @@ export default {
         },
 
         optionClicked(event) {
-            switch (event.item) {
+            switch (event) {
                 case "search":
                     this.searching = true;
                     this.searchMsg();

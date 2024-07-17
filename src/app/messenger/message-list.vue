@@ -96,6 +96,7 @@
         span Непрочитанные сообщения
 
     message(
+        @reply-msg="optionClicked",
         :group="group",
         :groups="groups",
         :msg="msg"
@@ -127,6 +128,10 @@ export default {
     methods: {
         swipeRight(event, msg) {
             this.$emit("swipe-rigth", event, msg)
+        },
+
+        optionClicked(event) {
+            this.$emit("reply-msg", event);
         }
     }
 }

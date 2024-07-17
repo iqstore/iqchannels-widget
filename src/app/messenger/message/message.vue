@@ -429,7 +429,7 @@
             )
 
     v-context(
-        element-id="msg-context",
+        :element-id="`msg-context-${msg.Id}`",
         :options=`[
             {name: 'Ответить', class: 'context-menu-option'},
             {name: 'Копировать', class: 'context-menu-option'}
@@ -497,6 +497,17 @@ export default {
         longtapEvent(msg) {
             return () => {
                 this.$emit("long-tap", msg);
+            }
+        },
+
+        optionClicked(event) {
+            switch (event.option.name) {
+                case "Ответить":
+                    this.$emit("reply-msg", this.msg);
+                    break;
+                case "Копировать":
+                    navigator.clipboard.writeText(event.item.Text);
+                    break;
             }
         },
 

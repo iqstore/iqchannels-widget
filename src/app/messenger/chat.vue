@@ -230,6 +230,7 @@
                     :group="group", 
                     :groups="groups",
                     :firstUnreadMessageId="firstUnreadMessageId",
+                    @reply-msg="optionClicked",
                     @swipe-rigth="swipeRight",
                     @send-message="trySendMessage",
                     @click-file="clickFile",
@@ -425,16 +426,8 @@ export default {
         },
 
 
-
         optionClicked(event) {
-            switch (event.option.name) {
-                case "Ответить":
-                    this.$emit("reply-msg", event.item);
-                    break;
-                case "Копировать":
-                    navigator.clipboard.writeText(event.item.Text);
-                    break;
-            }
+            this.$emit("reply-msg", event);
         },
 
         swipeRight(event, item) {
