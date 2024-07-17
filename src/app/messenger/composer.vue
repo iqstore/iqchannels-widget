@@ -61,6 +61,7 @@
 }
 
 .button {
+	cursor: pointer;
     border-radius: 50%;
     color: #ffffff;
     fill: #ffffff;
@@ -140,6 +141,7 @@
         width: 12px;
         height: 12px;
         margin: auto 2px auto auto;
+	    cursor: pointer;
     }
 }
 
@@ -189,6 +191,7 @@
     width: 38px;
     min-width: 38px;
     box-sizing: border-box;
+    margin-right: 3px;
 }
 
 .audio-msg-track {
@@ -287,7 +290,7 @@
                 pre.text()
                 button.img-button(
                     v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-            div(v-else-if="msg.File && msg.File.Type == 'image'")
+            div(v-else-if="msg.File && msg.File.Type === 'image'")
                 a.image(
                     :href="msg.File.URL",
                     target="_blank",
@@ -295,7 +298,7 @@
                     img.bubble(:src="msg.File.ThumbnailURL")
                 div(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")
                     button.img-button(v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-            div(v-else-if="msg.File && msg.File.Type == 'file'")
+            div(v-else-if="msg.File && msg.File.Type === 'file'")
                 a.file(
                     :href="msg.File.URL"
                     target="_blank"
@@ -328,7 +331,7 @@
         a.button.csm-btn(ref="sendMsg" id="send-msg-btn" href="#" @click.prevent="trySendMessage" title="Отправить сообщение" :class="getClass()")
             svg(xmlns="http://www.w3.org/2000/svg" height="16" width="10" viewBox="0 0 320 512")
                 path(d="M318 177.5c3.8-8.8 2-19-4.6-26l-136-144C172.9 2.7 166.6 0 160 0s-12.9 2.7-17.4 7.5l-136 144c-6.6 7-8.4 17.2-4.6 26S14.4 192 24 192H96l0 288c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32l0-288h72c9.6 0 18.2-5.7 22-14.5z")
-        div(v-if="audioMsgEnabled")
+        template(v-if="audioMsgEnabled")
             a.button.csm-btn(id="record-start" v-if="textTyped === '' && !recording && !recordingStopped" @click="startRecording()")
                 svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
                     path(d="M192 0C139 0 96 43 96 96V256c0 53 43 96 96 96s96-43 96-96V96c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 89.1 66.2 162.7 152 174.4V464H120c-13.3 0-24 10.7-24 24s10.7 24 24 24h72 72c13.3 0 24-10.7 24-24s-10.7-24-24-24H216V430.4c85.8-11.7 152-85.3 152-174.4V216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 70.7-57.3 128-128 128s-128-57.3-128-128V216z")
@@ -715,6 +718,7 @@ export default {
                 this.resetUploadFiles();
             }
             this.$refs.text.value = "";
+	        this.textTyped = "";
             this.titleVisible = true;
         },
 

@@ -241,7 +241,7 @@
             .body
                 messages(
                     :searching="searching",
-                    :group="group", 
+                    :group="group",
                     :groups="groups",
                     :firstUnreadMessageId="firstUnreadMessageId",
                     :animateMsgIds="animateMsgIds",
@@ -252,24 +252,24 @@
                     @click-file-image="clickFileImage",
                     @listen-audio="listenForAudioEvents",
                     @scroll-to-message="scrollToMessage")
-            div(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
+            div#choices(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
                 div
                     div.choice_box_dropdown(v-for="choice in group.LastMessage.SingleChoices")
                         button.choice_button(type="button", style="text-align: center"
                             v-if="!choice.Deleted",
                             @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
-            div.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
+            div#products.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
                 button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
                     span {{ getProductMsgText(group.LastMessage) }}
                 button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
-        rating(
+        rating#rating(
             v-if="group.Rating",
             :rating="group.Rating",
             :client="client",
             :channel="channel",
             @rate-rating="rateRating",
             @ignore-rating="ignoreRating")
-        inforequest(
+        inforequest#info-request(
             v-if="group.InfoRequest",
             :request="group.InfoRequest",
             :client="client",

@@ -56,8 +56,8 @@ div(v-if="msg.ReplyToMessageId")
         .reply-author(:class="{ 'reply-author-client': msg.Author === 'client', 'reply-author-user': msg.Author === 'user' }") {{ getAuthorAndText(msg).author }}
             div(v-if="replyMsg.Payload === 'carousel' && !replyMsg.File")
                 pre.text
-                button.img-button(v-for="action of replyMsg.Actions", 
-                @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" 
+                button.img-button(v-for="action of replyMsg.Actions",
+                @click.prevent="sendMessage(action.Title, action.Payload, action.URL)"
                 ) {{ action.Title }}
             div(v-else-if="replyMsg.File && replyMsg.File.Type === 'image'")
                 a.image(
@@ -102,7 +102,7 @@ export default {
             if (!this.searching) {
                 return
             }
-            document.getElementById(msg.ReplyToMessageId).scrollIntoView({
+            document.getElementById('message-'+msg.ReplyToMessageId).scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             })

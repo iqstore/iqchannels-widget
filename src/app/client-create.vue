@@ -93,12 +93,12 @@ input[type="text"] {
                     span {{ !this.greetings?.Greeting ? "фамилию и имя:" : "" }}
                 input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create" v-model="clientName")
                 div.client-consent
-                    input(type="checkbox" v-model="personalDataConsent").checkbox-custom
-                    span Согласие на обработку
+                    input#personal-data-consent(type="checkbox" v-model="personalDataConsent").checkbox-custom
+                    label(for="personal-data-consent") Согласие на обработку
                         a(style="text-decoration:underline" :href="processDataLink" target="_blank") &nbsp;персональных данных
-            button.button(:disabled="!personalDataConsent || !clientName || clientName === ''" @click.prevent="create" href="#") 
-                span(v-if="!creating") Начать чат
-                scale-loader.loader(v-if="creating", color="#fff", height="12px")
+                button.button(:disabled="!personalDataConsent || !clientName || clientName === ''" @click.prevent="create" href="#")
+                    span(v-if="!creating") Начать чат
+                    scale-loader.loader(v-if="creating", color="#fff", height="12px")
 
             p.error &nbsp;{{ error }}
 
