@@ -512,7 +512,7 @@ export default {
             this.searching = false;
             client.channelMessages(this.channel, this.chatType, null, id).then(messages => {
                 this.appendMessages(messages);
-                const msgElement = document.getElementById('message-'+id);
+                const msgElement = document.getElementById('message-' + id);
                 msgElement.scrollIntoView({
                     behavior: 'smooth',
                     block: block ?? 'center'
@@ -522,7 +522,7 @@ export default {
             });
         },
         scrollToPushMessage(msg) {
-            document.getElementById('message-'+msg).scrollIntoView({
+            document.getElementById('message-' + msg).scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             })
@@ -1253,7 +1253,7 @@ export default {
             // Someone else's message
             if (!message.My) {
                 this.appendMessage(message);
-                this.scrollToFoundMessage(this.firstUnreadMessageId);
+                this.scrollToFoundMessage(this.firstUnreadMessageId ?? message.Id);
                 return true;
             }
             // Replace my own message
