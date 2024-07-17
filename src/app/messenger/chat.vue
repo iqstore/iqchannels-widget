@@ -261,15 +261,7 @@
             @ignore-info="ignoreInfo"
         )
 
-    v-context(
-        element-id="msg-context",
-        :options=`[
-            {name: 'Ответить', class: 'context-menu-option'},
-            {name: 'Копировать', class: 'context-menu-option'}
-        ]`,
-        ref="msgContextMenu",
-        @option-clicked="optionClicked",
-    )
+
 
 </template>
 

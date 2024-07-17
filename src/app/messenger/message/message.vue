@@ -19,6 +19,8 @@
         white-space: -moz-pre-wrap;
         /* Mozilla, since 1999 */
         white-space: pre-wrap;
+        /* Opera 7 */
+        word-wrap: break-word;
         /* Opera 4-6 */
         white-space: -o-pre-wrap;
         /* Internet Explorer 5.5+ */
@@ -272,8 +274,6 @@
     margin-right: 0.5em;
 }
 
-
-
 .message_file {
     display: flex;
     align-items: center;
@@ -314,6 +314,20 @@
 
     .sent_for_checking {
         color: #2D98F4;
+    }
+
+    .no-messages-outer {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+
+        .no-messages {
+            font-style: italic;
+            font-weight: lighter;
+            opacity: 60%;
+        }
     }
 
 }
@@ -413,6 +427,16 @@
             messageFooter(
                 v-bind:msg="msg",
             )
+
+    v-context(
+        element-id="msg-context",
+        :options=`[
+            {name: 'Ответить', class: 'context-menu-option'},
+            {name: 'Копировать', class: 'context-menu-option'}
+        ]`,
+        ref="msgContextMenu",
+        @option-clicked="optionClicked",
+    )
 
 </template>
 
