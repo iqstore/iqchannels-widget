@@ -316,20 +316,6 @@
         color: #2D98F4;
     }
 
-    .no-messages-outer {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-
-        .no-messages {
-            font-style: italic;
-            font-weight: lighter;
-            opacity: 60%;
-        }
-    }
-
 }
 </style>
 

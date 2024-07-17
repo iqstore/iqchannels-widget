@@ -210,13 +210,27 @@
         }
     }
 }
+
+.no-messages-wrapper {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    .no-messages {
+        font-style: italic;
+        font-weight: lighter;
+        opacity: 60%;
+    }
+}
 </style>
 
 <template lang="pug">
 .messages#list(:class="{ 'empty': (groups.length === 0) }")
     .modal-img#modal-img(@close="closeModalImg", :modal-image-msg="modalImageMsg", :show-image-modal="showImageModal")
 
-    .no-messages-outer(v-if="groups.length === 0")
+    .no-messages-wrapper(v-if="groups.length === 0")
         span.no-messages Сообщений не найдено
 
     .group(v-for="group in groups" :class="{ client: group.ClientId, user: group.UserId }" )
