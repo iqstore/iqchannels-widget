@@ -99,7 +99,8 @@
         @reply-msg="optionClicked",
         :group="group",
         :groups="groups",
-        :msg="msg"
+        :msg="msg",
+        :enableImgModals="enableImgModals",
     )
 
     
@@ -117,6 +118,8 @@ export default {
         group: Object,
         groups: Array,
         firstUnreadMessageId: Number,
+        enableImgModals: Boolean,
+
     },
 
     data: function () {

@@ -357,6 +357,7 @@
             :msg="msg",
             :searching="searching",
             :groups="groups",
+            :enableImgModals="enableImgModals",
             @send-message="sendMessage",
             @click-file="clickFile",
             @click-file-image="clickFileImage"
@@ -459,7 +460,8 @@ export default {
         searching: Boolean,
         group: Object,
         groups: Array,
-        msg: Object
+        msg: Object,
+        enableImgModals: Boolean,
     },
 
     methods: {

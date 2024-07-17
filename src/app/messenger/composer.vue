@@ -185,7 +185,9 @@
 }
 
 .csm-btn {
+    height: 35px;
     min-width: 35px;
+    margin-left: 5px;
 }
 
 .audio-msg-track {

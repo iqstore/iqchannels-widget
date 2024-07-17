@@ -1,7 +1,7 @@
 <style lang="scss">
 .reply-icon {
-  position: absolute;
-  left: -25px;
+    position: absolute;
+    left: -25px;
 }
 
 .reply {
@@ -36,7 +36,7 @@
     margin-top: 5px;
     font-size: 12px;
     font-weight: 600;
-    
+
     &-user {
         color: black;
     }
@@ -76,13 +76,13 @@ div(v-if="msg.ReplyToMessageId")
                     button.img-button(
                         v-for="action of replyMsg.Actions") {{ action.Title }}
             a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type === 'file'"
-                    :href="replyMsg.File.URL"
-                    target="_blank"
-                    @click="clickFile(replyMsg, $event)")
+                :href="replyMsg.File.URL"
+                target="_blank"
+                @click="clickFile(replyMsg, $event)")
                 span.file
-                        .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
+                    .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
             audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
-                    :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
+                :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
             .reply-text {{ getAuthorAndText(msg).text }}
 
 </template>
@@ -94,6 +94,7 @@ export default {
         searching: Boolean,
         groups: Array,
         msg: Object,
+        enableImgModals: Boolean
     },
 
     methods: {
@@ -123,8 +124,8 @@ export default {
             const msg = messages.find(msg => message.ReplyToMessageId === msg.Id);
             if (msg) {
                 return {
-                author: msg.Author === 'client' ? 'Вы' : msg.User.DisplayName,
-                text: msg.Text
+                    author: msg.Author === 'client' ? 'Вы' : msg.User.DisplayName,
+                    text: msg.Text
                 }
             } else return {
                 author: '',
