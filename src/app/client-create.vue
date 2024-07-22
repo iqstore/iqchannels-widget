@@ -150,6 +150,10 @@ export default {
 
     methods: {
         create() {
+            if (!this.personalDataForm) {
+                if (!this.personalDataConsent) return;
+                if (this.requireName && !this.clientName) return;
+            }
             this.error = null;
 
             this.creating = client
