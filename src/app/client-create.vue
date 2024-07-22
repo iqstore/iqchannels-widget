@@ -116,7 +116,7 @@ export default {
     props: {
         channel: String,
         greetings: Object,
-        requireName: true,
+        requireName: Boolean,
         personalDataForm: Object,
     },
 
