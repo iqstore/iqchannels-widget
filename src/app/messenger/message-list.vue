@@ -98,6 +98,7 @@
     message(
         @reply-msg="optionClicked",
         @scroll-to-message="scrollToMessage",
+        @send-message="sendMessage"
         :group="group",
         :groups="groups",
         :msg="msg",
@@ -143,6 +144,9 @@ export default {
             this.$emit("scroll-to-message", msg, event)
         },
 
+        sendMessage(messageText, botpressPayload, url) {
+            this.$emit("send-message", messageText, botpressPayload, url)
+        },
     }
 }
 
