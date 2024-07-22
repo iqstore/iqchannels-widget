@@ -1363,10 +1363,10 @@ export default {
         onFileSelected(files, text, id) {
             let messageForm;
             for (const file of files) {
-                if (id) {
-                    messageForm = this.newFileMessageWithReply(file, id, text);
+	            if (id) {
+                    messageForm = this.newFileMessageWithReply(file, id, file === files[files.length - 1] ? text : "");
                 } else {
-                    messageForm = this.newFileMessage(file, text);
+                    messageForm = this.newFileMessage(file, file === files[files.length - 1] ? text : "");
                 }
                 const message = this.appendLocalMessage(messageForm);
                 this.uploadMessage(message);
