@@ -342,7 +342,6 @@ export default {
         closeSystemChat: Boolean,
         typing: Object,
         rating: Number,
-        chatTypeProp: String,
         client: Object,
         enableImgModals: Boolean,
         isMultiple: Boolean,
@@ -377,7 +376,7 @@ export default {
     },
 
     mounted() {
-        this.chatType = this.chatTypeProp;
+
         this.loadHistory();
         this.sendGreeting();
         document.getElementById('chat').addEventListener('scroll', ev => {
