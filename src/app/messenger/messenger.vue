@@ -1,315 +1,3 @@
-<style lang="scss">
-.header {
-    width: 100%;
-    background-color: #f0f0f0;
-    text-align: center;
-    display: flex;
-
-    .content {
-        display: table-cell;
-        vertical-align: middle;
-        text-align: center;
-        flex: 1;
-
-        .client-name-container {
-            display: block;
-        }
-
-        p {
-            margin-bottom: 8px;
-        }
-    }
-}
-
-a.close,
-a.close:active,
-a.close:visited,
-a.close:focus {
-    position: absolute;
-    padding: 1em 0.8em 1em 0.8em;
-    right: 0;
-    top: 0;
-    color: #666666;
-}
-
-a.logout,
-a.logout:active,
-a.logout:visited,
-a.logout:focus {
-    color: #666666;
-    text-decoration: none;
-    font-size: 75%;
-    border-bottom: 1px dashed #666666;
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-
-#chat {
-    width: 100%;
-    background-color: white;
-    overflow-y: scroll;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    flex: 1;
-}
-
-#composer {
-    background: #fff;
-}
-
-.messenger {
-    height: 100%;
-    overflow-y: clip;
-    display: flex;
-    flex-direction: column;
-}
-
-.messenger_absolute {
-    position: absolute;
-    right: 0;
-    left: 0;
-}
-
-.chat-type-container {
-    padding: 8px;
-    width: 100%;
-}
-
-.chat-type-select {
-    width: 100%;
-    color: inherit;
-    background-color: inherit;
-    border-radius: 0.25rem;
-    border: 1px solid #ced4da;
-    padding: .375rem 2.25rem .375rem .75rem;
-}
-
-.choice_box {
-    float: right;
-    margin-top: 5px;
-    line-height: 1.15;
-    text-transform: none;
-    visibility: visible;
-    -webkit-box-direction: normal;
-    text-align: right;
-    font-size: 14px;
-    border-radius: 3px;
-}
-
-.choice_button {
-    white-space: pre-wrap;
-    /* css-3 */
-    white-space: -moz-pre-wrap;
-    /* Mozilla, since 1999 */
-    white-space: -pre-wrap;
-    /* Opera 4-6 */
-    white-space: -o-pre-wrap;
-    /* Opera 7 */
-    word-wrap: break-word;
-    /* Internet Explorer 5.5+ */
-    font-family: inherit;
-    font-size: inherit;
-    text-align: right;
-    width: fit-content;
-    border: 1px solid #A3DE62;
-    margin-bottom: 5px;
-    border-radius: 10px;
-    background: none;
-    color: #74B928;
-    height: 36px;
-    margin-right: 6px;
-    cursor: pointer;
-    transition: border 0.3s, background 0.3s, color 0.3s;
-}
-
-.fa-icon {
-    margin-left: 5px;
-    padding: 5px;
-    cursor: pointer;
-}
-
-.search-icon {
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-}
-
-.back-icon,
-.options-icon {
-    font-size: 22px;
-}
-
-.options-icon {
-    border-radius: 100%;
-    width: 35px;
-}
-
-.w-100 {
-    width: 100%;
-}
-
-.search-input {
-    width: 100%;
-    color: gray;
-    background-color: #FFFFFF;
-    border-radius: 0.25rem;
-    border: 1px solid #ced4da;
-    padding: .375rem 3rem .375rem .75rem;
-
-    &:focus {
-        outline: none;
-    }
-}
-
-.nav-container {
-    display: flex;
-    padding: 15px 5px;
-    align-items: center;
-    min-height: 35px;
-}
-
-.nav-item {
-    margin-right: 8px;
-}
-
-.vue-simple-context-menu .context-menu-option {
-    transition: 0.1s ease;
-
-    &:hover {
-        background-color: #dedede;
-        color: black;
-    }
-}
-
-.unacceptable-msg {
-    text-align: center;
-    margin-right: 10px;
-    color: #ba6161;
-    font-size: 12px;
-    background-color: white;
-}
-
-.messenger-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-
-    .loader {
-        height: 24px;
-        width: 24px;
-        top: 6px;
-    }
-}
-</style>
-
-<template lang="pug">
-    .messenger(:class="{ 'messenger_absolute': !isMultiple }")
-        .header#header-loading(v-if="appError")
-            .messenger-loading
-                fade-loader.loader(:height="'6px'" :width="'2px'" :radius="'7px'" :color="'#b9b9b9'")
-                p Ожидание сети...
-        .header#header(v-else)
-            .content#header-content(v-if="!isMultiple")
-                div.client-name-container(v-if="mode !== 'mobile'")
-                    p {{ client.Name }}
-                    p(v-if="anonymous")
-                        a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
-                    a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
-                        font-awesome-icon(:icon="['fa', 'fa-times']")
-                div(style="display:flex")
-                    span.fa-icon.search-icon(title="Поиск по чату", @click.prevent="searchMsg()")
-                        font-awesome-icon(:icon="['fas', 'fa-search']")
-                    div.chat-type-container(v-if="searching || !hasPersonalManager", style="display:flex; width:100%" )
-                        input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
-                        span.fa-icon(v-if="hasPersonalManager" title="Отменить", @click.prevent="cancelSearch()")
-                            font-awesome-icon(:icon="['fas', 'fa-times']")
-                    div.chat-type-container(v-if="hasPersonalManager && !searching")
-                        select(name="chat-type" @change="onChatTypeSelected").chat-type-select
-                            option(selected value="regular") Общий чат
-                            option(value="personal_manager") Чат с персональным менеджером
-
-            .content(v-if="isMultiple")
-                .nav-container#header-multiple-content(v-if="isMultiple && !searching")
-                    .nav-item
-                        span.fa-icon.back-icon(@click.prevent="() => $emit('on-back')")
-                            font-awesome-icon(:icon="['fas', 'fa-arrow-left']")
-                    .nav-item.w-100
-                        chat-container(:chat="client", :chat-name="channel" :is-with-personal-manager="chatType === 'personal_manager'")
-                    .nav-item.fa-icon.options-icon(v-wave, @click.prevent.stop="handleMenuContext($event)")
-                        font-awesome-icon(:icon="['fas', 'fa-ellipsis-vertical']")
-
-                .nav-container#header-multiple-content_search(v-if="searching")
-                    .nav-item
-                        span.fa-icon(title="Отменить", @click.prevent="cancelSearch()")
-                            font-awesome-icon(:icon="['fas', 'fa-times']")
-                    .nav-item.w-100
-                        div(v-if="searching || !hasPersonalManager", style="width:80%" )
-                            input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
-
-
-        #chat
-            chat(
-                ref="chat",
-                :mode="mode",
-                :opened="opened",
-                :groups="groups",
-                :rating="rating",
-                :client="client",
-                :channel="channel",
-                :singleChoices="singleChoices",
-                :searching="searching",
-                :enableImgModals="enableImgModals",
-                :firstUnreadMessageId="firstUnreadMessageId",
-                @cancel-upload="cancelUpload",
-                @retry-upload="retryUpload",
-                @rate-rating="rateRating",
-                @message-composed="onMessageComposed",
-                @ignore-rating="ignoreRating",
-                @mobile-rating="mobileRating",
-                @send-info="sendInfo",
-                @ignore-info="ignoreInfo",
-                @long-tap="longTap",
-                @reply-msg="reply",
-                @scrollToMessage="(id) => scrollToFoundMessage(id)",
-                @click-file="clickFile",
-                @download-file="downloadFile",
-            )
-            .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
-                div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
-                    button.choice_button(type="button",
-                        v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
-                        @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
-        .unacceptable-msg(v-if="badWordError")
-            p(v-text="badWordError")
-        #composer
-            composer(
-                ref="composer"
-                :replayedMsg="inputMsg"
-                :operatorTyping="inputTyping"
-                :disableFreeText="disableFreeText"
-                @message-composed="onMessageComposed"
-                @file-selected="onFileSelected"
-                @start-typing="onStartTyping"
-                :channel="this.channel"
-            )
-
-    scroll-bottom(@on-click="scrollToLastMessage")
-
-    v-context(
-        element-id="nav-context",
-        :options="[{name: 'Поиск', class: 'context-menu-option'}]",
-        ref="contextMenu",
-        @option-clicked="optionClicked",
-    )
-</template>
-
 <script>
 import chat from './chat.vue';
 import composer from './composer.vue';
@@ -1373,3 +1061,315 @@ export default {
     }
 };
 </script>
+
+<template lang="pug">
+    .messenger(:class="{ 'messenger_absolute': !isMultiple }")
+        .header#header-loading(v-if="appError")
+            .messenger-loading
+                fade-loader.loader(:height="'6px'" :width="'2px'" :radius="'7px'" :color="'#b9b9b9'")
+                p Ожидание сети...
+        .header#header(v-else)
+            .content#header-content(v-if="!isMultiple")
+                div.client-name-container(v-if="mode !== 'mobile'")
+                    p {{ client.Name }}
+                    p(v-if="anonymous")
+                        a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
+                    a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
+                        font-awesome-icon(:icon="['fa', 'fa-times']")
+                div(style="display:flex")
+                    span.fa-icon.search-icon(title="Поиск по чату", @click.prevent="searchMsg()")
+                        font-awesome-icon(:icon="['fas', 'fa-search']")
+                    div.chat-type-container(v-if="searching || !hasPersonalManager", style="display:flex; width:100%" )
+                        input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
+                        span.fa-icon(v-if="hasPersonalManager" title="Отменить", @click.prevent="cancelSearch()")
+                            font-awesome-icon(:icon="['fas', 'fa-times']")
+                    div.chat-type-container(v-if="hasPersonalManager && !searching")
+                        select(name="chat-type" @change="onChatTypeSelected").chat-type-select
+                            option(selected value="regular") Общий чат
+                            option(value="personal_manager") Чат с персональным менеджером
+
+            .content(v-if="isMultiple")
+                .nav-container#header-multiple-content(v-if="isMultiple && !searching")
+                    .nav-item
+                        span.fa-icon.back-icon(@click.prevent="() => $emit('on-back')")
+                            font-awesome-icon(:icon="['fas', 'fa-arrow-left']")
+                    .nav-item.w-100
+                        chat-container(:chat="client", :chat-name="channel" :is-with-personal-manager="chatType === 'personal_manager'")
+                    .nav-item.fa-icon.options-icon(v-wave, @click.prevent.stop="handleMenuContext($event)")
+                        font-awesome-icon(:icon="['fas', 'fa-ellipsis-vertical']")
+
+                .nav-container#header-multiple-content_search(v-if="searching")
+                    .nav-item
+                        span.fa-icon(title="Отменить", @click.prevent="cancelSearch()")
+                            font-awesome-icon(:icon="['fas', 'fa-times']")
+                    .nav-item.w-100
+                        div(v-if="searching || !hasPersonalManager", style="width:80%" )
+                            input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
+
+
+        #chat
+            chat(
+                ref="chat",
+                :mode="mode",
+                :opened="opened",
+                :groups="groups",
+                :rating="rating",
+                :client="client",
+                :channel="channel",
+                :singleChoices="singleChoices",
+                :searching="searching",
+                :enableImgModals="enableImgModals",
+                :firstUnreadMessageId="firstUnreadMessageId",
+                @cancel-upload="cancelUpload",
+                @retry-upload="retryUpload",
+                @rate-rating="rateRating",
+                @message-composed="onMessageComposed",
+                @ignore-rating="ignoreRating",
+                @mobile-rating="mobileRating",
+                @send-info="sendInfo",
+                @ignore-info="ignoreInfo",
+                @long-tap="longTap",
+                @reply-msg="reply",
+                @scrollToMessage="(id) => scrollToFoundMessage(id)",
+                @click-file="clickFile",
+                @download-file="downloadFile",
+            )
+            .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
+                div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
+                    button.choice_button(type="button",
+                        v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
+                        @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
+        .unacceptable-msg(v-if="badWordError")
+            p(v-text="badWordError")
+        #composer
+            composer(
+                ref="composer"
+                :replayedMsg="inputMsg"
+                :operatorTyping="inputTyping"
+                :disableFreeText="disableFreeText"
+                @message-composed="onMessageComposed"
+                @file-selected="onFileSelected"
+                @start-typing="onStartTyping"
+                :channel="this.channel"
+            )
+
+    scroll-bottom(@on-click="scrollToLastMessage")
+
+    v-context(
+        element-id="nav-context",
+        :options="[{name: 'Поиск', class: 'context-menu-option'}]",
+        ref="contextMenu",
+        @option-clicked="optionClicked",
+    )
+</template>
+
+<style lang="scss">
+.header {
+    width: 100%;
+    background-color: #f0f0f0;
+    text-align: center;
+    display: flex;
+
+    .content {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+        flex: 1;
+
+        .client-name-container {
+            display: block;
+        }
+
+        p {
+            margin-bottom: 8px;
+        }
+    }
+}
+
+a.close,
+a.close:active,
+a.close:visited,
+a.close:focus {
+    position: absolute;
+    padding: 1em 0.8em 1em 0.8em;
+    right: 0;
+    top: 0;
+    color: #666666;
+}
+
+a.logout,
+a.logout:active,
+a.logout:visited,
+a.logout:focus {
+    color: #666666;
+    text-decoration: none;
+    font-size: 75%;
+    border-bottom: 1px dashed #666666;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+#chat {
+    width: 100%;
+    background-color: white;
+    overflow-y: scroll;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    flex: 1;
+}
+
+#composer {
+    background: #fff;
+}
+
+.messenger {
+    height: 100%;
+    overflow-y: clip;
+    display: flex;
+    flex-direction: column;
+}
+
+.messenger_absolute {
+    position: absolute;
+    right: 0;
+    left: 0;
+}
+
+.chat-type-container {
+    padding: 8px;
+    width: 100%;
+}
+
+.chat-type-select {
+    width: 100%;
+    color: inherit;
+    background-color: inherit;
+    border-radius: 0.25rem;
+    border: 1px solid #ced4da;
+    padding: .375rem 2.25rem .375rem .75rem;
+}
+
+.choice_box {
+    float: right;
+    margin-top: 5px;
+    line-height: 1.15;
+    text-transform: none;
+    visibility: visible;
+    -webkit-box-direction: normal;
+    text-align: right;
+    font-size: 14px;
+    border-radius: 3px;
+}
+
+.choice_button {
+    white-space: pre-wrap;
+    /* css-3 */
+    white-space: -moz-pre-wrap;
+    /* Mozilla, since 1999 */
+    white-space: -pre-wrap;
+    /* Opera 4-6 */
+    white-space: -o-pre-wrap;
+    /* Opera 7 */
+    word-wrap: break-word;
+    /* Internet Explorer 5.5+ */
+    font-family: inherit;
+    font-size: inherit;
+    text-align: right;
+    width: fit-content;
+    border: 1px solid #A3DE62;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    background: none;
+    color: #74B928;
+    height: 36px;
+    margin-right: 6px;
+    cursor: pointer;
+    transition: border 0.3s, background 0.3s, color 0.3s;
+}
+
+.fa-icon {
+    margin-left: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.search-icon {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.back-icon,
+.options-icon {
+    font-size: 22px;
+}
+
+.options-icon {
+    border-radius: 100%;
+    width: 35px;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    color: gray;
+    background-color: #FFFFFF;
+    border-radius: 0.25rem;
+    border: 1px solid #ced4da;
+    padding: .375rem 3rem .375rem .75rem;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.nav-container {
+    display: flex;
+    padding: 15px 5px;
+    align-items: center;
+    min-height: 35px;
+}
+
+.nav-item {
+    margin-right: 8px;
+}
+
+.vue-simple-context-menu .context-menu-option {
+    transition: 0.1s ease;
+
+    &:hover {
+        background-color: #dedede;
+        color: black;
+    }
+}
+
+.unacceptable-msg {
+    text-align: center;
+    margin-right: 10px;
+    color: #ba6161;
+    font-size: 12px;
+    background-color: white;
+}
+
+.messenger-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    .loader {
+        height: 24px;
+        width: 24px;
+        top: 6px;
+    }
+}
+</style>

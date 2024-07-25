@@ -1,31 +1,5 @@
-<style lang="scss" scoped>
-.circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    line-height: 40px;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    color: white;
-    .img {
-        border-radius: 500px;
-        width: 100%;
-        height: 100%;
-        background-size: 40px 40px;
-    }
-}
-</style>
-
-<template lang="pug">
-.circle(:style="styleObject")
-    span(v-if="!url") {{ initials }}
-    .img(v-else :style="{ 'background-image': 'url(' + url + ')' }")
-
-</template>
-
 <script>
-  const COLORS = [
+const COLORS = [
     "#c28eae",
     "#92a194",
     "#45acb0",
@@ -58,33 +32,60 @@
     "#b594a8",
     "#00b2bc",
     "#00aecb"
-  ];
+];
 
-  export default {
-    data () {
-      return {
-        styleObject: {
-          backgroundColor: COLORS[this.user.Id % COLORS.length],
+export default {
+    data() {
+        return {
+            styleObject: {
+                backgroundColor: COLORS[this.user.Id % COLORS.length],
+            }
         }
-      }
     },
     props: {
-      user: Object,
+        user: Object,
     },
 
     computed: {
-      'color': function () {
-        return COLORS[this.user.Id % COLORS.length];
-      },
-      'initials': function () {
-        if (this.user.DisplayName){
-          return this.user.DisplayName.split(' ').slice(0,2).map(s => s ? s[0].toUpperCase() : '').join('')
+        'color': function () {
+            return COLORS[this.user.Id % COLORS.length];
+        },
+        'initials': function () {
+            if (this.user.DisplayName) {
+                return this.user.DisplayName.split(' ').slice(0, 2).map(s => s ? s[0].toUpperCase() : '').join('')
+            }
+            return '';
+        },
+        'url': function () {
+            return this.user.AvatarURL
         }
-          return  '';
-      },
-      'url': function () {
-        return this.user.AvatarURL
-      }
     }
-  }
+}
 </script>
+
+<template lang="pug">
+    .circle(:style="styleObject")
+        span(v-if="!url") {{ initials }}
+        .img(v-else :style="{ 'background-image': 'url(' + url + ')' }")
+
+</template>
+
+<style lang="scss" scoped>
+.circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    line-height: 40px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+
+    .img {
+        border-radius: 500px;
+        width: 100%;
+        height: 100%;
+        background-size: 40px 40px;
+    }
+}
+</style>

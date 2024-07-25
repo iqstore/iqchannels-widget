@@ -1,58 +1,3 @@
-<template lang="pug">
-div(v-if="initialized")
-    error-boundary(:error="appError")
-        link(type="text/css" rel="stylesheet" :href="stylesURL")
-
-        template(v-if="isMultipleChats")
-            template(v-if="!multiClient")
-                client-auth(@on-client-multiple-authorized='onMultiLogin' :greetings="greetings" :multiChatData="chats")
-
-            multi-messenger#multi-messenger(
-                v-if="multiClient",
-                ref="multiMessenger",
-                @on-unread-changed='onUnreadChanged',
-                @on-message-received='onMessageReceived',
-                @on-file-clicked='onFileClicked',
-                @on-close='onClose',
-                @on-logout='onLogout',
-                @on-longtap="onLongTap",
-                @on-rating="onRating",
-                :mode='mode',
-                :multiClient='multiClient',
-                :opened='opened',
-                :channel='channel',
-                :replayed-msg="replayedMsg",
-                :scrollToMsg="scrollToMsg",
-                :rating="rating",
-                :closeSystemChat="closeSystemChat",
-                :chats="chats",
-            )
-        template(v-else)
-            template(v-if="!client")
-                client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :personalDataForm="personalDataForm" :channel="channel" :requireName="requireName")
-                client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
-            messenger#messenger(v-if="client",
-                ref="messenger"
-                @on-unread-changed='onUnreadChanged'
-                @on-message-received='onMessageReceived'
-                @on-file-clicked='onFileClicked'
-                @on-close='onClose'
-                @on-logout='onLogout'
-                @on-longtap="onLongTap"
-                @on-rating="onRating"
-                @client-changed="onClientChanged"
-                :mode='mode'
-                :client='client'
-                :opened='opened'
-                :channel='channel'
-                :replayed-msg="replayedMsg"
-                :scrollToMsg="scrollToMsg"
-                :rating="rating"
-                :closeSystemChat="closeSystemChat"
-                :app-error="appError",
-            )
-</template>
-
 <script>
 import config from '../config';
 import { clearCookie } from '../lib/web';
@@ -77,7 +22,10 @@ export default {
         const onMessageReceived = () => parent.postMessage({ type: 'iqchannels-widget-message' }, '*');
         const onFileClicked = (url) => parent.postMessage({ type: 'iqchannels-widget-file', data: url }, '*');
         const onUnreadChanged = (count) => parent.postMessage({ type: 'iqchannels-widget-unread', data: count }, '*');
-        const onLongTap = (msg) => parent.postMessage({ type: 'iqchannels-widget-longtap', data: JSON.stringify(msg) }, '*');
+        const onLongTap = (msg) => parent.postMessage({
+            type: 'iqchannels-widget-longtap',
+            data: JSON.stringify(msg)
+        }, '*');
         const onRating = (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*');
         const onError = (error) => {
             if (!error) {
@@ -290,3 +238,58 @@ export default {
     }
 };
 </script>
+
+<template lang="pug">
+    div(v-if="initialized")
+        error-boundary(:error="appError")
+            link(type="text/css" rel="stylesheet" :href="stylesURL")
+
+            template(v-if="isMultipleChats")
+                template(v-if="!multiClient")
+                    client-auth(@on-client-multiple-authorized='onMultiLogin' :greetings="greetings" :multiChatData="chats")
+
+                multi-messenger#multi-messenger(
+                    v-if="multiClient",
+                    ref="multiMessenger",
+                    @on-unread-changed='onUnreadChanged',
+                    @on-message-received='onMessageReceived',
+                    @on-file-clicked='onFileClicked',
+                    @on-close='onClose',
+                    @on-logout='onLogout',
+                    @on-longtap="onLongTap",
+                    @on-rating="onRating",
+                    :mode='mode',
+                    :multiClient='multiClient',
+                    :opened='opened',
+                    :channel='channel',
+                    :replayed-msg="replayedMsg",
+                    :scrollToMsg="scrollToMsg",
+                    :rating="rating",
+                    :closeSystemChat="closeSystemChat",
+                    :chats="chats",
+                )
+            template(v-else)
+                template(v-if="!client")
+                    client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :personalDataForm="personalDataForm" :channel="channel" :requireName="requireName")
+                    client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
+                messenger#messenger(v-if="client",
+                    ref="messenger"
+                    @on-unread-changed='onUnreadChanged'
+                    @on-message-received='onMessageReceived'
+                    @on-file-clicked='onFileClicked'
+                    @on-close='onClose'
+                    @on-logout='onLogout'
+                    @on-longtap="onLongTap"
+                    @on-rating="onRating"
+                    @client-changed="onClientChanged"
+                    :mode='mode'
+                    :client='client'
+                    :opened='opened'
+                    :channel='channel'
+                    :replayed-msg="replayedMsg"
+                    :scrollToMsg="scrollToMsg"
+                    :rating="rating"
+                    :closeSystemChat="closeSystemChat"
+                    :app-error="appError",
+                )
+</template>
