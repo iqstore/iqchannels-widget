@@ -285,6 +285,10 @@ class Client {
   channelSend (channel, message) {
     return this._enqueueRequest(`/chats/channel/send/${channel}`, message);
   }
+  
+  checkMessage (msgText) {
+    return this._enqueueRequest('/bad_words/check_message', { MsgText: msgText }, { shouldRetry: (error) => !error });
+  }
 
   listTicketsByClient (channel, clientId, query) {
     return this._enqueueRequest(`/chats/channel/tickets/existing/${channel}`, { ClientId: clientId, Query: query });

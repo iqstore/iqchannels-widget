@@ -205,6 +205,14 @@ a.logout:focus {
     }
 }
 
+.unacceptable-msg{
+  text-align: center;
+  margin-right: 10px;
+  color: #ba6161;
+  font-size: 12px;
+  background-color: white;
+}
+
 .messenger-loading {
     display: flex;
     align-items: center;
@@ -300,6 +308,8 @@ a.logout:focus {
                 button.choice_button(type="button",
                     v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
                     @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
+    .unacceptable-msg(v-if="badWordError")
+      p(v-text="badWordError")
     #composer
         composer(
             ref="composer"
@@ -404,6 +414,7 @@ export default {
             systemChat: false,
             singleChoices: [],
             disableFreeText: false,
+            badWordError: null,
             shouldBeScrolledBottom: true,
             chatType: 'regular',
             firstUnreadMessageId: 0
@@ -1317,22 +1328,39 @@ export default {
                 window.open(url, '_blank').focus();
                 return;
             }
-            let messageForm;
             if (text.messageText === "/version") {
                 this.handleVersion();
                 return;
             }
 
-            if (typeof text !== 'object') {
-                messageForm = this.newTextMessage(text, botpressPayload);
-            } else {
-                messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
+            if (this.badWordError){
+              this.badWordError = null;
             }
-            this.appendLocalMessage(messageForm);
-            client.channelSend(this.channel, messageForm).then(() =>
 
-                this.loadHistory(false));
-            ;
+            client.checkMessage(text.messageText).then(ok => {
+             this.sendMsg(text, botpressPayload)
+            }, err => {
+               if (err.code === "http"){
+                 this.sendMsg(text, botpressPayload)
+               } else {
+               this.badWordError = err;
+               }
+
+            })
+        },
+
+        sendMsg(text, botpressPayload){
+          let messageForm
+          if (typeof text !== 'object') {
+            messageForm = this.newTextMessage(text, botpressPayload);
+          } else {
+            messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
+          }
+          this.appendLocalMessage(messageForm);
+
+          client.channelSend(this.channel, messageForm).then(() =>
+
+              this.loadHistory(false));
         },
 
         handleVersion() {
