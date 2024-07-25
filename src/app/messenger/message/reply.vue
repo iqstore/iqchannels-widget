@@ -66,12 +66,12 @@ div(v-if="msg.ReplyToMessageId")
                     target="_blank",
                     @click="clickFile(replyMsg, $event)"
                 )
-                    img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                    img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
                 .image(
                     v-else-if="enableImgModals",
                     @click="clickFileImage(replyMsg, $event)"
                 )
-                    img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                    img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
                 div(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'")
                     button.img-button(
                         v-for="action of replyMsg.Actions") {{ action.Title }}
@@ -109,7 +109,7 @@ export default {
         },
 
         getReplyMsg(message) {
-            const messages = this.groups.map(group => group.Messages).reduce((result, current) => [...current, ...result]);
+            const messages = this.groups.map(group => group?.Messages).reduce((result, current) => [...current, ...result]);
             return messages.reduce((result, current) => {
                 if (message.ReplyToMessageId === current.Id) {
                     result.push(current)
@@ -120,7 +120,7 @@ export default {
         },
 
         getAuthorAndText(message) {
-            const messages = this.groups.map(x => x.Messages).reduce((x, acc) => [...acc, ...x]);
+            const messages = this.groups.map(x => x?.Messages).reduce((x, acc) => [...acc, ...x]);
             const msg = messages.find(msg => message.ReplyToMessageId === msg.Id);
             if (msg) {
                 return {
