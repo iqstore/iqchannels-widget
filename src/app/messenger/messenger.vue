@@ -254,60 +254,60 @@ a.logout:focus {
                             input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
 
 
-    #chat
-        chat(
-            ref="chat",
-            :mode="mode",
-            :opened="opened",
-            :groups="groups",
-            :rating="rating",
-            :client="client",
-            :channel="channel",
-            :singleChoices="singleChoices",
-            :searching="searching",
-            :enableImgModals="enableImgModals",
-            :firstUnreadMessageId="firstUnreadMessageId",
-            @cancel-upload="cancelUpload",
-            @retry-upload="retryUpload",
-            @rate-rating="rateRating",
-            @message-composed="onMessageComposed",
-            @ignore-rating="ignoreRating",
-            @mobile-rating="mobileRating",
-            @send-info="sendInfo",
-            @ignore-info="ignoreInfo",
-            @long-tap="longTap",
-            @reply-msg="reply",
-            @scrollToMessage="(id) => scrollToFoundMessage(id)",
-            @click-file="clickFile",
-            @download-file="downloadFile",
-        )
-        .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
-            div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
-                button.choice_button(type="button",
-                    v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
-                    @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
-    .unacceptable-msg(v-if="badWordError")
-      p(v-text="badWordError")
-    #composer
-        composer(
-            ref="composer"
-            :replayedMsg="inputMsg"
-            :operatorTyping="inputTyping"
-            :disableFreeText="disableFreeText"
-            @message-composed="onMessageComposed"
-            @file-selected="onFileSelected"
-            @start-typing="onStartTyping"
-            :channel="this.channel"
-        )
+        #chat
+            chat(
+                ref="chat",
+                :mode="mode",
+                :opened="opened",
+                :groups="groups",
+                :rating="rating",
+                :client="client",
+                :channel="channel",
+                :singleChoices="singleChoices",
+                :searching="searching",
+                :enableImgModals="enableImgModals",
+                :firstUnreadMessageId="firstUnreadMessageId",
+                @cancel-upload="cancelUpload",
+                @retry-upload="retryUpload",
+                @rate-rating="rateRating",
+                @message-composed="onMessageComposed",
+                @ignore-rating="ignoreRating",
+                @mobile-rating="mobileRating",
+                @send-info="sendInfo",
+                @ignore-info="ignoreInfo",
+                @long-tap="longTap",
+                @reply-msg="reply",
+                @scrollToMessage="(id) => scrollToFoundMessage(id)",
+                @click-file="clickFile",
+                @download-file="downloadFile",
+            )
+            .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
+                div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
+                    button.choice_button(type="button",
+                        v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
+                        @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
+        .unacceptable-msg(v-if="badWordError")
+            p(v-text="badWordError")
+        #composer
+            composer(
+                ref="composer"
+                :replayedMsg="inputMsg"
+                :operatorTyping="inputTyping"
+                :disableFreeText="disableFreeText"
+                @message-composed="onMessageComposed"
+                @file-selected="onFileSelected"
+                @start-typing="onStartTyping"
+                :channel="this.channel"
+            )
 
-scroll-bottom(@on-click="scrollToLastMessage")
+    scroll-bottom(@on-click="scrollToLastMessage")
 
-v-context(
-    element-id="nav-context",
-    :options="[{name: 'Поиск', class: 'context-menu-option'}]",
-    ref="contextMenu",
-    @option-clicked="optionClicked",
-)
+    v-context(
+        element-id="nav-context",
+        :options="[{name: 'Поиск', class: 'context-menu-option'}]",
+        ref="contextMenu",
+        @option-clicked="optionClicked",
+    )
 </template>
 
 <script>
@@ -318,7 +318,6 @@ import * as schema from '../../schema';
 import { isSameDate } from '../../lib/datetime';
 import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
-import { ref } from "vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 
 export default {
