@@ -227,56 +227,55 @@
 </style>
 
 <template lang="pug">
-.messages#list(:class="{ 'empty': (groups.length === 0) }")
-    .modal-img#modal-img(@close="closeModalImg", :modal-image-msg="modalImageMsg", :show-image-modal="showImageModal")
+    .messages#list(:class="{ 'empty': (groups.length === 0) }")
+        modal-img#modal-img(@close="closeModalImg", :modal-image-msg="modalImageMsg", :show-image-modal="showImageModal")
 
-    .no-messages-wrapper(v-if="groups.length === 0")
-        span.no-messages Сообщений не найдено
+        .no-messages-wrapper(v-if="groups.length === 0")
+            span.no-messages Сообщений не найдено
 
-    .group(v-for="group in groups" :class="{ client: group.ClientId, user: group.UserId }" )
-        .date(v-if="group.IsNewDay")
-            span.title {{ humanDate(group.LastMessage.CreatedAt) }}
+        .group(v-for="group in groups" :class="{ client: group.ClientId, user: group.UserId }" )
+            .date(v-if="group.IsNewDay")
+                span.title {{ humanDate(group.LastMessage.CreatedAt) }}
 
-        .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
-            .body
-                messages(
-                    :searching="searching",
-                    :group="group",
-                    :groups="groups",
-                    :firstUnreadMessageId="firstUnreadMessageId",
-                    :animateMsgIds="animateMsgIds",
-                    @reply-msg="optionClicked",
-                    @swipe-rigth="swipeRight",
-                    @send-message="trySendMessage",
-                    @click-file="clickFile",
-                    @click-file-image="clickFileImage",
-                    @listen-audio="listenForAudioEvents",
-                    @scroll-to-message="scrollToMessage")
-            div#choices(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
-                div
-                    div.choice_box_dropdown(v-for="choice in group.LastMessage.SingleChoices")
-                        button.choice_button(type="button", style="text-align: center"
-                            v-if="!choice.Deleted",
-                            @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
-            div#products.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
-                button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
-                    span {{ getProductMsgText(group.LastMessage) }}
-                button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
-        rating#rating(
-            v-if="group.Rating",
-            :rating="group.Rating",
-            :client="client",
-            :channel="channel",
-            @rate-rating="rateRating",
-            @ignore-rating="ignoreRating")
-        inforequest#info-request(
-            v-if="group.InfoRequest",
-            :request="group.InfoRequest",
-            :client="client",
-            @send-info="sendInfo",
-            @ignore-info="ignoreInfo"
-        )
-
+            .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
+                .body
+                    messages(
+                        :searching="searching",
+                        :group="group",
+                        :groups="groups",
+                        :firstUnreadMessageId="firstUnreadMessageId",
+                        :animateMsgIds="animateMsgIds",
+                        @reply-msg="optionClicked",
+                        @swipe-rigth="swipeRight",
+                        @send-message="trySendMessage",
+                        @click-file="clickFile",
+                        @click-file-image="clickFileImage",
+                        @listen-audio="listenForAudioEvents",
+                        @scroll-to-message="scrollToMessage")
+                div#choices(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
+                    div
+                        div.choice_box_dropdown(v-for="choice in group.LastMessage.SingleChoices")
+                            button.choice_button(type="button", style="text-align: center"
+                                v-if="!choice.Deleted",
+                                @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
+                div#products.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
+                    button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
+                        span {{ getProductMsgText(group.LastMessage) }}
+                    button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
+            rating#rating(
+                v-if="group.Rating",
+                :rating="group.Rating",
+                :client="client",
+                :channel="channel",
+                @rate-rating="rateRating",
+                @ignore-rating="ignoreRating")
+            inforequest#info-request(
+                v-if="group.InfoRequest",
+                :request="group.InfoRequest",
+                :client="client",
+                @send-info="sendInfo",
+                @ignore-info="ignoreInfo"
+            )
 
 
 </template>
@@ -311,7 +310,7 @@ export default {
             showImageModal: false,
             modalImageMsg: null,
             animateMsgIds: {},
-            enableImgModals: Boolean,
+            enableImgModals: true,
         }
     },
 

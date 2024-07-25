@@ -75,25 +75,6 @@ a.logout:focus {
     left: 0;
 }
 
-.scrollBottom {
-    width: 32px;
-    height: 32px;
-    position: fixed;
-    bottom: 60px;
-    background: #EBEBEB;
-    border-radius: 50%;
-    display: flex;
-    z-index: 2;
-    right: 0;
-    margin-right: 8px;
-    margin-left: auto;
-    cursor: pointer;
-
-    svg {
-        margin: auto;
-    }
-}
-
 .chat-type-container {
     padding: 8px;
     width: 100%;
@@ -300,9 +281,6 @@ a.logout:focus {
             @click-file="clickFile",
             @download-file="downloadFile",
         )
-        .scrollBottom#scroll-bottom(v-if="!isBottom && !this.searching" @click="scrollToLastMessage(false)")
-            svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
-                path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
         .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
             div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
                 button.choice_button(type="button",
@@ -322,6 +300,8 @@ a.logout:focus {
             :channel="this.channel"
         )
 
+scroll-bottom(@on-click="scrollToLastMessage")
+
 v-context(
     element-id="nav-context",
     :options="[{name: 'Поиск', class: 'context-menu-option'}]",
@@ -339,9 +319,10 @@ import { isSameDate } from '../../lib/datetime';
 import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
 import { ref } from "vue";
+import ScrollBottom from "../components/scroll-bottom.vue";
 
 export default {
-    components: { ChatContainer, chat, composer },
+    components: { ScrollBottom, ChatContainer, chat, composer },
 
     props: {
         mode: String,
@@ -386,16 +367,8 @@ export default {
     },
 
     mounted() {
-
         this.loadHistory();
         this.sendGreeting();
-        document.getElementById('chat').addEventListener('scroll', ev => {
-            setTimeout(() => {
-                const height = document.getElementById('chat')?.offsetHeight;
-                // add 3px because there is a difference for some reason
-                this.isBottom = !((ev.target.scrollHeight - ev.target.scrollTop - 3) >= height);
-            }, 300);
-        });
     },
 
     beforeUnmount() {
@@ -410,14 +383,13 @@ export default {
             search: "",
             inputMsg: {},
             inputTyping: {},
-            isBottom: true,
             systemChat: false,
             singleChoices: [],
             disableFreeText: false,
             badWordError: null,
             shouldBeScrolledBottom: true,
             chatType: 'regular',
-            firstUnreadMessageId: 0
+            firstUnreadMessageId: 0,
         };
     },
 
