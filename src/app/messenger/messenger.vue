@@ -186,12 +186,12 @@ a.logout:focus {
     }
 }
 
-.unacceptable-msg{
-  text-align: center;
-  margin-right: 10px;
-  color: #ba6161;
-  font-size: 12px;
-  background-color: white;
+.unacceptable-msg {
+    text-align: center;
+    margin-right: 10px;
+    color: #ba6161;
+    font-size: 12px;
+    background-color: white;
 }
 
 .messenger-loading {
@@ -210,48 +210,48 @@ a.logout:focus {
 </style>
 
 <template lang="pug">
-.messenger(:class="{ 'messenger_absolute': !isMultiple }")
-    .header#header-loading(v-if="appError")
-        .messenger-loading
-            fade-loader.loader(:height="'6px'" :width="'2px'" :radius="'7px'" :color="'#b9b9b9'")
-            p Ожидание сети...
-    .header#header(v-else)
-        .content#header-content(v-if="!isMultiple")
-            div.client-name-container(v-if="mode !== 'mobile'")
-                p {{ client.Name }}
-                p(v-if="anonymous")
-                    a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
-                a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
-                    font-awesome-icon(:icon="['fa', 'fa-times']")
-            div(style="display:flex")
-                span.fa-icon.search-icon(title="Поиск по чату", @click.prevent="searchMsg()")
-                    font-awesome-icon(:icon="['fas', 'fa-search']")
-                div.chat-type-container(v-if="searching || !hasPersonalManager", style="display:flex; width:100%" )
-                    input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
-                    span.fa-icon(v-if="hasPersonalManager" title="Отменить", @click.prevent="cancelSearch()")
-                        font-awesome-icon(:icon="['fas', 'fa-times']")
-                div.chat-type-container(v-if="hasPersonalManager && !searching")
-                    select(name="chat-type" @change="onChatTypeSelected").chat-type-select
-                        option(selected value="regular") Общий чат
-                        option(value="personal_manager") Чат с персональным менеджером
-
-        .content(v-if="isMultiple")
-            .nav-container#header-multiple-content(v-if="isMultiple && !searching")
-                .nav-item
-                    span.fa-icon.back-icon(@click.prevent="() => $emit('on-back')")
-                        font-awesome-icon(:icon="['fas', 'fa-arrow-left']")
-                .nav-item.w-100
-                    chat-container(:chat="client", :chat-name="channel" :is-with-personal-manager="chatType === 'personal_manager'")
-                .nav-item.fa-icon.options-icon(v-wave, @click.prevent.stop="handleMenuContext($event)")
-                    font-awesome-icon(:icon="['fas', 'fa-ellipsis-vertical']")
-
-            .nav-container#header-multiple-content_search(v-if="searching")
-                .nav-item
-                    span.fa-icon(title="Отменить", @click.prevent="cancelSearch()")
-                        font-awesome-icon(:icon="['fas', 'fa-times']")
-                .nav-item.w-100
-                    div(v-if="searching || !hasPersonalManager", style="width:80%" )
+    .messenger(:class="{ 'messenger_absolute': !isMultiple }")
+        .header#header-loading(v-if="appError")
+            .messenger-loading
+                fade-loader.loader(:height="'6px'" :width="'2px'" :radius="'7px'" :color="'#b9b9b9'")
+                p Ожидание сети...
+        .header#header(v-else)
+            .content#header-content(v-if="!isMultiple")
+                div.client-name-container(v-if="mode !== 'mobile'")
+                    p {{ client.Name }}
+                    p(v-if="anonymous")
+                        a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
+                    a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
+                        font-awesome-icon(:icon="['fa', 'fa-times']")
+                div(style="display:flex")
+                    span.fa-icon.search-icon(title="Поиск по чату", @click.prevent="searchMsg()")
+                        font-awesome-icon(:icon="['fas', 'fa-search']")
+                    div.chat-type-container(v-if="searching || !hasPersonalManager", style="display:flex; width:100%" )
                         input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
+                        span.fa-icon(v-if="hasPersonalManager" title="Отменить", @click.prevent="cancelSearch()")
+                            font-awesome-icon(:icon="['fas', 'fa-times']")
+                    div.chat-type-container(v-if="hasPersonalManager && !searching")
+                        select(name="chat-type" @change="onChatTypeSelected").chat-type-select
+                            option(selected value="regular") Общий чат
+                            option(value="personal_manager") Чат с персональным менеджером
+
+            .content(v-if="isMultiple")
+                .nav-container#header-multiple-content(v-if="isMultiple && !searching")
+                    .nav-item
+                        span.fa-icon.back-icon(@click.prevent="() => $emit('on-back')")
+                            font-awesome-icon(:icon="['fas', 'fa-arrow-left']")
+                    .nav-item.w-100
+                        chat-container(:chat="client", :chat-name="channel" :is-with-personal-manager="chatType === 'personal_manager'")
+                    .nav-item.fa-icon.options-icon(v-wave, @click.prevent.stop="handleMenuContext($event)")
+                        font-awesome-icon(:icon="['fas', 'fa-ellipsis-vertical']")
+
+                .nav-container#header-multiple-content_search(v-if="searching")
+                    .nav-item
+                        span.fa-icon(title="Отменить", @click.prevent="cancelSearch()")
+                            font-awesome-icon(:icon="['fas', 'fa-times']")
+                    .nav-item.w-100
+                        div(v-if="searching || !hasPersonalManager", style="width:80%" )
+                            input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
 
 
     #chat
@@ -1305,34 +1305,33 @@ export default {
                 return;
             }
 
-            if (this.badWordError){
-              this.badWordError = null;
+            if (this.badWordError) {
+                this.badWordError = null;
             }
 
             client.checkMessage(text.messageText).then(ok => {
-             this.sendMsg(text, botpressPayload)
+                this.sendMsg(text, botpressPayload)
             }, err => {
-               if (err.code === "http"){
-                 this.sendMsg(text, botpressPayload)
-               } else {
-               this.badWordError = err;
-               }
-
+                if (err.code === "http") {
+                    this.sendMsg(text, botpressPayload)
+                } else {
+                    this.badWordError = err;
+                }
             })
         },
 
-        sendMsg(text, botpressPayload){
-          let messageForm
-          if (typeof text !== 'object') {
-            messageForm = this.newTextMessage(text, botpressPayload);
-          } else {
-            messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
-          }
-          this.appendLocalMessage(messageForm);
+        sendMsg(text, botpressPayload) {
+            let messageForm
+            if (typeof text !== 'object') {
+                messageForm = this.newTextMessage(text, botpressPayload);
+            } else {
+                messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
+            }
+            this.appendLocalMessage(messageForm);
 
-          client.channelSend(this.channel, messageForm).then(() =>
+            client.channelSend(this.channel, messageForm).then(() =>
 
-              this.loadHistory(false));
+                this.loadHistory(false));
         },
 
         handleVersion() {
@@ -1362,7 +1361,7 @@ export default {
         onFileSelected(files, text, id) {
             let messageForm;
             for (const file of files) {
-	            if (id) {
+                if (id) {
                     messageForm = this.newFileMessageWithReply(file, id, file === files[files.length - 1] ? text : "");
                 } else {
                     messageForm = this.newFileMessage(file, file === files[files.length - 1] ? text : "");
