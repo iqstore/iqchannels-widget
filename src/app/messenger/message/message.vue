@@ -1,3 +1,208 @@
+<script>
+
+import MessageText from "../message-text.vue";
+import messageAvatar from "./message-avatar.vue";
+import { humanSize } from '../../../lib/filters';
+import { linkify } from "../../../lib/linkify";
+
+
+import reply from "./reply.vue";
+import messageFooter from "./message-footer.vue";
+
+
+export default {
+    components: { MessageText, messageAvatar, reply, messageFooter },
+
+    props: {
+        searching: Boolean,
+        group: Object,
+        groups: Array,
+        msg: Object,
+        enableImgModals: Boolean,
+    },
+
+    methods: {
+        humanSize,
+        getTitle() {
+            if (this.searching) {
+                return "Перейти к сообщению"
+            }
+            return "Сообщение"
+        },
+
+        showMsgContext(event, msg) {
+            this.$refs.msgContextMenu.showMenu(event, msg);
+        },
+
+        linkifyText(text) {
+            return linkify(text);
+        },
+
+        getIcon(msg) {
+            const splittedPath = msg.File.Path.split(".");
+            const fileType = splittedPath[splittedPath.length - 1];
+
+            if (fileType.includes("doc")) return ['fas', 'fa-file-word'];
+            if (fileType.includes("xls")) return ['fas', 'fa-file-excel'];
+            if (fileType.includes("pdf")) return ['fas', 'fa-file-pdf'];
+
+            return ['fas', 'fa-file'];
+        },
+
+        sendMessage(messageText, botpressPayload, url) {
+            this.$emit("send-message", messageText, botpressPayload, url)
+        },
+
+        longtapEvent(msg) {
+            return () => {
+                this.$emit("long-tap", msg);
+            }
+        },
+
+        optionClicked(event) {
+            switch (event.option.name) {
+                case "Ответить":
+                    this.$emit("reply-msg", this.msg);
+                    break;
+                case "Копировать":
+                    navigator.clipboard.writeText(event.item.Text);
+                    break;
+            }
+        },
+
+        isTextPayload(payload) {
+            return payload === 'text' || payload === 'single-choice' || payload === 'product' || payload === 'link'
+        },
+
+        clickFile(msg, event) {
+            this.$emit("click-file", msg, event);
+        },
+
+        clickFileImage(msg) {
+            this.$emit("click-file-image", msg);
+        },
+
+        listenForAudioEvents() {
+            this.$emit("listen-audio", msg)
+        },
+
+        scrollToMessage(msg, event) {
+            this.$emit("scroll-to-message", msg, event)
+        }
+    }
+
+}
+
+</script>
+
+<template lang="pug">
+    .author(v-if="group.Messages[0].Id === msg.Id")
+        span(v-if="group.User") {{ group.User.DisplayName }}
+        span(v-if="group.Client") {{ group.Client.Name }}
+
+    .message-inner
+        message-avatar(
+            v-if="group.User",
+            :showEmpty="group.Messages[group.Messages.length - 1].Id !== msg.Id",
+            :showAvatar="msg.Author === 'user' && group.Messages[group.Messages.length - 1].Id === msg.Id",
+            v-bind:user="group.User"
+        )
+
+        .message.bubble(
+            v-touch:longtap="longtapEvent(msg)",
+            @contextmenu.prevent="($event) => showMsgContext($event, msg)",
+            :title="getTitle()",
+            :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }"
+        )
+
+            reply(
+                :msg="msg",
+                :searching="searching",
+                :groups="groups",
+                :enableImgModals="enableImgModals",
+                @send-message="sendMessage",
+                @click-file="clickFile",
+                @click-file-image="clickFileImage"
+            )
+
+            .message-data(:class="{ 'audio-message-data': (msg.File && msg.File.Type === 'audio') }")
+                message-text(v-if="isTextPayload(msg.Payload)",
+                    v-bind:msg="msg",
+                    @scroll-to-message="scrollToMessage")
+
+                .file.text(v-if="msg.Upload")
+                    div(v-if="msg.Uploading")
+                        .filename {{ msg.Upload.name }}
+                        .filesize {{ humanSize(msg.Upload.size) }} - Загружено {{ msg.UploadProgress }}%
+                        a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
+                    div(v-if="msg.UploadError")
+                        .filename {{ msg.Upload.name }}
+                        .filesize {{ humanSize(msg.Upload.size) }}
+                        .error {{ msg.UploadError }}
+                        a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
+                        a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
+                div(v-if="msg.Payload === 'carousel' && !msg.File")
+                    pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
+                    button.img-button(
+                        v-for="action of msg.Actions", @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+                div(v-else-if="(msg.File && msg.File.Type === 'image') || msg.Payload === 'card'")
+                    a.image(
+                        v-if="!enableImgModals && msg.File",
+                        :href="msg.File.URL",
+                        target="_blank",
+                        @click="clickFile(msg, $event)"
+                    )
+                        img.bubble(v-if="msg.File && msg.File.Type === 'image'" :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                    .image(
+                        v-else-if="enableImgModals && msg.File",
+                        @click="clickFileImage(msg)"
+                    )
+                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                    div.img-caption
+                        pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
+                    div(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")
+                        button.img-button(
+                            v-for="action of msg.Actions", @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+                div(v-else-if="msg.File && msg.File.Type === 'file'")
+                    .file_state-not_approved(v-if="msg.File.State !== 'approved'")
+                        .check_error(v-if="msg.File.State === 'check_error'")
+                            span Ошибка проверки файла
+                        .on_checking(v-if="msg.File.State === 'on_checking'")
+                            span Файл на проверке
+                        .sent_for_checking(v-if="msg.File.State === 'sent_for_checking'")
+                            span Файл отправлен на проверку
+                        .rejected(v-if="msg.File.State === 'rejected'")
+                            span Небезопасный файл
+                    a.message_file(
+                        v-else-if="msg.File.State === 'approved'"
+                        :href="msg.File.URL"
+                        target="_blank"
+                        @click="clickFile(msg, $event)")
+                        font-awesome-icon(:icon="getIcon(msg)", :class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
+                        span.file
+                            .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
+                            .filesize(:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ humanSize(msg.File.Size) }}
+                    div.img-caption(v-if="msg.Text")
+                        pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
+                audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
+                    :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
+
+                messageFooter(
+                    v-bind:msg="msg",
+                )
+
+        v-context(
+            :element-id="`msg-context-${msg.Id}`",
+            :options=`[
+            {name: 'Ответить', class: 'context-menu-option'},
+            {name: 'Копировать', class: 'context-menu-option'}
+        ]`,
+            ref="msgContextMenu",
+            @option-clicked="optionClicked",
+        )
+
+</template>
+
 <style lang="scss">
 .message {
     margin: 2px 8px;
@@ -85,8 +290,6 @@
 }
 
 
-
-
 .group {
     margin-top: 8px;
     margin-bottom: 0;
@@ -158,7 +361,7 @@
             background-color: #cce4f7;
         }
 
-        .body>.message-wrapper {
+        .body > .message-wrapper {
             &:first-child:not(:only-child) .message-inner .message {
                 border-top-right-radius: 14px;
                 border-bottom-right-radius: 4px;
@@ -177,7 +380,7 @@
     }
 
 
-    .body>.message-wrapper {
+    .body > .message-wrapper {
         .message-inner .message:only-child {
             border-radius: 14px;
         }
@@ -322,208 +525,3 @@
     cursor: pointer;
 }
 </style>
-
-<template lang="pug">
-.author(v-if="group.Messages[0].Id === msg.Id")
-    span(v-if="group.User") {{ group.User.DisplayName }}
-    span(v-if="group.Client") {{ group.Client.Name }}
-
-.message-inner
-    message-avatar(
-        v-if="group.User",
-        :showEmpty="group.Messages[group.Messages.length - 1].Id !== msg.Id",
-        :showAvatar="msg.Author === 'user' && group.Messages[group.Messages.length - 1].Id === msg.Id",
-        v-bind:user="group.User"
-    )
-
-    .message.bubble(
-        v-touch:longtap="longtapEvent(msg)",
-        @contextmenu.prevent="($event) => showMsgContext($event, msg)",
-        :title="getTitle()",
-        :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }"
-    )
-
-        reply(
-            :msg="msg",
-            :searching="searching",
-            :groups="groups",
-            :enableImgModals="enableImgModals",
-            @send-message="sendMessage",
-            @click-file="clickFile",
-            @click-file-image="clickFileImage"
-        )
-
-        .message-data(:class="{ 'audio-message-data': (msg.File && msg.File.Type === 'audio') }")
-            message-text(v-if="isTextPayload(msg.Payload)",
-                v-bind:msg="msg",
-                @scroll-to-message="scrollToMessage")
-
-            .file.text(v-if="msg.Upload")
-                div(v-if="msg.Uploading")
-                    .filename {{ msg.Upload.name }}
-                    .filesize {{ humanSize(msg.Upload.size) }} - Загружено {{ msg.UploadProgress }}%
-                    a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
-                div(v-if="msg.UploadError")
-                    .filename {{ msg.Upload.name }}
-                    .filesize {{ humanSize(msg.Upload.size) }}
-                    .error {{ msg.UploadError }}
-                    a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
-                    a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
-            div(v-if="msg.Payload === 'carousel' && !msg.File")
-                pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
-                button.img-button(
-                    v-for="action of msg.Actions", @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-            div(v-else-if="(msg.File && msg.File.Type === 'image') || msg.Payload === 'card'")
-                a.image(
-                    v-if="!enableImgModals && msg.File",
-                    :href="msg.File.URL",
-                    target="_blank",
-                    @click="clickFile(msg, $event)"
-                )
-                    img.bubble(v-if="msg.File && msg.File.Type === 'image'" :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                .image(
-                    v-else-if="enableImgModals && msg.File",
-                    @click="clickFileImage(msg)"
-                )
-                    img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
-                div.img-caption
-                    pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
-                div(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")
-                    button.img-button(
-                        v-for="action of msg.Actions", @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
-            div(v-else-if="msg.File && msg.File.Type === 'file'")
-                .file_state-not_approved(v-if="msg.File.State !== 'approved'")
-                    .check_error(v-if="msg.File.State === 'check_error'")
-                        span Ошибка проверки файла
-                    .on_checking(v-if="msg.File.State === 'on_checking'")
-                        span Файл на проверке
-                    .sent_for_checking(v-if="msg.File.State === 'sent_for_checking'")
-                        span Файл отправлен на проверку
-                    .rejected(v-if="msg.File.State === 'rejected'")
-                        span Небезопасный файл
-                a.message_file(
-                    v-else-if="msg.File.State === 'approved'"
-                    :href="msg.File.URL"
-                    target="_blank"
-                    @click="clickFile(msg, $event)")
-                    font-awesome-icon(:icon="getIcon(msg)", :class="{ 'message_file-client': msg.Author === 'client', 'message_file-user': msg.Author === 'user' }")
-                    span.file
-                        .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
-                        .filesize(:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ humanSize(msg.File.Size) }}
-                div.img-caption(v-if="msg.Text")
-                    pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
-            audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
-                :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
-
-            messageFooter(
-                v-bind:msg="msg",
-            )
-
-    v-context(
-        :element-id="`msg-context-${msg.Id}`",
-        :options=`[
-            {name: 'Ответить', class: 'context-menu-option'},
-            {name: 'Копировать', class: 'context-menu-option'}
-        ]`,
-        ref="msgContextMenu",
-        @option-clicked="optionClicked",
-    )
-
-</template>
-
-<script>
-
-import MessageText from "../message-text.vue";
-import messageAvatar from "./message-avatar.vue";
-import { humanSize } from '../../../lib/filters';
-import { linkify } from "../../../lib/linkify";
-
-
-import reply from "./reply.vue";
-import messageFooter from "./message-footer.vue";
-
-
-export default {
-    components: { MessageText, messageAvatar, reply, messageFooter },
-
-    props: {
-        searching: Boolean,
-        group: Object,
-        groups: Array,
-        msg: Object,
-        enableImgModals: Boolean,
-    },
-
-    methods: {
-        humanSize,
-        getTitle() {
-            if (this.searching) {
-                return "Перейти к сообщению"
-            }
-            return "Сообщение"
-        },
-
-        showMsgContext(event, msg) {
-            this.$refs.msgContextMenu.showMenu(event, msg);
-        },
-
-        linkifyText(text) {
-            return linkify(text);
-        },
-
-        getIcon(msg) {
-            const splittedPath = msg.File.Path.split(".");
-            const fileType = splittedPath[splittedPath.length - 1];
-
-            if (fileType.includes("doc")) return ['fas', 'fa-file-word'];
-            if (fileType.includes("xls")) return ['fas', 'fa-file-excel'];
-            if (fileType.includes("pdf")) return ['fas', 'fa-file-pdf'];
-
-            return ['fas', 'fa-file'];
-        },
-
-        sendMessage(messageText, botpressPayload, url) {
-            this.$emit("send-message", messageText, botpressPayload, url)
-        },
-
-        longtapEvent(msg) {
-            return () => {
-                this.$emit("long-tap", msg);
-            }
-        },
-
-        optionClicked(event) {
-            switch (event.option.name) {
-                case "Ответить":
-                    this.$emit("reply-msg", this.msg);
-                    break;
-                case "Копировать":
-                    navigator.clipboard.writeText(event.item.Text);
-                    break;
-            }
-        },
-
-        isTextPayload(payload) {
-            return payload === 'text' || payload === 'single-choice' || payload === 'product' || payload === 'link'
-        },
-
-        clickFile(msg, event) {
-            this.$emit("click-file", msg, event);
-        },
-
-        clickFileImage(msg) {
-            this.$emit("click-file-image", msg);
-        },
-
-        listenForAudioEvents() {
-            this.$emit("listen-audio", msg)
-        },
-
-        scrollToMessage(msg, event) {
-            this.$emit("scroll-to-message", msg, event)
-        }
-    }
-
-}
-
-</script>

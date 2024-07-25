@@ -1,3 +1,69 @@
+<script>
+import Message from "./message/message.vue";
+
+
+export default {
+    components: { Message },
+
+    props: {
+        searching: Boolean,
+        group: Object,
+        groups: Array,
+        firstUnreadMessageId: Number,
+        enableImgModals: Boolean,
+        animateMsgIds: Array
+    },
+
+    data: function () {
+        return {
+            animateMsgIds: {},
+        }
+    },
+
+    methods: {
+        swipeRight(event, msg) {
+            this.$emit("swipe-rigth", event, msg)
+        },
+
+        optionClicked(event) {
+            this.$emit("reply-msg", event);
+        },
+
+        scrollToMessage(msg, event) {
+            this.$emit("scroll-to-message", msg, event)
+        },
+
+        sendMessage(messageText, botpressPayload, url) {
+            this.$emit("send-message", messageText, botpressPayload, url)
+        },
+    }
+}
+
+</script>
+
+<template lang="pug">
+    .message-wrapper(v-for="(msg, index) in group.Messages",
+        v-hammer:pan="(event) => swipeRight(event, msg)",
+        :class="{ scroll_msg_animation_client: msg.My && animateMsgIds[msg.Id], scroll_msg_animation_user: !msg.My && animateMsgIds[msg.Id] }",
+        :id="'message-'+msg.Id")
+
+        .unread-divider(v-if="firstUnreadMessageId === msg.Id")
+            span Непрочитанные сообщения
+
+        message(
+            @reply-msg="optionClicked",
+            @scroll-to-message="scrollToMessage",
+            @send-message="sendMessage"
+            :group="group",
+            :groups="groups",
+            :msg="msg",
+            :searching="searching",
+            :enableImgModals="enableImgModals",
+        )
+
+
+</template>
+
 <style lang="scss">
 .message-wrapper {
     display: flex;
@@ -85,69 +151,3 @@
     }
 }
 </style>
-
-<template lang="pug">
-.message-wrapper(v-for="(msg, index) in group.Messages",
-    v-hammer:pan="(event) => swipeRight(event, msg)",
-    :class="{ scroll_msg_animation_client: msg.My && animateMsgIds[msg.Id], scroll_msg_animation_user: !msg.My && animateMsgIds[msg.Id] }",
-    :id="'message-'+msg.Id")
-
-    .unread-divider(v-if="firstUnreadMessageId === msg.Id")
-        span Непрочитанные сообщения
-
-    message(
-        @reply-msg="optionClicked",
-        @scroll-to-message="scrollToMessage",
-        @send-message="sendMessage"
-        :group="group",
-        :groups="groups",
-        :msg="msg",
-        :searching="searching",
-        :enableImgModals="enableImgModals",
-    )
-
-
-</template>
-
-<script>
-import Message from "./message/message.vue";
-
-
-export default {
-    components: { Message },
-
-    props: {
-        searching: Boolean,
-        group: Object,
-        groups: Array,
-        firstUnreadMessageId: Number,
-        enableImgModals: Boolean,
-        animateMsgIds: Array
-    },
-
-    data: function () {
-        return {
-            animateMsgIds: {},
-        }
-    },
-
-    methods: {
-        swipeRight(event, msg) {
-            this.$emit("swipe-rigth", event, msg)
-        },
-
-        optionClicked(event) {
-            this.$emit("reply-msg", event);
-        },
-
-        scrollToMessage(msg, event) {
-            this.$emit("scroll-to-message", msg, event)
-        },
-
-        sendMessage(messageText, botpressPayload, url) {
-            this.$emit("send-message", messageText, botpressPayload, url)
-        },
-    }
-}
-
-</script>
