@@ -19,6 +19,7 @@ class Client {
     this.authToken = null;
     this.authSessionID = null;
     this.multiClientAuth = {};
+    this.iQVersion = null;
     this.state = reactive({
       error: null
     });
@@ -285,7 +286,7 @@ class Client {
   channelSend (channel, message) {
     return this._enqueueRequest(`/chats/channel/send/${channel}`, message);
   }
-  
+
   checkMessage (msgText) {
     return this._enqueueRequest('/bad_words/check_message', { MsgText: msgText }, { shouldRetry: (error) => !error });
   }

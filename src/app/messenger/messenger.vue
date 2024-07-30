@@ -7,6 +7,7 @@ import { isSameDate } from '../../lib/datetime';
 import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
+import { isYoungerVersion } from "../../lib/version";
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -995,16 +996,19 @@ export default {
             if (this.badWordError) {
                 this.badWordError = null;
             }
-
-            client.checkMessage(text.messageText).then(ok => {
-                this.sendMsg(text, botpressPayload)
-            }, err => {
-                if (err.code === "http") {
+            if (isYoungerVersion("4.2.1", client.iQVersion)) {
+                client.checkMessage(text.messageText).then(ok => {
                     this.sendMsg(text, botpressPayload)
-                } else {
-                    this.badWordError = err;
-                }
-            })
+                }, err => {
+                    if (err.code === "http") {
+                        this.sendMsg(text, botpressPayload)
+                    } else {
+                        this.badWordError = err;
+                    }
+                })
+            } else {
+                this.sendMsg(text, botpressPayload);
+            }
         },
 
         sendMsg(text, botpressPayload) {

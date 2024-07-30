@@ -105,6 +105,9 @@ export default {
 
                     this.maybeSendPushToken();
                     this.getGreetings();
+                    client.version().then(version => {
+                        client.iQVersion = version?.Data?.Version;
+                    });
                     break;
 
                 case 'close':
