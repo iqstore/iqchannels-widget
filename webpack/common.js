@@ -29,7 +29,7 @@ module.exports = {
         options: {
           loaders: {
             scss: [
-              MiniCssExtractPlugin.loader,
+              'style-loader',
               'css-loader',
               'sass-loader'
             ]
@@ -58,13 +58,13 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
+        use: ['style-loader', 'css-loader']
       }, {
         test: /\.less$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader']
+        use: ['style-loader', 'css-loader', 'less-loader']
       }, {
         test: /\.scss$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
+        use: ['style-loader', 'css-loader', 'sass-loader']
       }, {
         test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         use: 'file-loader'
