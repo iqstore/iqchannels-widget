@@ -3,12 +3,27 @@ export default {
     name: "scroll-bottom",
 
     mounted() {
-        document.getElementById('chat').addEventListener('scroll', ev => {
+        const chat = document.getElementById('chat');
+        chat.addEventListener('scroll', ev => {
             setTimeout(() => {
                 const height = document.getElementById('chat')?.offsetHeight;
                 // add 3px because there is a difference for some reason
                 this.isBottom = !((ev.target.scrollHeight - ev.target.scrollTop - 3) >= height);
             }, 300);
+        });
+        chat.addEventListener('wheel', event => {
+            const container = event.currentTarget;
+            const delta = event.deltaY;
+            const scrollTop = container.scrollTop;
+            const scrollHeight = container.scrollHeight;
+            const clientHeight = container.clientHeight;
+
+            const atTop = delta < 0 && scrollTop === 0;
+            const atBottom = delta > 0 && scrollTop + clientHeight >= scrollHeight;
+
+            if (atTop || atBottom) {
+                event.preventDefault();
+            }
         });
         const elementToPosition = document.getElementById('scroll-bottom');
         const blockBelow = document.getElementById('composer');
