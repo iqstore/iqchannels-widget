@@ -273,7 +273,23 @@ export default {
 
             event.preventDefault();
             this.$emit("click-file", { href: event.target.href });
-        }
+        },
+
+        async optionMsgClicked(event) {
+            const queryOpts = { name: 'clipboard-read', allowWithoutGesture: false };
+            const permissionStatus = await navigator.permissions.query(queryOpts);
+            switch (event.option.name) {
+                case "Ответить":
+                    this.optionClicked(event.item);
+                    break;
+                case "Копировать":
+                    navigator.clipboard.writeText(event.item.Text).catch(err => {
+                        console.warn(err.message);
+                    });
+                    break;
+            }
+            this.currentMsgContext = null;
+        },
     }
 };
 </script>
@@ -328,6 +344,16 @@ export default {
                 @send-info="sendInfo",
                 @ignore-info="ignoreInfo"
             )
+
+    v-context(
+        element-id="msg-context",
+        :options=`[
+            {name: 'Ответить', class: 'context-menu-option'},
+            {name: 'Копировать', class: 'context-menu-option'}
+        ]`,
+        ref="msgContextMenu",
+        @option-clicked="optionMsgClicked",
+    )
 
 
 </template>

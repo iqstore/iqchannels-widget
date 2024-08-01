@@ -159,6 +159,7 @@ input[type="text"] {
     font-size: 1.8rem;
     cursor: pointer;
     right: 16px;
+    z-index: 3;
 }
 
 .loader {

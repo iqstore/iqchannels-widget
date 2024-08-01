@@ -25,12 +25,8 @@ export default {
             this.$emit("swipe-rigth", event, msg)
         },
 
-        optionClicked(event) {
-            this.$emit("reply-msg", event);
-        },
-
         scrollToMessage(msg, event) {
-            this.$emit("scroll-to-message", msg, event)
+            this.$emit("scroll-to-message", msg, event);
         },
 
         sendMessage(messageText, botpressPayload, url) {

@@ -117,6 +117,7 @@ class IQChannelsWidget extends EventEmitter {
 			this.handleError();
 			this.emit('error', error);
 		});
+		iframe.allow = "clipboard-read; clipboard-write";
 
 		this.frameContainer.appendChild(widgetDiv);
 

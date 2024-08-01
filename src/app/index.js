@@ -22,10 +22,9 @@ import {
 	faUser
 } from '@fortawesome/free-solid-svg-icons';
 import VWave from "v-wave";
-import VueSimpleContextMenu from 'vue-simple-context-menu';
-import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 import ScaleLoader from "./components/scale-loader.vue";
 import FadeLoader from "./components/fade-loader.vue";
+import VContext from "./components/v-context.vue";
 
 library.add(
 	faFile,
@@ -63,6 +62,6 @@ app.component('client-create', clientCreate);
 app.component('multi-messenger', multiMessenger);
 app.component('messenger', messenger);
 app.component('font-awesome-icon', FontAwesomeIcon);
-app.component('v-context', VueSimpleContextMenu);
+app.component('v-context', VContext);
 
 app.mount('#app');

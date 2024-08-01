@@ -490,7 +490,7 @@ export default {
             data = pasteEvent.clipboardData.files[0]
             if (data) return { type: "image", data };
 
-            return { type, data }
+            return { data }
         }
 
     }

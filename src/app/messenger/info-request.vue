@@ -318,7 +318,7 @@ export default {
     border-radius: 0.25rem;
     border: 1px solid #ced4da;
     margin: 5px 2px 10px 2px;
-    padding: .375rem 3rem .375rem .75rem;
+    padding: .375rem .75rem;
 
     &:focus {
         outline: none;

@@ -17,6 +17,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/vue-fontawesome": "^3.0.6",
+    "click-outside-vue3": "^4.0.1",
     "es6-promise": "4.2.8",
     "event-emitter": "0.3.5",
     "event-source-polyfill": "1.0.31",
@@ -28,7 +29,6 @@
     "sass": "^1.77.4",
     "v-wave": "^2.0.0",
     "vue": "^3.3.13",
-    "vue-simple-context-menu": "^4.1.0",
     "vue3-touch-events": "^4.1.8",
     "wavesurfer.js": "4.0.1"
   },

@@ -30,8 +30,8 @@ export default {
             return "Сообщение"
         },
 
-        showMsgContext(event, msg) {
-            this.$refs.msgContextMenu.showMenu(event, msg);
+        OnContextMessage($event) {
+            this.$parent.$parent.$refs.msgContextMenu.showMenu($event, this.msg);
         },
 
         linkifyText(text) {
@@ -56,17 +56,6 @@ export default {
         longtapEvent(msg) {
             return () => {
                 this.$emit("long-tap", msg);
-            }
-        },
-
-        optionClicked(event) {
-            switch (event.option.name) {
-                case "Ответить":
-                    this.$emit("reply-msg", this.msg);
-                    break;
-                case "Копировать":
-                    navigator.clipboard.writeText(event.item.Text);
-                    break;
             }
         },
 
@@ -110,7 +99,7 @@ export default {
 
         .message.bubble(
             v-touch:longtap="longtapEvent(msg)",
-            @contextmenu.prevent="($event) => showMsgContext($event, msg)",
+            @contextmenu.prevent="($event) => OnContextMessage($event)",
             :title="getTitle()",
             :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1, 'no-p': msg.File && msg.File.Type == 'image'  }"
         )
@@ -190,16 +179,6 @@ export default {
                 messageFooter(
                     v-bind:msg="msg",
                 )
-
-        v-context(
-            :element-id="`msg-context-${msg.Id}`",
-            :options=`[
-            {name: 'Ответить', class: 'context-menu-option'},
-            {name: 'Копировать', class: 'context-menu-option'}
-        ]`,
-            ref="msgContextMenu",
-            @option-clicked="optionClicked",
-        )
 
 </template>
 
