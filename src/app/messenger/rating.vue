@@ -206,8 +206,8 @@ export default {
         .rated(v-if="rating.State === 'rated' && rating.Value")
             span Оценка оператора: {{ rating.Value }} из 5
 
-        .backdrop(v-if="(rating.State === 'poll' || thanksFeedback) && this.poll")
-        .backdrop(v-if="(rating.State === 'pending')")
+        //.backdrop(v-if="(rating.State === 'poll' || thanksFeedback) && this.poll")
+        //.backdrop(v-if="(rating.State === 'pending')")
         .pending(v-if="rating.State === 'pending'")
             .button-close(@click="ignoreRating")
                 svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
@@ -304,10 +304,11 @@ export default {
 
 .pending {
     border-radius: 15px;
-    box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.2);
+    //box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0,0,0, 0.1);
     z-index: 5;
     background: white;
-    position: fixed;
+    position: relative;
     right: 0;
     left: 0;
     bottom: 0;
