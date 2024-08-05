@@ -33,3 +33,5 @@ export function hexToHSL(hex) {
 
     return { h, s, l };
 }
+
+export const isMobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i;

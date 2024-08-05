@@ -1,4 +1,6 @@
 <script>
+import { isMobileRegex } from "../../lib/ui";
+
 let WaveSurfer;
 let lamejs;
 let MicrophonePlugin;
@@ -333,7 +335,8 @@ export default {
         // Private
 
         handleEnterPressed(event) {
-            if (!event.shiftKey) {
+            const isMobile = isMobileRegex.test(navigator.userAgent);
+            if (!event.shiftKey && !isMobile) {
                 event.preventDefault();
                 this.trySendMessage();
             }
@@ -415,6 +418,11 @@ export default {
             const target = this.$refs.text;
 
             target.style.height = TEXTAREA_HEIGHT;
+            if (target.scrollHeight > document.documentElement.clientHeight) {
+                target.style.height = (document.documentElement.clientHeight - 120) + "px";
+                return;
+            }
+
             target.style.height = (target.scrollHeight) + "px";
         },
 
@@ -569,7 +577,7 @@ export default {
     &-inputs {
         display: flex;
         gap: 3px;
-        align-items: center;
+        align-items: end;
         justify-content: center;
 
         width: 100%;
