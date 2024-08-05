@@ -489,6 +489,7 @@ export default {
                 default:
                     break;
             }
+            this.$refs.text.scrollTop = this.$refs.text.scrollHeight;
         },
 
         getClipboardData(pasteEvent) {
