@@ -8,3 +8,7 @@ window.widget = new IQChannelsWidget({
   width: 425,
   iconOptions: { show: true }
 });
+
+widget.on("unread", (count) => {
+  document.getElementById("unread_count").textContent = count;
+})

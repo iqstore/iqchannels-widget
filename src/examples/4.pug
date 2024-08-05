@@ -13,12 +13,18 @@ html
         overflow: hidden;
       }
 
-
+      body {
+        padding-left: 10px;
+      }
 
       iframe {
         border: 0;
         width: 100%;
         height: 100%;
+      }
+      #unread_count {
+        font-size: 24pt;
+        font-weight: 700;
       }
 
   body
@@ -34,3 +40,7 @@ html
       button(type="button", onclick="widget.logout();") Выйти
       span &nbsp;
       button(type="button", onclick="widget.destroy();") Уничтожить
+
+      br
+      span Количество непрочитанных (обновляется само):
+      span(id="unread_count")
