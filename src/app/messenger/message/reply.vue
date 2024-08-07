@@ -71,36 +71,36 @@ export default {
     div(v-if="msg.ReplyToMessageId")
         .reply(@click="goToMessage(msg)", v-for="replyMsg of getReplyMsg(msg)" :class="{ 'reply-client': msg.Author === 'client', 'reply-user': msg.Author === 'user' }" )
             .reply-author(:class="{ 'reply-author-client': msg.Author === 'client', 'reply-author-user': msg.Author === 'user' }") {{ getAuthorAndText(msg).author }}
-                div(v-if="replyMsg.Payload === 'carousel' && !replyMsg.File")
-                    pre.text
-                    button.img-button(v-for="action of replyMsg.Actions",
-                        @click.prevent="sendMessage(action.Title, action.Payload, action.URL)"
-                    ) {{ action.Title }}
-                div(v-else-if="replyMsg.File && replyMsg.File.Type === 'image'")
-                    a.image(
-                        v-if="!enableImgModals",
-                        :href="replyMsg.File.URL",
-                        target="_blank",
-                        @click="clickFile(replyMsg, $event)"
-                    )
-                        img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
-                    .image(
-                        v-else-if="enableImgModals",
-                        @click="clickFileImage(replyMsg, $event)"
-                    )
-                        img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
-                    div(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'")
-                        button.img-button(
-                            v-for="action of replyMsg.Actions") {{ action.Title }}
-                a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type === 'file'"
-                    :href="replyMsg.File.URL"
-                    target="_blank"
-                    @click="clickFile(replyMsg, $event)")
-                    span.file
-                        .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
-                audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
-                    :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
-                .reply-text {{ getAuthorAndText(msg).text }}
+            div(v-if="replyMsg.Payload === 'carousel' && !replyMsg.File")
+                pre.text
+                button.img-button(v-for="action of replyMsg.Actions",
+                    @click.prevent="sendMessage(action.Title, action.Payload, action.URL)"
+                ) {{ action.Title }}
+            div(v-else-if="replyMsg.File && replyMsg.File.Type === 'image'")
+                a.image(
+                    v-if="!enableImgModals",
+                    :href="replyMsg.File.URL",
+                    target="_blank",
+                    @click="clickFile(replyMsg, $event)"
+                )
+                    img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
+                .image(
+                    v-else-if="enableImgModals",
+                    @click="clickFileImage(replyMsg, $event)"
+                )
+                    img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
+                div(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'")
+                    button.img-button(
+                        v-for="action of replyMsg.Actions") {{ action.Title }}
+            a.message_file(v-else-if="replyMsg.File && replyMsg.File.Type === 'file'"
+                :href="replyMsg.File.URL"
+                target="_blank"
+                @click="clickFile(replyMsg, $event)")
+                span.file
+                    .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
+            audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
+                :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
+            .reply-text {{ getAuthorAndText(msg).text }}
 
 </template>
 
