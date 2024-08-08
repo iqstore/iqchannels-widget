@@ -277,8 +277,8 @@ class Client {
       .then(response => new Relations(config, response.Rels).messages(response.Result));
   }
 
-  channelTyping (channel, chatType) {
-    const data = { ChatType: chatType };
+  channelTyping (channel, chatType, text) {
+    const data = { ChatType: chatType, Text: text };
     const options = { timeout: 5000 };
     return this._enqueueRequest(`/chats/channel/typing/${channel}`, data, options);
   }

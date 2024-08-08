@@ -450,7 +450,7 @@ export default {
             if (now - this.lastTypingEventAt >= TYPING_INTERVAL) {
                 this.lastTypingEventAt = now;
                 this.typing = true;
-                this.$emit("start-typing");
+                this.$emit("start-typing", this.textTyped);
             }
             this.lastTypedAt = now;
         },

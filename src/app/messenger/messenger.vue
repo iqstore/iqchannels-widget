@@ -1043,8 +1043,8 @@ export default {
             })
         },
 
-        onStartTyping() {
-            client.channelTyping(this.channel, this.chatType).catch(() => {
+        onStartTyping(text) {
+            client.channelTyping(this.channel, this.chatType, text).catch(() => {
                 // ignore error, cause event is transitive
             });
         },
