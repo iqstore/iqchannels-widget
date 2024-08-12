@@ -94,6 +94,27 @@ export default {
             this.pollResult = temp;
         },
 
+        getScaleItems(scale) {
+            const res = [];
+            for (let i = scale.FromValue; i <= scale.ToValue; i++) {
+                res.push(i);
+            }
+            return res;
+        },
+
+        setPollVariantScale(value) {
+            let temp = [...this.pollResult];
+            temp[this.index] = {
+                Type: "scale",
+                RatingPollQuestionId: this.poll.Questions[this.index].Id,
+                AnswerScale: value,
+                RatingId: this.rating.Id,
+                ClientId: this.client.Id,
+                ProjectId: this.client.ProjectId,
+            };
+            this.pollResult = temp;
+        },
+
         isRatingPollAnswerEmpty() {
             for (const arg of this.pollResult) {
                 if (Object.keys(arg).length <= 1) {
@@ -271,6 +292,16 @@ export default {
 
             .input(v-if="poll.Questions[index].Type === 'input'")
                 textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
+
+            .scale(v-if="poll.Questions[index].Type === 'scale'")
+                .buttons-scale.mt
+                    template(v-for="idx in getScaleItems(poll.Questions[index].Scale)")
+                        .buttons-scale_inner
+                            button.button.button_one_of_list(
+                                @click.prevent="setPollVariantScale(idx)",
+                                :class="{'button_active': idx === pollResult[index].AnswerScale}"
+                            ) {{ idx }}
+                            span(v-if="poll.Questions[index].Scale.Items[idx]") {{ poll.Questions[index].Scale.Items[idx] }}
 
             .buttons-next-prev.mt(v-if="this.poll.Questions.length !== 1")
                 button.button(@click.prevent="prevQuestion()", :disabled="index === 0") Назад
@@ -495,10 +526,43 @@ export default {
     text-align: center;
 }
 
-.buttons-fcr, .buttons-one-of-list, .buttons-next-prev, .buttons-answer {
+.buttons-fcr, .buttons-one-of-list, .buttons-next-prev, .buttons-answer, .buttons-scale {
     display: flex;
     margin: 10px;
     justify-content: center;
+}
+
+.buttons-scale {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7%, 1fr));
+    gap: 5px;
+}
+
+.buttons-scale_inner {
+    flex-flow: column;
+    display: flex;
+    align-items: center;
+
+    &:first-child {
+        align-items: start;
+    }
+
+    &:last-child {
+        align-items: end;
+    }
+
+    span {
+        margin-top: 5px;
+        display: inline-block;
+        text-align: center;
+    }
+
+    button {
+        margin: 0;
+        padding: 0;
+        aspect-ratio: 1/1;
+        box-sizing: border-box;
+    }
 }
 
 .buttons-one-of-list {
