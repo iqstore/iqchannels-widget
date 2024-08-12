@@ -166,11 +166,24 @@ export default {
                 this.scrollToFoundMessage(this.firstUnreadMessageId);
                 return;
             }
+            this.scrollToBottom();
+        },
+
+        scrollToBottom() {
             const chat = document.getElementById('chat');
             chat.scrollTo({
                 top: chat.scrollHeight,
                 behavior: 'smooth'
             });
+
+            this.resetUnreadCount();
+        },
+
+        resetUnreadCount() {
+            this.unreadMessages?.forEach((message) => {
+                message.Read = message.Received = true;
+                message.ReadAt = message.ReceivedAt = new Date().getTime();
+            })
         },
 
         searchMsg() {
@@ -302,12 +315,7 @@ export default {
         },
 
         markMessagesAsRead() {
-            const ids = [];
-            for (let message of this.unreadMessages) {
-                ids.push(message.Id);
-                message.Read = message.Received = true;
-                message.ReadAt = message.ReceivedAt = new Date().getTime();
-            }
+            const ids = this.unreadMessages.map(({ Id }) => Id);
             if (ids.length) {
                 client.channelMessagesRead(ids);
             }
@@ -466,7 +474,9 @@ export default {
                     isSameDate(message.CreatedAt, lastMessage.CreatedAt)
                 ) {
 
-                    if (!message.Read && message.Author === 'user' && !this.opened && (!this.firstUnreadMessageId || this.firstUnreadMessageId > message.Id)) {
+                    if (!message.Read && message.Author === 'user'
+                        && !this.opened
+                        && (!this.firstUnreadMessageId || this.firstUnreadMessageId > message.Id)) {
                         this.firstUnreadMessageId = message.Id;
                     }
                     if (message.My && message.Id > this.firstUnreadMessageId) {
@@ -1157,7 +1167,7 @@ export default {
                 :channel="this.channel"
             )
 
-    scroll-bottom(@on-click="scrollToLastMessage")
+    scroll-bottom(@on-click="scrollToBottom", @on-reached-bottom="resetUnreadCount", :unreadCount="unreadCount")
 
     v-context(
         element-id="nav-context",

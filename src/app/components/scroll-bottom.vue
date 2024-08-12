@@ -2,6 +2,10 @@
 export default {
     name: "scroll-bottom",
 
+    props: {
+        unreadCount: Number,
+    },
+
     mounted() {
         const chat = document.getElementById('chat');
         chat.addEventListener('scroll', ev => {
@@ -9,6 +13,9 @@ export default {
                 const height = document.getElementById('chat')?.offsetHeight;
                 // add 3px because there is a difference for some reason
                 this.isBottom = !((ev.target.scrollHeight - ev.target.scrollTop - 3) >= height);
+                if (this.isBottom) {
+                    this.onReachedBottom();
+                }
             }, 300);
         });
         chat.addEventListener('wheel', event => {
@@ -47,18 +54,32 @@ export default {
     methods: {
         onClick() {
             this.$emit("on-click");
+        },
+
+        onReachedBottom() {
+            this.$emit("on-reached-bottom");
         }
     },
 }
 </script>
 
 <template lang="pug">
-    .scrollBottom#scroll-bottom(:class="{ 'invisible': (isBottom || this.searching) }" @click="onClick()")
-        svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
-            path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
+    .scrollWrapper(:class="{ 'invisible': (isBottom || this.searching) }")
+        .unreadCount(v-if="unreadCount") {{  unreadCount }}
+        .scrollBottom#scroll-bottom(@click="onClick()")
+            svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
+                path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
 </template>
 
 <style scoped lang="scss">
+.scrollWrapper {
+    transition: 0.2s ease;
+
+    &.invisible {
+        opacity: 0;
+    }
+}
+
 .scrollBottom {
     width: 32px;
     height: 32px;
@@ -76,9 +97,26 @@ export default {
     svg {
         margin: auto;
     }
+}
 
-    &.invisible {
-        visibility: hidden;
-    }
+.unreadCount {
+    background: #8b8b8b;
+    color: #fff;
+
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+
+    position: absolute;
+    z-index: 100;
+
+    font-size: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    right: 5px;
+    bottom: 93px;
 }
 </style>
