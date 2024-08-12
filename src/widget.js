@@ -100,7 +100,7 @@ class IQChannelsWidget extends EventEmitter {
 		const widgetDiv = document.createElement('div');
 		widgetDiv.id = 'iqchannels-widget';
 		widgetDiv.style.width = `${this.width}px`;
-		widgetDiv.style.height = `${window.innerHeight}px`;
+		// widgetDiv.style.height = `${window.innerHeight}px`;
 
 		const iframe = document.createElement('iframe');
 		iframe.id = 'iqchannels-widget-iframe';
