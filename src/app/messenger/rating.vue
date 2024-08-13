@@ -319,9 +319,6 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-.rating {
-}
-
 .rated {
     padding: 3px;
     margin: 10px 10px 20px;
@@ -336,7 +333,7 @@ export default {
 .pending {
     border-radius: 15px;
     //box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(0,0,0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     z-index: 5;
     background: white;
     position: relative;
@@ -379,7 +376,8 @@ export default {
             height: 34px;
         }
 
-        .star-background, .star-outline {
+        .star-background,
+        .star-outline {
             left: 0;
             position: absolute;
             text-align: center;
@@ -398,7 +396,8 @@ export default {
             cursor: pointer;
         }
 
-        &:hover, &.star-selected {
+        &:hover,
+        &.star-selected {
             .star-background {
                 color: #2EB8FE;
             }
@@ -526,7 +525,11 @@ export default {
     text-align: center;
 }
 
-.buttons-fcr, .buttons-one-of-list, .buttons-next-prev, .buttons-answer, .buttons-scale {
+.buttons-fcr,
+.buttons-one-of-list,
+.buttons-next-prev,
+.buttons-answer,
+.buttons-scale {
     display: flex;
     margin: 10px;
     justify-content: center;
@@ -619,5 +622,4 @@ export default {
     cursor: pointer;
     opacity: 0.6;
 }
-
 </style>

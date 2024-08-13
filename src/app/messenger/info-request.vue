@@ -77,7 +77,7 @@ export default {
                 if (f.Required) {
                     const val = f.CorrespondingField
                     if (val === '') {
-                        this.dataError = "Вы не заполнили поле " + f.Name
+                        this.dataError = "Вы не заполнили поле " + f.Label
                         document.getElementById(f.Label).style.borderColor = 'red';
                         return;
                     }
@@ -86,7 +86,7 @@ export default {
                 if (f.ValidationRegexp && f.ValidationRegexp?.length) {
                     const regexp = REGEXP[f.ValidationRegexp] ?? f.ValidationRegexp
                     if (!f.CorrespondingField.match(regexp)) {
-                        this.dataError = "Неправильно значение в поле " + f.Name;
+                        this.dataError = "Неправильно значение в поле " + f.Label;
                         return;
                     }
                 }
@@ -144,9 +144,6 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-.request {
-}
-
 .rated {
     padding: 3px;
     margin: 10px 10px 20px;
@@ -206,7 +203,8 @@ export default {
             height: 34px;
         }
 
-        .star-background, .star-outline {
+        .star-background,
+        .star-outline {
             left: 0;
             position: absolute;
             text-align: center;
@@ -225,7 +223,8 @@ export default {
             cursor: pointer;
         }
 
-        &:hover, &.star-selected {
+        &:hover,
+        &.star-selected {
             .star-background {
                 color: #2EB8FE;
             }
