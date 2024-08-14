@@ -107,7 +107,7 @@ export default {
                         input#personal-data-consent(type="checkbox" v-model="personalDataConsent").checkbox-custom
                         label(for="personal-data-consent") Согласие на обработку
                             a(style="text-decoration:underline" :href="processDataLink" target="_blank") &nbsp;персональных данных
-                    button.button(:disabled="!personalDataConsent || !clientName || clientName === ''" @click.prevent="create" href="#")
+                    button.button(:disabled="!personalDataConsent || requireName && !clientName || clientName === ''" @click.prevent="create" href="#")
                         span(v-if="!creating") Начать чат
                         scale-loader.loader(v-if="creating", color="#fff", height="12px")
 
