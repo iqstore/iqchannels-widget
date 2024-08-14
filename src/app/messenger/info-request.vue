@@ -63,7 +63,6 @@ export default {
     },
 
     methods: {
-
         sendInfo() {
             if (this.dataError === `Максимальная длина значения - ${MaxFieldLength} символов`) {
                 return;

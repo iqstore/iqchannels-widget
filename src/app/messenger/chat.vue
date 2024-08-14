@@ -49,7 +49,7 @@ export default {
         humanDateTime,
         scrollToLastMessage() {
             const chat = document.getElementById('chat');
-            chat.scrollTo({
+            chat?.scrollTo({
                 top: chat.scrollHeight,
                 behavior: 'smooth'
             });

@@ -71,7 +71,7 @@ export default {
         },
 
         sendInfo(info) {
-            this.clientName = info.Form.Fields.find((field) => field.Name === 'Имя').CorrespondingField
+            this.clientName = info.Form.Fields.find((field) => field.Name === 'Имя')?.CorrespondingField
             this.create();
         },
     },
