@@ -933,9 +933,9 @@ export default {
             // Someone else's message
             if (!message.My) {
                 this.appendMessage(message);
-                this.scrollToFoundMessage(this.firstUnreadMessageId ?? message.Id);
                 return true;
             }
+            this.scrollToFoundMessage(this.firstUnreadMessageId ?? message.Id);
             // Replace my own message
             if (!this.replaceMessage(message)) {
                 // Sent from concurrent session from another browser?
