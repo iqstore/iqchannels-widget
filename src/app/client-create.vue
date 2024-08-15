@@ -28,6 +28,10 @@ export default {
         client.getInfoLinkByChannel(this.channel).then((link) => {
             this.processDataLink = link.Data
         })
+
+        if (!this.requireName) {
+            this.create()
+        }
     },
 
     created() {
@@ -44,8 +48,10 @@ export default {
     methods: {
         create() {
             if (!this.personalDataForm) {
-                if (!this.personalDataConsent) return;
-                if (this.requireName && !this.clientName) return;
+                if (this.requireName) {
+                    if (!this.personalDataConsent) return;
+                    if (!this.clientName) return;
+                }
             }
             this.error = null;
 
