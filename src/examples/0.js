@@ -5,6 +5,6 @@ import { LOCALSTORAGE_CHANNEL_NAME } from "../schema";
 window.widget = new IQChannelsWidget({
   channel: localStorage.getItem(LOCALSTORAGE_CHANNEL_NAME) || 'support',
   width: 425,
-  requireName: false,
+  requireName: true,
   iconOptions: { show: true }
 });
