@@ -97,7 +97,7 @@ export default {
                     this.channel = event.data.channel;
                     this.credentials = event.data.credentials;
                     this.project = event.data.project;
-                    this.requireName = event.data.requireName;
+                    this.requireName = event.data.requireName ?? true;
                     this.pushToken = event.data.pushToken;
                     this.enableImgModals = event.data.enableImgModals;
                     this.chats = event.data.chats;
