@@ -77,7 +77,15 @@ export default {
 
         scrollToMessage(msg, event) {
             this.$emit("scroll-to-message", msg, event)
-        }
+        },
+
+        cancelUpload(localId) {
+            this.$emit("cancel-upload", localId);
+        },
+
+        retryUpload(localId) {
+            this.$emit("retry-upload", localId);
+        },
     }
 
 }
@@ -340,7 +348,7 @@ export default {
             background-color: #cce4f7;
         }
 
-        .body > .message-wrapper {
+        .body>.message-wrapper {
             &:first-child:not(:only-child) .message-inner .message {
                 border-top-right-radius: 14px;
                 border-bottom-right-radius: 4px;
@@ -359,7 +367,7 @@ export default {
     }
 
 
-    .body > .message-wrapper {
+    .body>.message-wrapper {
         .message-inner .message:only-child {
             border-radius: 14px;
         }

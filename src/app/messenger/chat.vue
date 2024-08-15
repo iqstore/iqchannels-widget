@@ -316,6 +316,8 @@ export default {
                         @reply-msg="optionClicked",
                         @swipe-rigth="swipeRight",
                         @send-message="trySendMessage",
+                        @cancel-upload="cancelUpload",
+                        @retry-upload="retryUpload",
                         @click-file="clickFile",
                         @click-file-image="clickFileImage",
                         @listen-audio="listenForAudioEvents",

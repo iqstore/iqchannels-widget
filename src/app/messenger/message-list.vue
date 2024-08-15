@@ -32,6 +32,14 @@ export default {
         sendMessage(messageText, botpressPayload, url) {
             this.$emit("send-message", messageText, botpressPayload, url)
         },
+
+        cancelUpload(localId) {
+            this.$emit("cancel-upload", localId);
+        },
+
+        retryUpload(localId) {
+            this.$emit("retry-upload", localId);
+        },
     }
 }
 
@@ -49,7 +57,9 @@ export default {
         message(
             @reply-msg="optionClicked",
             @scroll-to-message="scrollToMessage",
-            @send-message="sendMessage"
+            @send-message="sendMessage",
+            @cancel-upload="cancelUpload",
+            @retry-upload="retryUpload",
             :group="group",
             :groups="groups",
             :msg="msg",
