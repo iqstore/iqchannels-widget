@@ -129,7 +129,7 @@ class Client {
   multipart (path, data, onSuccess, onError, onProgress) {
     let headers = new Headers();
     if (this.authToken) {
-      headers.append('XClientAuthorizationHeader', this.authToken);
+      headers.append(XClientAuthorizationHeader, this.authToken);
     }
 
     return new Promise((resolve, reject) => {
