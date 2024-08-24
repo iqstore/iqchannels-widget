@@ -1,5 +1,6 @@
 <script>
 import client from "../client";
+import { isYoungerVersion } from "../lib/version";
 
 export default {
     props: {
@@ -16,8 +17,11 @@ export default {
         };
     },
 
-    mounted() {
-        if (this.channel) {
+    async mounted() {
+        if (!client.iQVersion) {
+            client.iQVersion = (await client.version())?.Data?.Version
+        }
+        if (this.channel && isYoungerVersion("4.2.0", client.iQVersion)) {
             client.getBlocker(this.channel).then((blocker) => {
                 if (blocker.Data.Enabled) {
                     this.error = blocker.Data.Text;
