@@ -102,6 +102,16 @@ export default {
             return res;
         },
 
+        getScaleStyle(scale) {
+            console.log(scale);
+            const itemsCount = scale.ToValue - scale.FromValue + 1;
+            const widthPercentage = 100 / itemsCount;
+
+            return {
+                gridTemplateColumns: `repeat(${itemsCount}, ${widthPercentage}%)`
+            };
+        },
+
         setPollVariantScale(value) {
             let temp = [...this.pollResult];
             temp[this.index] = {
@@ -294,7 +304,7 @@ export default {
                 textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
 
             .scale(v-if="poll.Questions[index].Type === 'scale'")
-                .buttons-scale.mt
+                .buttons-scale.mt(:style="getScaleStyle(poll.Questions[index].Scale)")
                     template(v-for="idx in getScaleItems(poll.Questions[index].Scale)")
                         .buttons-scale_inner
                             button.button.button_one_of_list(
@@ -538,20 +548,31 @@ export default {
 .buttons-scale {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(7%, 1fr));
-    gap: 5px;
 }
 
 .buttons-scale_inner {
-    flex-flow: column;
     display: flex;
+    flex-flow: column;
     align-items: center;
 
     &:first-child {
         align-items: start;
+
+        button.button {
+            border-bottom-left-radius: 5px;
+            border-top-left-radius: 5px;
+            border-left: 1px #2EB8FE solid;
+        }
     }
 
     &:last-child {
         align-items: end;
+
+        button.button {
+            border-bottom-right-radius: 5px;
+            border-top-right-radius: 5px;
+            border-right: 1px #2EB8FE solid;
+        }
     }
 
     span {
@@ -560,11 +581,15 @@ export default {
         text-align: center;
     }
 
-    button {
+    button.button {
         margin: 0;
         padding: 0;
         aspect-ratio: 1/1;
         box-sizing: border-box;
+        max-height: 50px;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
     }
 }
 
