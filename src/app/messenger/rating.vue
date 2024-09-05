@@ -14,9 +14,6 @@ export default {
         if (this.poll) {
             this.pollResult = new Array(this.poll.Questions.length).fill({});
         }
-        if (this.poll && this.rating.State === 'poll') {
-            this.start = !this.poll.ShowOffer;
-        }
     },
 
     data() {
