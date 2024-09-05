@@ -491,6 +491,10 @@ export default {
                     if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
                         group.InfoRequest = message.InfoRequest;
                     }
+
+                    if (message.Rating) {
+                        group.Rating = message.Rating;
+                    }
                     this.maybeEnableFreeText();
                     return;
                 }
@@ -519,6 +523,7 @@ export default {
 
                 IsNewDay: isNewDay
             };
+
             if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
                 group.InfoRequest = message.InfoRequest;
             }

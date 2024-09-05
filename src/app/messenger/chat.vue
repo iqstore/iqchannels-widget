@@ -305,7 +305,7 @@ export default {
             .date(v-if="group.IsNewDay")
                 span.title {{ humanDate(group.LastMessage.CreatedAt) }}
 
-            .group-wrapper(v-if="!group.Rating && !group.InfoRequest && group.Author !== 'system'")
+            .group-wrapper(v-if="!group.InfoRequest && group.Author !== 'system'")
                 .body
                     messages(
                         :searching="searching",

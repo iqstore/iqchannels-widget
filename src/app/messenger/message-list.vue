@@ -55,6 +55,7 @@ export default {
             span Непрочитанные сообщения
 
         message(
+            v-if="!msg.Rating",
             @reply-msg="optionClicked",
             @scroll-to-message="scrollToMessage",
             @send-message="sendMessage",

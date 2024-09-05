@@ -103,7 +103,6 @@ export default {
         },
 
         getScaleStyle(scale) {
-            console.log(scale);
             const itemsCount = scale.ToValue - scale.FromValue + 1;
             const widthPercentage = 100 / itemsCount;
 
@@ -234,11 +233,11 @@ export default {
 
 <template lang="pug">
     .rating
+        .rated(v-if="rating.State === 'ignored'")
+            span Без оценки оператора
         .rated(v-if="rating.State === 'rated' && rating.Value")
             span Оценка оператора: {{ rating.Value }} из 5
 
-        //.backdrop(v-if="(rating.State === 'poll' || thanksFeedback) && this.poll")
-        //.backdrop(v-if="(rating.State === 'pending')")
         .pending(v-if="rating.State === 'pending'")
             .button-close(@click="ignoreRating")
                 svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
