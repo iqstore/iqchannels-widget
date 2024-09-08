@@ -86,6 +86,13 @@ export default {
         retryUpload(localId) {
             this.$emit("retry-upload", localId);
         },
+
+        getCardBlockClass(msg) {
+            if (!msg?.Actions || !msg?.Actions?.length || msg?.Actions?.length == 0) {
+                return '';
+            }
+            return msg.Actions[0].Payload.split('|')[0];
+        }
     }
 
 }
@@ -157,7 +164,7 @@ export default {
                         img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                     div.img-caption
                         pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
-                    .carousel-card-block(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")
+                    .carousel-card-block(:class="getCardBlockClass(msg)", v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")
                         button.img-button(
                             v-for="action of msg.Actions", @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                 div(v-else-if="msg.File && msg.File.Type === 'file'")
@@ -514,5 +521,9 @@ export default {
 
 .carousel-card-block {
     margin-top: 5px;
+
+    &.poll_choice_scale {
+        display: flex;
+    }
 }
 </style>

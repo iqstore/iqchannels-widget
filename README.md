@@ -658,6 +658,22 @@ widget.setAndroidToken(tokenString);
 }
 ```
 
+Блоки с кнопками опроса
+```scss
+.carousel-card-block {
+  margin-top: 5px;
+  
+  // Типы ответов опроса:
+  &.poll_choice_scale {                             // 1. Шкала
+    display: flex;
+  }
+  &.poll_choice_one_of_list { /* your styles */ }   // 2. Один из списка
+  &.poll_choice_fcr { /* your styles */ }           // 3. FCR
+  &.poll_choice_stars { /* your styles */ }         // 4. Звезды
+  &.poll_choice_show_offer { /* your styles */ }    // 5. Предложение пройти опрос
+}
+```
+
 # Разработка
 
 Зависимости:
