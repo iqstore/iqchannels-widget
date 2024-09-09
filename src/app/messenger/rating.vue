@@ -314,7 +314,7 @@ export default {
                 button.button(@click.prevent="nextQuestion()", :disabled="isRatingPollAnswerEmpty() && index === poll.Questions.length - 1") Далее
 
             .buttons-answer.mt(v-if="this.poll.Questions.length === 1")
-                button.button(@click="sendRatingPoll") Отправить ответ
+                button.button(@click="sendRatingPoll()") Отправить ответ
 
         .pending(v-if="thanksFeedback")
             .thanks-feedback
