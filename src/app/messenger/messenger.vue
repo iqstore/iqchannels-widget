@@ -992,8 +992,8 @@ export default {
             if (!message) {
                 return;
             }
-            this.client.getFile(message.FileId).then(file => {
-                message.File = file;
+            client.getFile(message.FileId).then(file => {
+                message.File.State = file.State;
                 this.replaceMessage(message);
             })
         },

@@ -98,9 +98,7 @@ class Client {
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      const url = new URL(config.apiUrl(path));
-
-      Object.keys(data).forEach(key => url.searchParams.append(key, data[key]));
+      const url = config.apiUrl(path);
 
       xhr.open('GET', url, true);
       xhr.withCredentials = true;
