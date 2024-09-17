@@ -48,12 +48,6 @@ export default {
 
     },
 
-    beforeMount() {
-        setTimeout(() => {
-            this.scrollToLastMessage();
-        }, 200);
-    },
-
     mounted() {
         this.loadHistory();
         this.sendGreeting();
@@ -75,7 +69,6 @@ export default {
             singleChoices: [],
             disableFreeText: false,
             badWordError: null,
-            shouldBeScrolledBottom: true,
             chatType: 'regular',
             firstUnreadMessageId: 0,
         };
@@ -114,30 +107,31 @@ export default {
             // widget opened
             if (newValue && !oldValue) {
                 this.markMessagesAsRead();
-                this.sendGreeting();
-                // Force fixed element to repaint,
+
+                // Force fixed element to rerender,
                 // because of safari issue with fixed hidden elements
                 const composer = document.getElementById('composer');
                 composer.style.display = 'none';
                 setTimeout(() => {
                     composer.style.display = '';
                 }, 0);
-                this.scrollToLastMessage();
             }
+
             // widget closed
             if (!newValue) {
                 this.firstUnreadMessageId = null;
             }
+
+            this.scrollToMessage()
         },
         search: function (newValue, oldValue) {
             if (!this.searching) {
                 this.searching = true;
             }
             this.queryMessages(newValue);
-            if (newValue === "" && this.shouldBeScrolledBottom) {
+            if (newValue === "") {
                 setTimeout(() => {
-                    this.scrollToLastMessage();
-
+                    this.scrollToMessage();
                 }, 1000)
             }
         },
@@ -148,7 +142,7 @@ export default {
             this.inputMsg = JSON.parse(JSON.stringify(newValue));
         },
         scrollToMsg: function (newValue) {
-            this.scrollToPushMessage(newValue)
+            this.scrollToMessage(newValue)
         },
         rating: function (newRating) {
             if (newRating === 0) {
@@ -161,20 +155,43 @@ export default {
     },
 
     methods: {
-        scrollToLastMessage() {
-            if (this.firstUnreadMessageId) {
-                this.scrollToFoundMessage(this.firstUnreadMessageId);
+        scrollToMessage(msgId, block, toLast) {
+            if (!this.opened) return;
+
+            if (msgId) {
+                let msgEl = document.getElementById('message-' + msgId)
+                msgEl?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: block ?? 'center',
+                    inline: 'center',
+                });
+
                 return;
             }
-            this.scrollToBottom();
+
+            if (this.firstUnreadMessageId) {
+                this.scrollToFoundMessage(this.firstUnreadMessageId, 'start');
+                return;
+            }
+
+            const lastGroup = this.groups[this.groups.length - 1]
+            const lastMsg = lastGroup?.Messages[lastGroup.Messages.length - 1]
+            let msgEl = document.getElementById('message-' + lastMsg?.Id)
+            msgEl?.scrollIntoView(false);
+            this.scrollToBottom()
         },
 
         scrollToBottom() {
             const chat = document.getElementById('chat');
-            chat.scrollTo({
-                top: chat.scrollHeight,
-                behavior: 'smooth'
-            });
+
+            if (chat.scrollTop === 0) {
+                chat?.scrollIntoView(false);
+            } else {
+                chat.scrollTo({
+                    top: chat.scrollHeight + chat.scrollTop,
+                    behavior: 'smooth'
+                });
+            }
 
             this.resetUnreadCount();
         },
@@ -190,25 +207,17 @@ export default {
             this.searching = true;
         },
 
+        cancelSearch() {
+            this.searching = false;
+        },
+
         scrollToFoundMessage(id, block) {
-            this.shouldBeScrolledBottom = false;
             this.searching = false;
             client.channelMessages(this.channel, this.chatType, null, id).then(messages => {
                 this.appendMessages(messages);
-                const msgElement = document.getElementById('message-' + id);
-                msgElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: block ?? 'center'
-                })
-                this.shouldBeScrolledBottom = true;
+                this.scrollToMessage(id, block)
                 this.animateMsgAfterScroll(id);
             });
-        },
-        scrollToPushMessage(msg) {
-            document.getElementById('message-' + msg).scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            })
         },
 
         queryMessages(value) {
@@ -221,14 +230,9 @@ export default {
             })
         },
 
-        cancelSearch() {
-            this.searching = false;
-        },
-
         optionClicked(event) {
             switch (event) {
                 case "search":
-                    this.searching = true;
                     this.searchMsg();
             }
         },
@@ -258,7 +262,7 @@ export default {
                     ? messages[messages.length - 1].EventId
                     : null;
                 this.groups = [];
-                this.appendMessages(messages);
+                this.appendMessages(messages, true);
                 this.markMessages();
                 if (subscribeNeeded) {
                     this.subscribe();
@@ -321,23 +325,21 @@ export default {
             }
         },
 
-        appendMessages(messages) {
-            if (messages.length > 0) {
-                const last = messages[messages.length - 1];
-                if (last.DisableFreeText) {
-                    this.disableFreeText = true;
-                } else {
-                    this.disableFreeText = false;
-                }
-            }
-
+        appendMessages(messages, scrollToLastMessage) {
             for (let message of messages) {
                 this.appendMessage(message);
             }
-            this.maybeEnableFreeText();
+
+            if (messages.length > 0) {
+                const last = messages[messages.length - 1];
+                this.disableFreeText = last.DisableFreeText;
+                if (scrollToLastMessage) {
+                    this.scrollToMessage(last?.Id);
+                }
+            }
         },
 
-        appendMessage(message) {
+        appendMessage(message, scrollToMessage) {
             if (message.Id) {
                 for (let group of this.groups) {
                     for (let m of group.Messages) {
@@ -348,6 +350,11 @@ export default {
                 }
             }
             this.messageGroupsAppend(this.groups, message);
+
+
+            if (scrollToMessage) {
+                this.scrollToMessage(message.Id);
+            }
         },
 
         appendLocalMessage(messageForm) {
@@ -419,12 +426,8 @@ export default {
                         if (i === group.Messages.length - 1) {
                             group.LastMessage = message;
                             this.singleChoices = group.LastMessage.SingleChoices
-                            if (group.LastMessage.DisableFreeText) {
-                                this.disableFreeText = true
-                            } else {
-                                this.disableFreeText = false
-                            }
-                            this.maybeEnableFreeText();
+                            this.disableFreeText = group.LastMessage.DisableFreeText
+
                         }
                         return true;
                     }
@@ -448,12 +451,7 @@ export default {
                         } else {
                             group.LastMessage = group.Messages[group.Messages.length - 1];
                             this.singleChoices = group.Messages[group.Messages.length - 1].SingleChoices;
-                            if (group.LastMessage.DisableFreeText) {
-                                this.disableFreeText = true
-                            } else {
-                                this.disableFreeText = false
-                            }
-                            this.maybeEnableFreeText();
+                            this.disableFreeText = group.LastMessage.DisableFreeText
                         }
                         return true;
                     }
@@ -495,7 +493,6 @@ export default {
                     if (message.Rating) {
                         group.Rating = message.Rating;
                     }
-                    this.maybeEnableFreeText();
                     return;
                 }
             }
@@ -528,7 +525,6 @@ export default {
                 group.InfoRequest = message.InfoRequest;
             }
             groups.push(group);
-            this.maybeEnableFreeText();
         },
 
         sendGreeting() {
@@ -543,50 +539,41 @@ export default {
             }
             client.getChatSettings(this.channel).then(result => {
                 const settings = result.Data
-                if (settings !== null) {
-                    this.systemChat = true
-                    // if client has no open tickets, send him greeting from bot or from made-up operator
-                    // these messages are deleted if client does not respond
-                    client.listTicketsByClient(this.channel, this.client.Id, { Open: true }).then(result => {
-                        if (result.Data.TotalCount === 0) {
-                            if (settings.GreetFrom === 'bot') {
-                                client.openSystemChat(this.channel)
-                                this.scrollToLastMessage();
-                            } else {
-                                const message = {
-                                    Id: new Date().getTime(),
-                                    Author: "user",
-                                    CreatedAt: new Date(),
-                                    Text: settings.Message,
-                                    Payload: 'text',
-                                    Read: true,
-                                    UserId: new Date().getTime(),
-                                    User: {
-                                        DisplayName: settings.OperatorName,
-                                        Name: settings.OperatorName,
-                                        Active: true,
-                                        Id: new Date().getTime()
-                                    }
-                                };
-                                this.appendMessage(message)
-                                setTimeout(() => {
-                                    this.removeMessage(message);
-                                    this.systemChat = false
-                                }, 1000 * settings.Lifetime)
-                            }
-                        } else {
-                            this.systemChat = false;
-                        }
-                    })
-                }
-            })
-        },
+                if (!settings) return;
 
-        maybeEnableFreeText() {
-            if (!this.groups.length ||
-                !this.groups[this.groups.length - 1].LastMessage.DisableFreeText) {
-                this.disableFreeText = false;
-            }
+                this.systemChat = true
+                client.listTicketsByClient(this.channel, this.client.Id, { Open: true }).then(result => {
+                    if (result.Data.TotalCount) {
+                        this.systemChat = false;
+                        return;
+                    }
+
+                    if (settings.GreetFrom === 'bot') {
+                        client.openSystemChat(this.channel)
+                    } else {
+                        const now = new Date()
+                        const message = {
+                            Id: now.getTime(),
+                            Author: "user",
+                            CreatedAt: now,
+                            Text: settings.Message,
+                            Payload: 'text',
+                            Read: true,
+                            UserId: now.getTime(),
+                            User: {
+                                DisplayName: settings.OperatorName,
+                                Name: settings.OperatorName,
+                                Active: true,
+                            }
+                        };
+                        this.appendMessage(message, true)
+                        setTimeout(() => {
+                            this.removeMessage(message);
+                            this.systemChat = false
+                        }, 1000 * settings.Lifetime)
+                    }
+                })
+            })
         },
 
         getNextLocalId() {
@@ -661,7 +648,7 @@ export default {
                     message.FileId = file.Id;
                     client.channelSend(this.channel, message);
                     this.replaceMessage(message);
-                    this.scrollToLastMessage();
+                    this.scrollToMessage(); // TODO mb move to replace message
                 },
                 error => {
                     message.UploadError = error.http() ? "Ошибка загрузки" : error.text;
@@ -924,26 +911,16 @@ export default {
             }
         },
 
-        /**
-         * Add or replaces message in messages list
-         * Returns true if message really added.
-         * @param message
-         * @returns {boolean}
-         */
         handleIncomingMessage(message) {
-            // Empty message
             if (!message) {
                 return false;
             }
-            // Someone else's message
             if (!message.My) {
                 this.appendMessage(message);
                 return true;
             }
             this.scrollToFoundMessage(this.firstUnreadMessageId ?? message.Id);
-            // Replace my own message
             if (!this.replaceMessage(message)) {
-                // Sent from concurrent session from another browser?
                 this.appendMessage(message);
             }
             return false;
@@ -1035,26 +1012,27 @@ export default {
             }
             this.appendLocalMessage(messageForm);
 
-            client.channelSend(this.channel, messageForm).then(() =>
-
-                this.loadHistory(false));
+            client.channelSend(this.channel, messageForm);
         },
 
         handleVersion() {
             client.version().then(res => {
-                const v = res.Data.Version;
+                const now = new Date()
                 const message = {
-                    Id: new Date().getTime(),
+                    Id: now.getTime(),
                     Author: "user",
-                    CreatedAt: new Date(),
-                    Text: v,
+                    CreatedAt: now,
+                    Text: res.Data.Version,
                     Payload: 'text',
                     Read: true,
-                    UserId: new Date().getTime(),
-                    User: { DisplayName: "Система", Name: "Система", Active: true, Id: new Date().getTime() }
+                    UserId: now.getTime(),
+                    User: {
+                        DisplayName: "Система",
+                        Name: "Система",
+                        Active: true
+                    }
                 };
-                this.appendMessage(message);
-                this.scrollToLastMessage();
+                this.appendMessage(message, true);
             })
         },
 
