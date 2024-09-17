@@ -169,6 +169,7 @@ export default {
                     break;
             }
         });
+        parent.postMessage({ type: 'iqchannels-ready' }, "*");
     },
 
     methods: {
