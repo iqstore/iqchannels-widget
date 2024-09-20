@@ -179,6 +179,18 @@ export default {
             this.resetUnreadCount();
         },
 
+        scrollWithTimeout() {
+          setTimeout(() => {
+            const chat = document.getElementById('chat');
+            chat.scrollTo({
+              top: chat.scrollHeight,
+              behavior: 'auto'
+            });
+          }, 500)
+
+          this.resetUnreadCount();
+        },
+
         resetUnreadCount() {
             this.unreadMessages?.forEach((message) => {
                 message.Read = message.Received = true;
@@ -938,6 +950,7 @@ export default {
             // Someone else's message
             if (!message.My) {
                 this.appendMessage(message);
+                this.scrollWithTimeout();
                 return true;
             }
             this.scrollToFoundMessage(this.firstUnreadMessageId ?? message.Id);
@@ -1157,7 +1170,7 @@ export default {
                 div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
                     button.choice_button(type="button",
                         v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
-                        @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
+                        @click.prevent="onMessageComposed(choice.title, choice.value, null)") {{ choice.title }}
         .unacceptable-msg(v-if="badWordError")
             p(v-text="badWordError")
         #composer
