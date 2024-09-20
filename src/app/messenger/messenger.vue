@@ -186,7 +186,7 @@ export default {
               top: chat.scrollHeight,
               behavior: 'auto'
             });
-          }, 500)
+          }, 700)
 
           this.resetUnreadCount();
         },
