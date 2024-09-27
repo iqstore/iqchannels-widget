@@ -24,6 +24,7 @@ export const ChatEventClientChanged = 'client_changed';
 
 export const LOCALSTORAGE_CHANNEL_NAME = 'iq-channel-name';
 export const LOCALSTORAGE_WIDGET_CONFIG = 'iq-widget-config';
+export const LOCALSTORAGE_WIDGET_0_CONFIG = 'iq-widget-0-config';
 export const DefaultThirdClientConfig = {
   chats: [
     {
@@ -36,3 +37,9 @@ export const DefaultThirdClientConfig = {
     }
   ]
 };
+export const DefaultAnonClientConfig = {
+  channel: localStorage.getItem(LOCALSTORAGE_CHANNEL_NAME) || 'support',
+  width: 425,
+  requireName: true,
+  iconOptions: { show: true }
+}

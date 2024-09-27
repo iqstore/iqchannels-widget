@@ -19,3 +19,9 @@ html
       button(type="button", onclick="widget.logout();") Выйти
       span &nbsp;
       button(type="button", onclick="widget.destroy();") Уничтожить
+      button(type="button", onclick="configureWidget();") Настроить конфигурацию
+        | &nbsp;
+      br
+      br
+      span Текущий конфиг:
+      pre(id="current_config")
