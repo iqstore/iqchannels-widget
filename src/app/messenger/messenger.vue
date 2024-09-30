@@ -210,6 +210,18 @@ export default {
             this.resetUnreadCount();
         },
 
+        scrollWithTimeout() {
+          setTimeout(() => {
+            const chat = document.getElementById('chat');
+            chat.scrollTo({
+              top: chat.scrollHeight,
+              behavior: 'auto'
+            });
+          }, 700)
+
+          this.resetUnreadCount();
+        },
+
         resetUnreadCount() {
             this.unreadMessages?.forEach((message) => {
                 message.Read = message.Received = true;
@@ -369,6 +381,7 @@ export default {
             }
             this.messageGroupsPrepend(this.groups, message);
         },
+
 
         appendMessage(message, scrollToMessage) {
             if (this.existingMsgIds[message.Id]) {
@@ -600,6 +613,50 @@ export default {
                 IsNewDay: isNewDay
             };
             groups = [group, ...groups]
+        },
+
+        messageGroupsPrepend(groups, message) {
+            if (groups.length > 0) {
+                const firstGroup = groups[0];
+                const firstMessage = firstGroup.Messages[0];
+
+                if (
+                    firstGroup.Author === message.Author &&
+                    firstGroup.UserId === message.UserId &&
+                    firstGroup.ClientId === message.ClientId &&
+                    firstMessage.CreatedAt - message.CreatedAt < 60000 &&
+                    isSameDate(message.CreatedAt, firstMessage.CreatedAt)
+                ) {
+                    firstGroup.Messages.unshift(message);
+                    this.existingMsgIds[message.Id] = true;
+                    return;
+                }
+            }
+
+            const isNewDay =
+                groups.length > 0
+                    ? !isSameDate(
+                        message.CreatedAt,
+                        groups[0].Messages[0].CreatedAt
+                    )
+                    : true;
+
+            const group = {
+                Id: groups.length + 1,
+                Author: message.Author,
+                UserId: message.UserId,
+                ClientId: message.ClientId,
+
+                User: message.User,
+                Client: message.Client,
+
+                Messages: [message],
+                LastMessage: message,
+                Rating: message.Rating,
+
+                IsNewDay: isNewDay
+            };
+            groups.unshift(group);
         },
 
         sendGreeting() {
@@ -991,6 +1048,7 @@ export default {
             }
             if (!message.My) {
                 this.appendMessage(message);
+                this.scrollWithTimeout();
                 return true;
             }
 
