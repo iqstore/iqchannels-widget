@@ -30,7 +30,6 @@ export default {
         const onError = (error) => {
             if (!error) {
                 appError.value = null;
-                parent.postMessage({ type: 'iqchannels-ready' }, "*");
             } else appError.value = error;
 
             parent.postMessage({ type: 'iqchannels-error', data: JSON.stringify(error) }, "*");
@@ -170,7 +169,6 @@ export default {
                     break;
             }
         });
-        parent.postMessage({ type: 'iqchannels-ready' }, "*");
     },
 
     methods: {
@@ -185,6 +183,10 @@ export default {
 
         onMultiLogin(multiClient) {
             this.multiClient = multiClient;
+        },
+
+        onMessagesLoaded() {
+            parent.postMessage({ type: 'iqchannels-ready' }, "*");
         },
 
         onLogout() {
@@ -290,6 +292,7 @@ export default {
                     @on-longtap="onLongTap"
                     @on-rating="onRating"
                     @client-changed="onClientChanged"
+                    @on-messages-loaded="onMessagesLoaded"
                     :mode='mode'
                     :client='client'
                     :opened='opened'

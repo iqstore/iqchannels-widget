@@ -7,9 +7,8 @@ export default {
     },
 
     mounted() {
-        this.checkIsBottom();
-
         const chat = document.getElementById('chat');
+
         chat.addEventListener('scroll', ev => {
             setTimeout(() => {
                 this.checkIsBottom(ev);
@@ -45,17 +44,13 @@ export default {
     },
 
     data: () => ({
-        isBottom: true,
+        isBottom: false,
     }),
 
     methods: {
         checkIsBottom(event) {
-            if (!event) {
-                this.isBottom = false;
-                return;
-            }
-
             const height = document.getElementById('chat')?.offsetHeight;
+
             // add 3px because there is a difference for some reason
             this.isBottom = !((event.target.scrollHeight - event.target.scrollTop - 3) >= height);
             if (this.isBottom) {

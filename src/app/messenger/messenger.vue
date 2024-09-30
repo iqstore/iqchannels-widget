@@ -119,7 +119,9 @@ export default {
                 composer.style.display = 'none';
                 setTimeout(() => {
                     composer.style.display = '';
+                    this.scrollToBottom();
                 }, 0);
+
             }
 
             // widget closed
@@ -127,7 +129,6 @@ export default {
                 this.firstUnreadMessageId = null;
             }
 
-            this.scrollToMessage()
         },
         search: function (newValue, oldValue) {
             if (!this.searching) {
@@ -161,55 +162,50 @@ export default {
     },
 
     methods: {
-        scrollToMessage(msgId, block, toLast) {
+        scrollToMessage(msgId, block) {
             if (!this.opened) return;
 
-            if (msgId) {
-                let msgEl = document.getElementById('message-' + msgId)
-                msgEl?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: block ?? 'center',
-                    inline: 'center',
-                });
+            let scrollToMessageId;
 
-                return;
+            if (msgId) {
+                scrollToMessageId = msgId;
             }
 
             if (this.firstUnreadMessageId) {
-                this.scrollToFoundMessage(this.firstUnreadMessageId, 'start');
-                return;
+                scrollToMessageId = this.firstUnreadMessageId;
             }
 
             const lastGroup = this.groups[this.groups.length - 1]
             const lastMsg = lastGroup?.Messages[lastGroup.Messages.length - 1]
-            let msgEl = document.getElementById('message-' + lastMsg?.Id)
-            msgEl?.scrollIntoView(false);
-            this.scrollToBottom()
+            if (lastMsg) {
+                scrollToMessageId = lastMsg.Id
+            }
+
+            if (!scrollToMessageId) {
+                return
+            }
+            const observer = new MutationObserver(() => {
+                const messageElement = document.getElementById('message-' + msgId)
+                if (messageElement) {
+                    observer.disconnect()
+                    messageElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: block ?? 'center',
+                        inline: 'center',
+                    });
+                }
+            })
+            observer.observe(document.body, { childList: true, subtree: true })
         },
 
         scrollToBottom() {
             const chat = document.getElementById('chat');
+            chat.scrollTo({
+                top: chat.scrollHeight + chat.scrollTop + chat.offsetHeight,
+                behavior: 'smooth'
+            });
+            // chat.scrollTo
 
-            if (chat.scrollTop === 0) {
-                chat?.scrollIntoView(false);
-            } else {
-                chat.scrollTo({
-                    top: chat.scrollHeight + chat.scrollTop,
-                    behavior: 'smooth'
-                });
-            }
-
-            this.resetUnreadCount();
-        },
-
-        scrollWithTimeout() {
-            setTimeout(() => {
-                const chat = document.getElementById('chat');
-                chat.scrollTo({
-                    top: chat.scrollHeight,
-                    behavior: 'auto'
-                });
-            }, 700)
 
             this.resetUnreadCount();
         },
@@ -282,11 +278,13 @@ export default {
                     : null;
                 this.groups = [];
                 this.existingMsgIds = {};
-                this.appendMessages(messages);
+                this.appendMessages(messages, true);
                 this.markMessages();
                 if (subscribeNeeded) {
                     this.subscribe();
                 }
+
+                this.$emit('on-messages-loaded')
             });
         },
 
@@ -354,12 +352,8 @@ export default {
                 this.appendMessage(message);
             }
 
-            if (messages.length > 0) {
-                const last = messages[messages.length - 1];
-                this.disableFreeText = last.DisableFreeText;
-                if (scrollToLastMessage) {
-                    this.scrollToMessage(last?.Id);
-                }
+            if (messages.length > 0 && scrollToLastMessage) {
+                this.scrollToMessage();
             }
         },
 
@@ -401,12 +395,17 @@ export default {
             return message;
         },
 
-        replaceMessage(message) {
+        replaceMessage(message, scrollToMessage) {
             if (this.messageGroupsReplace(this.groups, message)) {
                 this.groups.push({}); // FIX: have to use to simulate object change,
                 this.groups.pop(); // because i couldn't find way to fire deep object changes
                 return true;
             }
+
+            if (scrollToMessage && message.Id) {
+                this.scrollToMessage(message.Id);
+            }
+
             return false;
         },
 
@@ -557,7 +556,6 @@ export default {
             }
             groups.push(group);
             this.existingMsgIds[message.Id] = true;
-            this.maybeEnableFreeText();
         },
 
         messageGroupsPrepend(groups, message) {
@@ -572,7 +570,7 @@ export default {
                     firstMessage.CreatedAt - message.CreatedAt < 60000 &&
                     isSameDate(message.CreatedAt, firstMessage.CreatedAt)
                 ) {
-                    firstGroup.Messages.unshift(message);
+                    firstGroup.Messages = [message, ...firstGroup.Messages]
                     this.existingMsgIds[message.Id] = true;
                     return;
                 }
@@ -601,7 +599,7 @@ export default {
 
                 IsNewDay: isNewDay
             };
-            groups.unshift(group);
+            groups = [group, ...groups]
         },
 
         sendGreeting() {
@@ -724,8 +722,7 @@ export default {
                     message.File = file;
                     message.FileId = file.Id;
                     client.channelSend(this.channel, message);
-                    this.replaceMessage(message);
-                    this.scrollToMessage(); // TODO mb move to replace message
+                    this.replaceMessage(message, true);
                 },
                 error => {
                     message.UploadError = error.http() ? "Ошибка загрузки" : error.text;
@@ -755,7 +752,7 @@ export default {
         },
 
         retryUpload(localId) {
-            const message = this.getMessageByLocalId(localId);
+            const message = this.getMesssageByLocalId(localId);
             if (!message) {
                 return;
             }
@@ -994,11 +991,10 @@ export default {
             }
             if (!message.My) {
                 this.appendMessage(message);
-                this.scrollWithTimeout();
                 return true;
             }
-            this.scrollToFoundMessage(this.firstUnreadMessageId ?? message.Id);
-            if (!this.replaceMessage(message)) {
+
+            if (!this.replaceMessage(message, true)) {
                 this.appendMessage(message);
             }
             return false;
@@ -1139,8 +1135,6 @@ export default {
             }
             this.currentLimit += 50;
             this.loadingMore = true;
-            console.log(this.groups);
-            console.log(this.existingMsgIds);
             client.channelMessages(this.channel, this.chatType, null, null, this.groups[0]?.Messages[0].Id).then(messages => {
                 this.prependMessages(messages.reverse());
                 this.loadingMore = false;
