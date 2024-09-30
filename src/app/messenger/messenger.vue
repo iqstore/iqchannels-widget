@@ -204,22 +204,8 @@ export default {
                 top: chat.scrollHeight + chat.scrollTop + chat.offsetHeight,
                 behavior: 'smooth'
             });
-            // chat.scrollTo
-
 
             this.resetUnreadCount();
-        },
-
-        scrollWithTimeout() {
-          setTimeout(() => {
-            const chat = document.getElementById('chat');
-            chat.scrollTo({
-              top: chat.scrollHeight,
-              behavior: 'auto'
-            });
-          }, 700)
-
-          this.resetUnreadCount();
         },
 
         resetUnreadCount() {
@@ -1048,7 +1034,6 @@ export default {
             }
             if (!message.My) {
                 this.appendMessage(message);
-                this.scrollWithTimeout();
                 return true;
             }
 
