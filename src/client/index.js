@@ -263,10 +263,10 @@ class Client {
       .then(response => response.Result.Client);
   }
 
-  channelMessages (channel, chatType, searchTerm, fromId, toId) {
+  channelMessages (channel, chatType, searchTerm, fromId, toId, limit = config.REQUEST_MESSAGES_LIMIT) {
     const data = {
       ChatType: chatType,
-      Limit: config.REQUEST_MESSAGES_LIMIT,
+      Limit: limit,
       Q: searchTerm,
       FromId: fromId,
       ToId: toId

@@ -8,6 +8,7 @@ import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
+import config from "../../config";
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -51,6 +52,7 @@ export default {
     mounted() {
         this.loadHistory();
         this.sendGreeting();
+        this.initScrollEvents();
     },
 
     beforeUnmount() {
@@ -71,6 +73,9 @@ export default {
             badWordError: null,
             chatType: 'regular',
             firstUnreadMessageId: 0,
+            currentLimit: config.REQUEST_MESSAGES_LIMIT,
+            loadingMore: false,
+            existingMsgIds: {},
         };
     },
 
@@ -150,7 +155,8 @@ export default {
             }
         },
         closeSystemChat: function () {
-            this.groups = []
+            this.groups = [];
+            this.existingMsgIds = {};
         }
     },
 
@@ -196,6 +202,18 @@ export default {
             this.resetUnreadCount();
         },
 
+        scrollWithTimeout() {
+            setTimeout(() => {
+                const chat = document.getElementById('chat');
+                chat.scrollTo({
+                    top: chat.scrollHeight,
+                    behavior: 'auto'
+                });
+            }, 700)
+
+            this.resetUnreadCount();
+        },
+
         resetUnreadCount() {
             this.unreadMessages?.forEach((message) => {
                 message.Read = message.Received = true;
@@ -226,6 +244,7 @@ export default {
                     ? messages[messages.length - 1].EventId
                     : null;
                 this.groups = [];
+                this.existingMsgIds = {};
                 this.appendMessages(messages);
             })
         },
@@ -262,7 +281,8 @@ export default {
                     ? messages[messages.length - 1].EventId
                     : null;
                 this.groups = [];
-                this.appendMessages(messages, true);
+                this.existingMsgIds = {};
+                this.appendMessages(messages);
                 this.markMessages();
                 if (subscribeNeeded) {
                     this.subscribe();
@@ -326,6 +346,10 @@ export default {
         },
 
         appendMessages(messages, scrollToLastMessage) {
+            if (messages.length > 0) {
+                this.disableFreeText = messages[messages.length - 1].DisableFreeText || false;
+            }
+
             for (let message of messages) {
                 this.appendMessage(message);
             }
@@ -339,15 +363,22 @@ export default {
             }
         },
 
+        prependMessages(messages) {
+            for (let message of messages) {
+                this.prependMessage(message);
+            }
+        },
+
+        prependMessage(message) {
+            if (this.existingMsgIds[message.Id]) {
+                return;
+            }
+            this.messageGroupsPrepend(this.groups, message);
+        },
+
         appendMessage(message, scrollToMessage) {
-            if (message.Id) {
-                for (let group of this.groups) {
-                    for (let m of group.Messages) {
-                        if (m.Id === message.Id) {
-                            return;
-                        }
-                    }
-                }
+            if (this.existingMsgIds[message.Id]) {
+                return;
             }
             this.messageGroupsAppend(this.groups, message);
 
@@ -366,7 +397,7 @@ export default {
                 ReplyToMessageId: messageForm.ReplyToMessageId
             });
             this.firstUnreadMessageId = null;
-            this.appendMessage(message, true);
+            this.appendMessage(message);
             return message;
         },
 
@@ -462,12 +493,12 @@ export default {
 
         messageGroupsAppend(groups, message) {
             if (groups.length > 0) {
-                const group = groups[groups.length - 1];
-                const lastMessage = group.Messages[group.Messages.length - 1];
+                const lastGroup = groups[groups.length - 1];
+                const lastMessage = lastGroup.Messages[lastGroup.Messages.length - 1];
                 if (
-                    group.Author === message.Author &&
-                    group.UserId === message.UserId &&
-                    group.ClientId === message.ClientId &&
+                    lastGroup.Author === message.Author &&
+                    lastGroup.UserId === message.UserId &&
+                    lastGroup.ClientId === message.ClientId &&
                     message.CreatedAt - lastMessage.CreatedAt < 60000 &&
                     isSameDate(message.CreatedAt, lastMessage.CreatedAt)
                 ) {
@@ -480,18 +511,18 @@ export default {
                     if (message.My && message.Id > this.firstUnreadMessageId) {
                         this.firstUnreadMessageId = null;
                     }
-                    group.Messages.push(message);
-
-                    group.LastMessage = message;
-                    this.singleChoices = group.LastMessage.SingleChoices
-                    this.disableFreeText = group.LastMessage.DisableFreeText
+                    lastGroup.Messages.push(message);
+                    this.existingMsgIds[message.Id] = true;
+                    lastGroup.LastMessage = message;
+                    this.singleChoices = lastGroup.LastMessage.SingleChoices
+                    this.disableFreeText = lastGroup.LastMessage.DisableFreeText
 
                     if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
-                        group.InfoRequest = message.InfoRequest;
+                        lastGroup.InfoRequest = message.InfoRequest;
                     }
 
                     if (message.Rating) {
-                        group.Rating = message.Rating;
+                        lastGroup.Rating = message.Rating;
                     }
                     return;
                 }
@@ -525,6 +556,52 @@ export default {
                 group.InfoRequest = message.InfoRequest;
             }
             groups.push(group);
+            this.existingMsgIds[message.Id] = true;
+            this.maybeEnableFreeText();
+        },
+
+        messageGroupsPrepend(groups, message) {
+            if (groups.length > 0) {
+                const firstGroup = groups[0];
+                const firstMessage = firstGroup.Messages[0];
+
+                if (
+                    firstGroup.Author === message.Author &&
+                    firstGroup.UserId === message.UserId &&
+                    firstGroup.ClientId === message.ClientId &&
+                    firstMessage.CreatedAt - message.CreatedAt < 60000 &&
+                    isSameDate(message.CreatedAt, firstMessage.CreatedAt)
+                ) {
+                    firstGroup.Messages.unshift(message);
+                    this.existingMsgIds[message.Id] = true;
+                    return;
+                }
+            }
+
+            const isNewDay =
+                groups.length > 0
+                    ? !isSameDate(
+                        message.CreatedAt,
+                        groups[0].Messages[0].CreatedAt
+                    )
+                    : true;
+
+            const group = {
+                Id: groups.length + 1,
+                Author: message.Author,
+                UserId: message.UserId,
+                ClientId: message.ClientId,
+
+                User: message.User,
+                Client: message.Client,
+
+                Messages: [message],
+                LastMessage: message,
+                Rating: message.Rating,
+
+                IsNewDay: isNewDay
+            };
+            groups.unshift(group);
         },
 
         sendGreeting() {
@@ -917,6 +994,7 @@ export default {
             }
             if (!message.My) {
                 this.appendMessage(message);
+                this.scrollWithTimeout();
                 return true;
             }
             this.scrollToFoundMessage(this.firstUnreadMessageId ?? message.Id);
@@ -1055,6 +1133,33 @@ export default {
             }
         },
 
+        onScrolledToTop() {
+            if (this.loadingMore) {
+                return;
+            }
+            this.currentLimit += 50;
+            this.loadingMore = true;
+            console.log(this.groups);
+            console.log(this.existingMsgIds);
+            client.channelMessages(this.channel, this.chatType, null, null, this.groups[0]?.Messages[0].Id).then(messages => {
+                this.prependMessages(messages.reverse());
+                this.loadingMore = false;
+            }).catch(() => {
+                this.loadingMore = false;
+            });
+        },
+
+        initScrollEvents() {
+            const chat = document.getElementById('chat');
+            chat.addEventListener('scroll', event => {
+                const container = event.currentTarget;
+                const atTop = container.scrollTop === 0;
+                if (atTop) {
+                    this.onScrolledToTop()
+                }
+            });
+        },
+
     }
 };
 </script>
@@ -1103,7 +1208,8 @@ export default {
                         div(v-if="searching || !hasPersonalManager", style="width:80%" )
                             input.search-input(type="text" placeholder="Введите текст сообщения", v-model="search")
 
-
+        .loading-more
+            fade-loader.loader(v-if="loadingMore" :height="'6px'" :width="'2px'" :radius="'7px'" :color="'#b9b9b9'")
         #chat
             chat(
                 ref="chat",
@@ -1135,7 +1241,7 @@ export default {
                 div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")
                     button.choice_button(type="button",
                         v-for="choice in groups[groups.length -1].LastMessage.SingleChoices",
-                        @click.prevent="onMessageComposed(choice.title, choice.value)") {{ choice.title }}
+                        @click.prevent="onMessageComposed(choice.title, choice.value, null)") {{ choice.title }}
         .unacceptable-msg(v-if="badWordError")
             p(v-text="badWordError")
         #composer
@@ -1367,6 +1473,15 @@ a.logout:focus {
         height: 24px;
         width: 24px;
         top: 6px;
+    }
+}
+
+.loading-more {
+    justify-content: center;
+    display: flex;
+
+    .loader {
+        top: 10px;
     }
 }
 </style>

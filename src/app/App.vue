@@ -68,6 +68,7 @@ export default {
             credentials: null,
             greetings: null,
             personalDataForm: null,
+            personalDataFormReady: false,
             project: null,
             requireName: true,
             client: null,
@@ -227,6 +228,8 @@ export default {
 
                 if (res.Data?.PersonalDataRequestType === 'full_form') {
                     this.getPersonalDataForm()
+                } else {
+                    this.personalDataFormReady = true;
                 }
             });
         },
@@ -237,6 +240,7 @@ export default {
                     State: 'pending',
                     Form: res.Data
                 };
+                this.personalDataFormReady = true;
             });
         },
     }
@@ -274,7 +278,7 @@ export default {
                 )
             template(v-else)
                 template(v-if="!client")
-                    client-create(v-if="!credentials" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :personalDataForm="personalDataForm" :channel="channel" :requireName="requireName")
+                    client-create(v-if="!credentials && personalDataFormReady" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :personalDataForm="personalDataForm" :channel="channel" :requireName="requireName")
                     client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
                 messenger#messenger(v-if="client",
                     ref="messenger"
