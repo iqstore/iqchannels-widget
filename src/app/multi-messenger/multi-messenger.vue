@@ -65,6 +65,10 @@ export default {
             this.$emit("on-rating", rating);
         },
 
+        onMessagesLoaded(rating) {
+            this.$emit("on-messages-loaded", rating);
+        },
+
         onBack() {
             this.chatSelected = false;
             setTimeout(() => {
@@ -110,6 +114,7 @@ export default {
             @on-longtap="onLongTap",
             @on-rating="onRating",
             @on-back="onBack",
+            @on-messages-loaded="onMessagesLoaded",
             :mode="mode",
             :client="multiClient[currentChannel]",
             :opened="opened",

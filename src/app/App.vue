@@ -268,6 +268,7 @@ export default {
                     @on-logout='onLogout',
                     @on-longtap="onLongTap",
                     @on-rating="onRating",
+                    @on-messages-loaded="onMessagesLoaded",
                     :mode='mode',
                     :multiClient='multiClient',
                     :opened='opened',
