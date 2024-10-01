@@ -73,7 +73,6 @@ export default {
             badWordError: null,
             chatType: 'regular',
             firstUnreadMessageId: 0,
-            currentLimit: config.REQUEST_MESSAGES_LIMIT,
             loadingMore: false,
             existingMsgIds: {},
         };
@@ -1176,7 +1175,6 @@ export default {
             if (this.loadingMore) {
                 return;
             }
-            this.currentLimit += 50;
             this.loadingMore = true;
             client.channelMessages(this.channel, this.chatType, null, null, this.groups[0]?.Messages[0].Id).then(messages => {
                 this.prependMessages(messages.reverse());
