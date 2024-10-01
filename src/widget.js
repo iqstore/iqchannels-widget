@@ -38,16 +38,16 @@ function objectAssign(dst, src) {
 }
 
 function cleanIconOptions(iconOptions) {
-	let show = iconOptions.show !== undefined ? iconOptions.show : defaultIconOptions.show;
+	let show = iconOptions?.show !== undefined ? iconOptions.show : defaultIconOptions.show;
 
 	let style = {};
-	if (iconOptions.color !== undefined) {
+	if (iconOptions?.color !== undefined) {
 		style.color = iconOptions.color;
 	}
-	if (iconOptions.backgroundColor !== undefined) {
+	if (iconOptions?.backgroundColor !== undefined) {
 		style.backgroundColor = iconOptions.backgroundColor;
 	}
-	if (iconOptions.style !== undefined) {
+	if (iconOptions?.style !== undefined) {
 		style = objectAssign(style, iconOptions.style);
 	}
 
@@ -71,7 +71,7 @@ class IQChannelsWidget extends EventEmitter {
 			iconOptions = {},
 			DOMIdentifier,
 			chats = [],
-			enableImgModals = true,
+			enableImgModals = true
 		}
 	) {
 		super();
@@ -90,8 +90,6 @@ class IQChannelsWidget extends EventEmitter {
 		this.enableImgModals = enableImgModals;
 		this.chats = chats;
 		this.isMultipleChats = this.chats.length > 0;
-
-		iconOptions = cleanIconOptions(iconOptions);
 
 		// split
 		this.frameContainer = document.createElement('div');
@@ -121,10 +119,10 @@ class IQChannelsWidget extends EventEmitter {
 
 		this.frameContainer.appendChild(widgetDiv);
 
-		this.initIcon(iconOptions);
+        this.initIcon();
 	}
 
-	initIcon = (iconOptions) => {
+	initIcon = () => {
 		this.icon = document.createElement('a');
 		this.icon.href = '#';
 		this.icon.id = 'iqchannels-widget-icon';
@@ -146,13 +144,19 @@ class IQChannelsWidget extends EventEmitter {
 
 		this.icon.appendChild(svg);
 
-		this.icon.style.display = iconOptions.show ? 'block' : 'none';
+        this.icon.style.display = 'none';
+	}
+
+    displayIcon = () => {
+        let iconOptions = cleanIconOptions(this.iconOptions);
+        
+        this.icon.style.display = iconOptions.show ? 'block' : 'none';
 		for (const property in iconOptions.style) {
 			if (iconOptions.style.hasOwnProperty(property)) {
 				this.icon.style[property] = iconOptions.style[property];
 			}
 		}
-	}
+    }
 
 	checkPageIsReady = () => {
 		switch (document.readyState) {
@@ -331,12 +335,12 @@ class IQChannelsWidget extends EventEmitter {
 				break;
 
 			case 'iqchannels-ready':
+		        this.displayIcon();
 				this.emit('ready');
 				break;
 
 			default:
 				break;
-			// console.log(`Unknown frame event: type=${type}, data=${data}`);
 		}
 	};
 

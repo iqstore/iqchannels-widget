@@ -8,14 +8,10 @@ export default {
 
     mounted() {
         const chat = document.getElementById('chat');
+
         chat.addEventListener('scroll', ev => {
             setTimeout(() => {
-                const height = document.getElementById('chat')?.offsetHeight;
-                // add 3px because there is a difference for some reason
-                this.isBottom = !((ev.target.scrollHeight - ev.target.scrollTop - 3) >= height);
-                if (this.isBottom) {
-                    this.onReachedBottom();
-                }
+                this.checkIsBottom(ev);
             }, 300);
         });
         chat.addEventListener('wheel', event => {
@@ -48,10 +44,20 @@ export default {
     },
 
     data: () => ({
-        isBottom: true,
+        isBottom: false,
     }),
 
     methods: {
+        checkIsBottom(event) {
+            const height = document.getElementById('chat')?.offsetHeight;
+
+            // add 3px because there is a difference for some reason
+            this.isBottom = !((event.target.scrollHeight - event.target.scrollTop - 3) >= height);
+            if (this.isBottom) {
+                this.onReachedBottom();
+            }
+        },
+
         onClick() {
             this.$emit("on-click");
         },
