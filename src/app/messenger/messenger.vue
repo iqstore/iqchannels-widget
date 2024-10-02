@@ -75,6 +75,7 @@ export default {
             firstUnreadMessageId: 0,
             loadingMore: false,
             existingMsgIds: {},
+            isBottom: false,
         };
     },
 
@@ -184,7 +185,7 @@ export default {
                 return
             }
             const observer = new MutationObserver(() => {
-                const messageElement = document.getElementById('message-' + msgId)
+                const messageElement = document.getElementById('message-' + scrollToMessageId)
                 if (messageElement) {
                     observer.disconnect()
                     messageElement.scrollIntoView({
@@ -1033,6 +1034,10 @@ export default {
             }
             if (!message.My) {
                 this.appendMessage(message);
+
+                if (this.isBottom) {
+                    this.scrollToMessage(message);
+                }
                 return true;
             }
 
@@ -1195,6 +1200,10 @@ export default {
             });
         },
 
+        onIsBottomChanged(isBottom) {
+            this.isBottom = isBottom;
+        },
+
     }
 };
 </script>
@@ -1291,7 +1300,7 @@ export default {
                 :channel="this.channel"
             )
 
-    scroll-bottom(@on-click="scrollToBottom", @on-reached-bottom="resetUnreadCount", :unreadCount="unreadCount")
+    scroll-bottom(@on-click="scrollToBottom", @on-reached-bottom="resetUnreadCount", @is-bottom-chaned="onIsBottomChanged",  :unreadCount="unreadCount")
 
     v-context(
         element-id="nav-context",

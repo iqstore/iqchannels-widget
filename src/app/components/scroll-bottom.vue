@@ -56,6 +56,8 @@ export default {
             if (this.isBottom) {
                 this.onReachedBottom();
             }
+
+            this.$emit("is-bottom-chaned", this.isBottom);
         },
 
         onClick() {
