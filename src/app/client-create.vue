@@ -28,10 +28,6 @@ export default {
         client.getInfoLinkByChannel(this.channel).then((link) => {
             this.processDataLink = link.Data
         })
-
-        if (!this.requireName) {
-            this.create()
-        }
     },
 
     created() {
@@ -42,6 +38,11 @@ export default {
             })
             .catch(_ => {
                 this.checking = false;
+                if (!this.requireName) {
+                    this.create()
+                } else {
+                    this.$emit("on-failed");
+                }
             });
     },
 

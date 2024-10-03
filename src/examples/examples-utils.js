@@ -19,14 +19,13 @@ export function clearChannel() {
     }
 }
 
-// only with bind(key, defaultConfig)
-export function configureWidget() {
+export function configureWidget(key, defaultConfig) {
     const configTyped = prompt("Введите конфиг для данного клиента:",
-        JSON.stringify( JSON.parse(localStorage.getItem(this.key)) ?? this.defaultConfig, null, 2)
+        JSON.stringify( JSON.parse(localStorage.getItem(key)) ?? defaultConfig, null, 2)
     );
     if (configTyped) {
         window.widget.logout();
-        localStorage.setItem(this.key, configTyped);
+        localStorage.setItem(key, configTyped);
         const current = window.document.getElementById("iqchannels-widget-container");
         const ico = window.document.getElementById("iqchannels-widget-icon");
         current.remove();
