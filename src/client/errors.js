@@ -1,3 +1,5 @@
+import App from "../app/App.vue";
+
 export default class AppError {
   static fromApiError (error) {
     return new AppError(error.Code, error.Text);
@@ -43,5 +45,9 @@ export const ErrCodeUnauthorized = 'unauthorized';
 export const ErrCodeInvalid = 'invalid';
 export const ErrCodeHttpError = 'http';
 export const ErrCodeExpired = 'expired';
+export const ErrBadRequest = 'bad_request'
 
 export const ErrExpired = new AppError(ErrCodeExpired, 'Request timeout expired');
+export const ErrMaxFileSize = new AppError(ErrBadRequest, 'Превышен максимально допустимый размер файла');
+export const ErrFileImageDimensionsTooLarge = new AppError(ErrBadRequest, 'Слишком большая ширина или высота изображения');
+export const ErrFileTypeNotAllowed = new AppError(ErrBadRequest, 'Запрещенный тип файла');
