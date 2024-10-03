@@ -450,7 +450,10 @@ export default {
                         (msg.Id && msg.Id === message.Id) ||
                         msg.LocalId === message.LocalId
                     ) {
+                        const old = group.Messages[i].Id;
                         group.Messages[i] = { ...message };
+                        delete this.existingMsgIds[old];
+                        this.existingMsgIds[message.Id] = true;
 
                         if (i === group.Messages.length - 1) {
                             group.LastMessage = message;
@@ -474,7 +477,8 @@ export default {
                         (msg.Id && msg.Id === message.Id) ||
                         msg.LocalId === message.LocalId
                     ) {
-                        group.Messages.splice(i, 1);
+                        const deleted = group.Messages.splice(i, 1);
+                        delete this.existingMsgIds[deleted[0].Id];
                         if (group.Messages.length === 0) {
                             groups.splice(g, 1);
                         } else {
@@ -555,50 +559,6 @@ export default {
             }
             groups.push(group);
             this.existingMsgIds[message.Id] = true;
-        },
-
-        messageGroupsPrepend(groups, message) {
-            if (groups.length > 0) {
-                const firstGroup = groups[0];
-                const firstMessage = firstGroup.Messages[0];
-
-                if (
-                    firstGroup.Author === message.Author &&
-                    firstGroup.UserId === message.UserId &&
-                    firstGroup.ClientId === message.ClientId &&
-                    firstMessage.CreatedAt - message.CreatedAt < 60000 &&
-                    isSameDate(message.CreatedAt, firstMessage.CreatedAt)
-                ) {
-                    firstGroup.Messages = [message, ...firstGroup.Messages]
-                    this.existingMsgIds[message.Id] = true;
-                    return;
-                }
-            }
-
-            const isNewDay =
-                groups.length > 0
-                    ? !isSameDate(
-                        message.CreatedAt,
-                        groups[0].Messages[0].CreatedAt
-                    )
-                    : true;
-
-            const group = {
-                Id: groups.length + 1,
-                Author: message.Author,
-                UserId: message.UserId,
-                ClientId: message.ClientId,
-
-                User: message.User,
-                Client: message.Client,
-
-                Messages: [message],
-                LastMessage: message,
-                Rating: message.Rating,
-
-                IsNewDay: isNewDay
-            };
-            groups = [group, ...groups]
         },
 
         messageGroupsPrepend(groups, message) {
