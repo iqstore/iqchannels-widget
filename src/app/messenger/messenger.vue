@@ -1152,6 +1152,9 @@ export default {
         initScrollEvents() {
             const chat = document.getElementById('chat');
             chat.addEventListener('scroll', event => {
+                if (this.$refs.chat.$refs.msgContextMenu.active) {
+                    this.$refs.chat.$refs.msgContextMenu.hideContextMenu();
+                }
                 const container = event.currentTarget;
                 const atTop = container.scrollTop === 0;
                 if (atTop) {
