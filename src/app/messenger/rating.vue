@@ -193,7 +193,7 @@ export default {
         finishRating() {
             client.finishPoll(this.rating.Id, this.poll.Id, false).then(res => {
                 if (res.OK) {
-                    this.rating.State = "finished";
+                    this.rating.State = "ignored";
                     this.start = false;
                 }
             });
