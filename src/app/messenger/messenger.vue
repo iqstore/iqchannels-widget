@@ -1140,10 +1140,17 @@ export default {
             if (this.loadingMore) {
                 return;
             }
+            const chat = document.getElementById('chat');
+            const oldScrollHeight = chat.scrollHeight;
+            const oldScrollTop = chat.scrollTop;
             this.loadingMore = true;
             client.channelMessages(this.channel, this.chatType, null, null, this.groups[0]?.Messages[0].Id).then(messages => {
                 this.prependMessages(messages.reverse());
                 this.loadingMore = false;
+                this.$nextTick(() => {
+                    const newScrollHeight = chat.scrollHeight;
+                    chat.scrollTop = newScrollHeight - oldScrollHeight + oldScrollTop;
+                })
             }).catch(() => {
                 this.loadingMore = false;
             });
