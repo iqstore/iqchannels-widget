@@ -1,6 +1,8 @@
 <script>
 import client from "../../client";
 
+const DEFAULT_RATING_MAX_VALUE = 5;
+
 export default {
     props: {
         rating: Object,
@@ -140,9 +142,6 @@ export default {
                 }
             }
 
-            if (this.poll.Questions[this.index].AsTicketRating) {
-                this.sendRating();
-            }
             client.sendPoll(this.pollResult);
             this.finishPoll();
         },
@@ -194,7 +193,7 @@ export default {
         finishRating() {
             client.finishPoll(this.rating.Id, this.poll.Id, false).then(res => {
                 if (res.OK) {
-                    this.rating.State = "finished";
+                    this.rating.State = "ignored";
                     this.start = false;
                 }
             });
@@ -226,6 +225,24 @@ export default {
                 event.preventDefault();
                 this.sendRating();
             }
+        },
+
+        isRated() {
+            return (this.rating.State === "rated" || this.rating.State === "finished") && this.rating.Value;
+        },
+
+        getRatingScaleMaxValue() {
+            let maxValue = DEFAULT_RATING_MAX_VALUE;
+            if (this.rating.State === "finished" && this.rating.RatingPoll) {
+                for (const question of this.rating.RatingPoll?.Questions) {
+                    if (question.AsTicketRating && question.Type === "scale") {
+                        maxValue = question.Scale.ToValue
+                    }
+                }
+
+            }
+
+            return maxValue
         }
     }
 };
@@ -235,8 +252,8 @@ export default {
     .rating
         .rated(v-if="rating.State === 'ignored'")
             span Без оценки оператора
-        .rated(v-if="rating.State === 'rated' && rating.Value")
-            span Оценка оператора: {{ rating.Value }} из 5
+        .rated(v-if="isRated()")
+            span Оценка оператора: {{ rating.Value }} из {{ getRatingScaleMaxValue() }}
 
         .pending(v-if="rating.State === 'pending'")
             .button-close(@click="ignoreRating")
