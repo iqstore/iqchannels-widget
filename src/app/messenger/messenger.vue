@@ -208,6 +208,18 @@ export default {
             this.resetUnreadCount();
         },
 
+        scrollToRating(ratingId, index) {
+            const observer = new MutationObserver(() => {
+                const rating = document.getElementById('rating-' + ratingId + '-index-' + index);
+                if (rating) {
+                    observer.disconnect();
+                    rating.scrollIntoView(false);
+                }
+            })
+
+            observer.observe(document.body, { childList: true, subtree: true })
+        },
+
         resetUnreadCount() {
             this.unreadMessages?.forEach((message) => {
                 message.Read = message.Received = true;
@@ -381,8 +393,9 @@ export default {
             }
         },
 
-        appendLocalMessage(messageForm, scrollToBottom) {
+        appendLocalMessage(messageForm, scrollToMessage) {
             const message = Object.assign({}, messageForm, {
+                Id: uuidv4(),
                 Client: this.client,
                 ClientId: this.client.Id,
                 Author: "client",
@@ -390,10 +403,7 @@ export default {
                 ReplyToMessageId: messageForm.ReplyToMessageId
             });
             this.firstUnreadMessageId = null;
-            this.appendMessage(message);
-            if (scrollToBottom) {
-                this.scrollToBottom();
-            }
+            this.appendMessage(message, scrollToMessage);
             return message;
         },
 
@@ -1249,7 +1259,8 @@ export default {
                 @ignore-info="ignoreInfo",
                 @long-tap="longTap",
                 @reply-msg="reply",
-                @scrollToMessage="(id) => scrollToFoundMessage(id)",
+                @scroll-to-message="(id) => scrollToFoundMessage(id)",
+                @scroll-to-rating="(ratingId, index) => scrollToRating(ratingId, index)",
                 @click-file="clickFile",
                 @download-file="downloadFile",
             )
