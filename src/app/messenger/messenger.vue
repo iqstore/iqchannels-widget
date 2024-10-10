@@ -399,7 +399,7 @@ export default {
 
         appendLocalMessage(messageForm, scrollToMessage) {
             const message = Object.assign({}, messageForm, {
-                Id: uuidv4(),
+                Id: new Date().getTime() + "",
                 Client: this.client,
                 ClientId: this.client.Id,
                 Author: "client",
