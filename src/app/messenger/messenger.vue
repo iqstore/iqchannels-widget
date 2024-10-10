@@ -381,7 +381,7 @@ export default {
             }
         },
 
-        appendLocalMessage(messageForm) {
+        appendLocalMessage(messageForm, scrollToBottom) {
             const message = Object.assign({}, messageForm, {
                 Client: this.client,
                 ClientId: this.client.Id,
@@ -391,6 +391,9 @@ export default {
             });
             this.firstUnreadMessageId = null;
             this.appendMessage(message);
+            if (scrollToBottom) {
+                this.scrollToBottom();
+            }
             return message;
         },
 
@@ -994,7 +997,6 @@ export default {
             }
             if (!message.My) {
                 this.appendMessage(message);
-
                 if (this.isBottom) {
                     this.scrollToMessage(message);
                 }
@@ -1091,7 +1093,7 @@ export default {
             } else {
                 messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
             }
-            this.appendLocalMessage(messageForm);
+            this.appendLocalMessage(messageForm, true);
 
             client.channelSend(this.channel, messageForm);
         },
