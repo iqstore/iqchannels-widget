@@ -53,8 +53,9 @@ export default {
 
         setPollStars(value) {
             if (this.poll.Questions[this.index].AsTicketRating) {
-                this.setRating(value);
+                this.rating.Value = value;
             }
+            this.value = value;
             let temp = [...this.pollResult];
             temp[this.index] = {
                 Type: "stars",
@@ -126,8 +127,9 @@ export default {
 
         setPollVariantScale(value) {
             if (this.poll.Questions[this.index].AsTicketRating) {
-                this.setRating(value);
+                this.rating.Value = value;
             }
+            this.value = value;
             let temp = [...this.pollResult];
             temp[this.index] = {
                 Type: "scale",
