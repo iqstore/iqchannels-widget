@@ -163,6 +163,8 @@ export default {
 
     methods: {
         scrollToMessage(msgId, block) {
+            console.log({ msgId });
+
             if (!this.opened) return;
 
             let scrollToMessageId;
@@ -186,6 +188,8 @@ export default {
             }
             const observer = new MutationObserver(() => {
                 const messageElement = document.getElementById('message-' + scrollToMessageId)
+                console.log({ messageElement });
+
                 if (messageElement) {
                     observer.disconnect()
                     messageElement.scrollIntoView({
@@ -403,6 +407,8 @@ export default {
                 ReplyToMessageId: messageForm.ReplyToMessageId
             });
             this.firstUnreadMessageId = null;
+            console.log("appendLocalMessage", message.Id, { scrollToMessage });
+
             this.appendMessage(message, scrollToMessage);
             return message;
         },
