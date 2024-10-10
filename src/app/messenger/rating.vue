@@ -24,7 +24,10 @@ export default {
     watch: {
         index: function (newValue, oldValue) {
             this.$emit("on-poll-question-chaned", this.rating.Id, newValue);
-        }
+        },
+        start: function (newValue, oldValue) {
+            this.$emit("on-poll-question-chaned", this.rating.Id, this.index);
+        },
     },
 
     data() {
