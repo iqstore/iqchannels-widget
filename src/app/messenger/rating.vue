@@ -205,7 +205,7 @@ export default {
         },
 
         ignoreRating() {
-            this.rating.Value = 0;
+            this.rating.Value = null;
             this.$emit("ignore-rating", this.rating);
         },
 
@@ -233,7 +233,7 @@ export default {
         },
 
         isRated() {
-            return (this.rating.State === "rated" || this.rating.State === "finished") && this.rating.Value;
+            return (this.rating.State === "rated" || this.rating.State === "finished") && this.rating.Value != null;
         },
 
         getRatingScaleMaxValue() {

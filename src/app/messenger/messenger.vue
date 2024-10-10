@@ -151,8 +151,8 @@ export default {
             this.scrollToMessage(newValue)
         },
         rating: function (newRating) {
-            if (newRating === 0) {
-                this.ignoreRating(0);
+            if (newRating == null) {
+                this.ignoreRating(null);
             }
         },
         closeSystemChat: function () {
@@ -794,11 +794,11 @@ export default {
                 ignored => {
                     rating.Sending = null;
                     rating.State = ignored.State;
-                    rating.Value = 0;
+                    rating.Value = null;
                 },
                 error => {
                     rating.Sending = null;
-                    rating.Value = 0;
+                    rating.Value = null;
                 }
             );
         },
