@@ -38,7 +38,7 @@ export default {
     data() {
         return {
             styleObject: {
-                backgroundColor: COLORS[this.user.Id || 1 % COLORS.length],
+                backgroundColor: COLORS[this.user.Id % COLORS.length || 1 % COLORS.length],
             }
         }
     },
