@@ -509,7 +509,7 @@ export default {
 <template lang="pug">
     .composer
 
-        .operator-typing(v-if="typingDisplay") {{inputTyping.User.DisplayName }} печатает...
+        .operator-typing(v-if="typingDisplay") {{ inputTyping.User.DisplayName }} печатает...
 
         .replayed(v-if="msg && msgVisible")
             .replayed__data
