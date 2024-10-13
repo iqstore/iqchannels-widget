@@ -9,10 +9,8 @@ export default {
     mounted() {
         const chat = document.getElementById('chat');
 
-        chat.addEventListener('scroll', ev => {
-            setTimeout(() => {
-                this.checkIsBottom(ev);
-            }, 300);
+        chat.addEventListener('scrollend', ev => {
+            this.checkIsBottom(ev);
         });
         chat.addEventListener('wheel', event => {
             const container = event.currentTarget;
