@@ -79,6 +79,13 @@ export default {
 
 <style scoped lang="scss">
 .scrollWrapper {
+    position: fixed;
+    bottom: 60px;
+    right: 0;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 8px;
+
     transition: 0.2s ease;
 
     &.invisible {
@@ -89,15 +96,11 @@ export default {
 .scrollBottom {
     width: 32px;
     height: 32px;
-    position: fixed;
-    bottom: 60px;
+
     background: #EBEBEB;
     border-radius: 50%;
     display: flex;
     z-index: 2;
-    right: 0;
-    margin-right: 8px;
-    margin-left: auto;
     cursor: pointer;
 
     svg {
@@ -114,15 +117,13 @@ export default {
     border-radius: 15px;
 
     position: absolute;
-    z-index: 100;
+    z-index: 3;
+    top: -6px;
 
     font-size: 10px;
 
     display: flex;
     align-items: center;
     justify-content: center;
-
-    right: 5px;
-    bottom: 93px;
 }
 </style>
