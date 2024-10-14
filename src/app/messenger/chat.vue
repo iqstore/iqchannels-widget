@@ -87,7 +87,11 @@ export default {
             if (!this.searching) {
                 return;
             }
-            this.$emit("scrollToMessage", msg.Id);
+            this.$emit("scroll-to-message", msg.Id);
+        },
+
+        scrollToRating(ratingId, index) {
+            this.$emit("scroll-to-rating", ratingId, index);
         },
 
         getProductMsgText(message) {
@@ -338,7 +342,8 @@ export default {
                 :client="client",
                 :channel="channel",
                 @rate-rating="rateRating",
-                @ignore-rating="ignoreRating")
+                @ignore-rating="ignoreRating",
+                @on-poll-question-chaned="(ratingId, index) => scrollToRating(ratingId, index)")
             inforequest#info-request(
                 v-if="group.InfoRequest",
                 :request="group.InfoRequest",

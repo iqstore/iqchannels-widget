@@ -108,6 +108,9 @@ export default {
                     client.version().then(version => {
                         client.iQVersion = version?.Data?.Version;
                     });
+                    client.filesConfig().then(resp => {
+                        client.configFiles = resp?.Result;
+                    });
                     break;
 
                 case 'close':
@@ -183,6 +186,10 @@ export default {
 
         onMultiLogin(multiClient) {
             this.multiClient = multiClient;
+        },
+
+        onFailedLogin() {
+            parent.postMessage({ type: 'iqchannels-ready' }, "*");
         },
 
         onMessagesLoaded() {
@@ -281,7 +288,7 @@ export default {
                 )
             template(v-else)
                 template(v-if="!client")
-                    client-create(v-if="!credentials && personalDataFormReady" @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :personalDataForm="personalDataForm" :channel="channel" :requireName="requireName")
+                    client-create(v-if="!credentials && personalDataFormReady" @on-failed='onFailedLogin' @on-client-created='onLogin' @on-close-clicked='onClose' :greetings="greetings" :personalDataForm="personalDataForm" :channel="channel" :requireName="requireName")
                     client-auth(v-if="credentials" @on-client-authorized='onLogin' :credentials="credentials" :greetings="greetings" :channel="channel")
                 messenger#messenger(v-if="client",
                     ref="messenger"

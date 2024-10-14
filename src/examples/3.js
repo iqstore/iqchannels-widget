@@ -2,7 +2,7 @@ import "normalize.css";
 import { DefaultThirdClientConfig, LOCALSTORAGE_WIDGET_CONFIG } from "../schema";
 import { configureWidget } from "./examples-utils";
 
-window.configureWidget = configureWidget.bind(LOCALSTORAGE_WIDGET_CONFIG, DefaultThirdClientConfig);
+window.configureWidget = configureWidget.bind(null, LOCALSTORAGE_WIDGET_CONFIG, DefaultThirdClientConfig);
 window.onload = () => {
 	let config = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_WIDGET_CONFIG)) ?? DefaultThirdClientConfig;
 	const current = window.document.getElementById("current_config");
