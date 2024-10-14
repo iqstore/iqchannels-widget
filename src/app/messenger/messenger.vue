@@ -161,11 +161,16 @@ export default {
         }
     },
 
+    // options: {checkIsBottom: Boolean, scrollIsBottomValue: boolean, scrollToLast: boolean, block: "center" | "end" | "nearest" | "start"}
     methods: {
-        scrollToMessage(msgId, block) {
-            console.log({ msgId });
-
+        scrollToMessage(msgId, options) {
             if (!this.opened) return;
+
+            if (options?.checkIsBottom) {
+                if (this.isBottom !== options?.scrollIsBottomValue) {
+                    return;
+                }
+            }
 
             let scrollToMessageId;
 
@@ -194,8 +199,7 @@ export default {
                     observer.disconnect()
                     messageElement.scrollIntoView({
                         behavior: 'smooth',
-                        block: block ?? 'center',
-                        inline: 'center',
+                        block: options?.block ?? 'center',
                     });
                 }
             })
@@ -1012,10 +1016,21 @@ export default {
                 return false;
             }
             if (!message.My) {
+                const lastGroup = this.groups[this.groups.length - 1]
+                const lastMsg = lastGroup?.Messages[lastGroup.Messages.length - 1]
+
                 this.appendMessage(message);
-                if (this.isBottom) {
-                    this.scrollToMessage(message);
+
+                const scrollOptions = {}
+                if (message.CreatedAt - lastMsg.CreatedAt > 200) {
+                    scrollOptions.checkIsBottom = true
+                    scrollOptions.scrollIsBottomValue = true
                 }
+                if (message.Text?.length > 500) {
+                    scrollOptions.block = "end"
+                }
+
+                this.scrollToMessage(message, scrollOptions);
                 return true;
             }
 
