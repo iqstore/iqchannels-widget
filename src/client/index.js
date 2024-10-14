@@ -457,7 +457,7 @@ class Client {
         }
       });
     }
-    if (file.size > this.configFiles.MaxFileSizeMb*1024*1024) {
+    if (file.size >= this.configFiles.MaxFileSizeMb*1024*1024) {
       err = ErrMaxFileSize;
     }
     const split = file.name.split('.');
