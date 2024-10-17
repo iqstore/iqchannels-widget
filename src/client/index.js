@@ -462,8 +462,8 @@ class Client {
     }
     const split = file.name.split('.');
     const ext = split[split.length - 1];
-    if (this.configFiles.ForbiddenExtensions && this.configFiles.ForbiddenExtensions.includes(`.${ext}`) ||
-      this.configFiles.AllowedExtensions && !this.configFiles.AllowedExtensions.includes(`.${ext}`)
+    if (this.configFiles.ForbiddenExtensions && this.configFiles.ForbiddenExtensions.includes(ext) ||
+      this.configFiles.AllowedExtensions && !this.configFiles.AllowedExtensions.includes(ext)
     ) {
       err = ErrFileTypeNotAllowed;
     }
