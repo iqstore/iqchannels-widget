@@ -71,8 +71,8 @@ export default {
 
 <template lang="pug">
     .scrollWrapper(:class="{ 'invisible': (isBottom || this.searching) }")
-        .unreadCount(v-if="unreadCount") {{  unreadCount }}
         .scrollBottom#scroll-bottom(@click="onClick()")
+            .unreadCount(v-if="unreadCount") {{  unreadCount }}
             svg(width='12' height='7' viewbox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg')
                 path(d='M11 1L6.07071 5.92929C6.03166 5.96834 5.96834 5.96834 5.92929 5.92929L1 1' stroke='#767B81' stroke-width='1.5' stroke-linecap='round')
 </template>
@@ -96,6 +96,7 @@ export default {
 .scrollBottom {
     width: 32px;
     height: 32px;
+    position: fixed;
 
     background: #EBEBEB;
     border-radius: 50%;
@@ -118,7 +119,8 @@ export default {
 
     position: absolute;
     z-index: 3;
-    top: -6px;
+    top: -5px;
+    right: -2px;
 
     font-size: 10px;
 
