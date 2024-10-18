@@ -6,9 +6,10 @@ import inforequest from './info-request.vue';
 import { humanDate, humanDateTime, humanSize } from '../../lib/filters';
 import MessageText from "./message-text.vue";
 import messages from './message-list.vue';
+import ModalImg from "../components/modal-img.vue";
 
 export default {
-    components: { MessageText, inforequest, avatar, rating, messages },
+    components: { ModalImg, MessageText, inforequest, avatar, rating, messages },
 
     props: {
         mode: String,
@@ -317,6 +318,7 @@ export default {
                         :groups="groups",
                         :firstUnreadMessageId="firstUnreadMessageId",
                         :animateMsgIds="animateMsgIds",
+                        :enableImgModals="enableImgModals",
                         @reply-msg="optionClicked",
                         @swipe-rigth="swipeRight",
                         @send-message="trySendMessage",
@@ -500,82 +502,6 @@ export default {
     height: 36px;
     cursor: pointer;
     transition: border 0.3s, background 0.3s, color 0.3s;
-}
-
-.backdrop {
-    background: black;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    z-index: 4;
-    opacity: 0.7;
-}
-
-.pending {
-    z-index: 5;
-    position: fixed;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-size: 18px;
-    color: white;
-    height: 100%;
-
-    .modal_img {
-        height: 100%;
-        display: flex;
-
-        img {
-            object-fit: contain;
-            width: 100%;
-        }
-    }
-
-    .modal_img_footer {
-        padding: 25px;
-    }
-
-    .modal_img_header {
-        padding: 15px;
-        display: flex;
-        border-bottom: 1px gray solid;
-
-        .modal_img_header-icon {
-            padding: 10px;
-
-            svg {
-                fill: white;
-                width: 30px;
-                height: 30px;
-                transition: 0.3s ease;
-                opacity: 0.6;
-                cursor: pointer;
-
-                &:hover {
-                    opacity: 1;
-                }
-            }
-        }
-
-        .modal_img_header-title {
-            margin-left: 10px;
-            display: flex;
-            flex-flow: column;
-            justify-content: space-around;
-            width: 100%;
-
-            .modal_img_header-title_date {
-                opacity: 0.6;
-                font-size: 16px;
-            }
-        }
-    }
 }
 
 .no-messages-wrapper {

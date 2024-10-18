@@ -40,6 +40,10 @@ export default {
         retryUpload(localId) {
             this.$emit("retry-upload", localId);
         },
+
+        clickFileImage(msg) {
+            this.$emit("click-file-image", msg);
+        },
     }
 }
 
@@ -61,6 +65,7 @@ export default {
             @send-message="sendMessage",
             @cancel-upload="cancelUpload",
             @retry-upload="retryUpload",
+            @click-file-image="clickFileImage",
             :group="group",
             :groups="groups",
             :msg="msg",
