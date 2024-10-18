@@ -90,7 +90,7 @@ export default {
             }
             this.$emit("scroll-to-message", msg.Id);
         },
-        
+
         scrollToBottom(event) {
             this.$emit("scroll-to-bottom", event);
         },
@@ -337,6 +337,7 @@ export default {
                         :firstUnreadMessageId="firstUnreadMessageId",
                         :animateMsgIds="animateMsgIds",
                         :imgModalOptions="imgModalOptions",
+                        :enableImgModals="enableImgModals",
                         @reply-msg="optionClicked",
                         @swipe-rigth="swipeRight",
                         @send-message="trySendMessage",
