@@ -163,6 +163,7 @@ export default {
                     a.image(
                         v-if="!enableImgModals && msg.File",
                         :href="msg.File.URL",
+                        onload="scrollToMessage(msg, $event)",
                         target="_blank",
                         @click="clickFile(msg, $event)"
                     )
