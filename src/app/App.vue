@@ -240,9 +240,12 @@ export default {
                         this.personalDataFormReady = true;
                         this.requireName = true;
                         break;
-                    default:
+                    case 'full_form':
                         this.requireName = true;
                         this.getPersonalDataForm()
+                        break;
+                    default:
+                        this.personalDataFormReady = true;
                 }
             });
         },
