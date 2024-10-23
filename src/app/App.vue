@@ -234,7 +234,9 @@ export default {
                     Greeting: res.Data?.Greeting,
                     GreetingBold: res.Data?.GreetingBold
                 };
-
+                if (res.Data?.PersonalDataRequestType === 'none') {
+                    this.requireName = false;
+                }
                 if (res.Data?.PersonalDataRequestType === 'full_form') {
                     this.getPersonalDataForm()
                 } else {
