@@ -29,7 +29,7 @@ export default {
             showImageModal: false,
             modalImageMsg: null,
             animateMsgIds: {},
-            enableImgModals: true,
+            imgModalOptions: {},
         }
     },
 
@@ -37,11 +37,11 @@ export default {
         setTimeout(() => {
             this.scrollToLastMessage();
         }, 1500)
-        this.enableImgModals = this.$parent.$parent.$parent.enableImgModals;
+        this.imgModalOptions = this.$parent.$parent.$parent.imgModalOptions;
     },
 
     updated() {
-        this.enableImgModals = this.$parent.$parent.$parent.enableImgModals;
+        this.imgModalOptions = this.$parent.$parent.$parent.imgModalOptions;
     },
 
     methods: {
@@ -242,9 +242,18 @@ export default {
         },
 
         clickFileImage(msg) {
-            if (this.enableImgModals) {
-                this.showImageModal = true;
-                this.modalImageMsg = msg;
+            if (!this.imgModalOptions.enabled) {
+                this.$emit("click-file", msg.File);
+                return;
+            }
+            switch (this.imgModalOptions.state) {
+                case 'mobile':
+                    this.showImageModal = true;
+                    this.modalImageMsg = msg;
+                    break;
+                case 'full':
+                    this.$emit("click-file-img", msg);
+                    break;
             }
         },
 
@@ -301,7 +310,12 @@ export default {
 
 <template lang="pug">
     .messages#list(:class="{ 'empty': (groups.length === 0) }")
-        modal-img#modal-img(@close="closeModalImg", :modal-image-msg="modalImageMsg", :show-image-modal="showImageModal")
+        modal-img#modal-img(
+            @close="closeModalImg",
+            @click-file="clickFile",
+            :modal-image-msg="modalImageMsg",
+            :show-image-modal="showImageModal",
+        )
 
         .no-messages-wrapper(v-if="groups.length === 0")
             span.no-messages Сообщений не найдено
@@ -318,7 +332,7 @@ export default {
                         :groups="groups",
                         :firstUnreadMessageId="firstUnreadMessageId",
                         :animateMsgIds="animateMsgIds",
-                        :enableImgModals="enableImgModals",
+                        :imgModalOptions="imgModalOptions",
                         @reply-msg="optionClicked",
                         @swipe-rigth="swipeRight",
                         @send-message="trySendMessage",

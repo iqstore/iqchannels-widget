@@ -10,14 +10,8 @@ export default {
         group: Object,
         groups: Array,
         firstUnreadMessageId: Number,
-        enableImgModals: Boolean,
-        animateMsgIds: Array
-    },
-
-    data: function () {
-        return {
-            animateMsgIds: {},
-        }
+        imgModalOptions: Object,
+        animateMsgIds: Object
     },
 
     methods: {
@@ -44,6 +38,10 @@ export default {
         clickFileImage(msg) {
             this.$emit("click-file-image", msg);
         },
+
+        clickFile(msg, event) {
+            this.$emit("click-file", msg, event);
+        },
     }
 }
 
@@ -66,11 +64,12 @@ export default {
             @cancel-upload="cancelUpload",
             @retry-upload="retryUpload",
             @click-file-image="clickFileImage",
+            @click-file="clickFile",
             :group="group",
             :groups="groups",
             :msg="msg",
             :searching="searching",
-            :enableImgModals="enableImgModals",
+            :imgModalOptions="imgModalOptions",
         )
 
 

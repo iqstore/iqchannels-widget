@@ -18,7 +18,7 @@ export default {
         group: Object,
         groups: Array,
         msg: Object,
-        enableImgModals: Boolean,
+        imgModalOptions: Object,
     },
 
     methods: {
@@ -123,7 +123,7 @@ export default {
                 :msg="msg",
                 :searching="searching",
                 :groups="groups",
-                :enableImgModals="enableImgModals",
+                :imgModalOptions="imgModalOptions",
                 @send-message="sendMessage",
                 @click-file="clickFile",
                 @click-file-image="clickFileImage"
@@ -161,7 +161,7 @@ export default {
                         v-for="action of msg.Actions", @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                 div(v-else-if="(msg.File && msg.File.Type === 'image') || msg.Payload === 'card'")
                     a.image(
-                        v-if="!enableImgModals && msg.File",
+                        v-if="!imgModalOptions.enabled && msg.File",
                         :href="msg.File.URL",
                         onload="scrollToMessage(msg, $event)",
                         target="_blank",
@@ -169,7 +169,7 @@ export default {
                     )
                         img.bubble(v-if="msg.File && msg.File.Type === 'image'" :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                     .image(
-                        v-else-if="enableImgModals && msg.File",
+                        v-else-if="imgModalOptions.enabled && msg.File",
                         @click="clickFileImage(msg)"
                     )
                         img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")

@@ -112,8 +112,11 @@ var widget = new IQChannelsWidget({
         backgroundColor: "#FFFFFF",
         style: {}
     },
-    url: 'https://app.iqstore.ru/widget/',
-    enableImgModals: true,
+    url: 'https://app.iqstore.ru/widget/', 
+    imgModalOptions: {
+        enabled: true,
+        state: 'mobile',
+    },
 });
 </script>
 ```

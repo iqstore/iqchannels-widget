@@ -23,7 +23,7 @@ export default {
         typing: Object,
         rating: Number,
         client: Object,
-        enableImgModals: Boolean,
+        imgModalOptions: Object,
         isMultiple: Boolean,
         appError: Object,
     },
@@ -920,7 +920,10 @@ export default {
             } else {
                 this.$emit("on-file-clicked", file);
             }
+        },
 
+        clickFileImg(msg) {
+            this.$emit("on-image-clicked", msg);
         },
 
         longTap(msg) {
@@ -1265,7 +1268,7 @@ export default {
                 :channel="channel",
                 :singleChoices="singleChoices",
                 :searching="searching",
-                :enableImgModals="enableImgModals",
+                :imgModalOptions="imgModalOptions",
                 :firstUnreadMessageId="firstUnreadMessageId",
                 @cancel-upload="cancelUpload",
                 @retry-upload="retryUpload",
@@ -1280,6 +1283,7 @@ export default {
                 @scroll-to-message="(id) => scrollToFoundMessage(id)",
                 @scroll-to-rating="(ratingId, index) => scrollToRating(ratingId, index)",
                 @click-file="clickFile",
+                @click-file-img="clickFileImg",
                 @download-file="downloadFile",
             )
             .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")

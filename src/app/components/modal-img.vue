@@ -11,7 +11,10 @@ export default {
         humanDateTime,
         closeModalImg() {
             this.$emit("close");
-        }
+        },
+        clickFile(msg, event) {
+            this.$emit("click-file", msg, event);
+        },
     }
 }
 </script>

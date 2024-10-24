@@ -34,6 +34,7 @@ export default {
 
             parent.postMessage({ type: 'iqchannels-error', data: JSON.stringify(error) }, "*");
         };
+        const onImageClicked = (msg) => parent.postMessage({ type: 'iqchannels-image', data: JSON.stringify(msg) });
 
         provide('client', client);
 
@@ -52,6 +53,7 @@ export default {
             onLongTap,
             onRating,
             onError,
+            onImageClicked,
 
             appError,
         }
@@ -75,7 +77,7 @@ export default {
             replayedMsg: null,
             scrollToMsg: null,
             rating: null,
-            enableImgModals: null,
+            imgModalOptions: null,
             chats: null,
             isMultipleChats: false,
             multiClient: null,
@@ -99,7 +101,7 @@ export default {
                     this.project = event.data.project;
                     this.requireName = event.data.requireName ?? true;
                     this.pushToken = event.data.pushToken;
-                    this.enableImgModals = event.data.enableImgModals;
+                    this.imgModalOptions = event.data.imgModalOptions;
                     this.chats = event.data.chats;
                     this.isMultipleChats = event.data.isMultipleChats;
 
@@ -281,6 +283,7 @@ export default {
                     @on-unread-changed='onUnreadChanged',
                     @on-message-received='onMessageReceived',
                     @on-file-clicked='onFileClicked',
+                    @on-image-clicked='onImageClicked',
                     @on-close='onClose',
                     @on-logout='onLogout',
                     @on-longtap="onLongTap",
@@ -305,6 +308,7 @@ export default {
                     @on-unread-changed='onUnreadChanged'
                     @on-message-received='onMessageReceived'
                     @on-file-clicked='onFileClicked'
+                    @on-image-clicked='onImageClicked'
                     @on-close='onClose'
                     @on-logout='onLogout'
                     @on-longtap="onLongTap"
