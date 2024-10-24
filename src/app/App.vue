@@ -234,13 +234,21 @@ export default {
                     Greeting: res.Data?.Greeting,
                     GreetingBold: res.Data?.GreetingBold
                 };
-                if (res.Data?.PersonalDataRequestType === 'none') {
-                    this.requireName = false;
-                }
-                if (res.Data?.PersonalDataRequestType === 'full_form') {
-                    this.getPersonalDataForm()
-                } else {
-                    this.personalDataFormReady = true;
+                switch (res.Data?.PersonalDataRequestType) {
+                    case 'none':
+                        this.personalDataFormReady = true;
+                        this.requireName = false;
+                        break;
+                    case 'default':
+                        this.personalDataFormReady = true;
+                        this.requireName = true;
+                        break;
+                    case 'full_form':
+                        this.requireName = true;
+                        this.getPersonalDataForm()
+                        break;
+                    default:
+                        this.personalDataFormReady = true;
                 }
             });
         },
