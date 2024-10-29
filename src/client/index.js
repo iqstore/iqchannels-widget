@@ -549,6 +549,10 @@ class Client {
     return source;
   }
 
+  logMessage(query) {
+    return this._enqueueRequest("/log/message", query);
+  }
+
   _enqueueRequest (url, data, options = { timeout: 0, shouldRetry: null }) {
     const req = new Request(url, data, options);
     const promise = new Promise((resolve, reject) => {

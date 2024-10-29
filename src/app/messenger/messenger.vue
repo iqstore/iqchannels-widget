@@ -1000,7 +1000,11 @@ export default {
                         this.$emit("client-changed", event)
                         break;
                     default:
-                        console.log("Unhandled channel event", event);
+                        this.client.logMessage({
+                            Message: "Unhandled channel event" + JSON.stringify(event),
+                            Widget: true,
+                            Level: 2
+                        });
                 }
                 this.lastEventId = event.Id;
             }
