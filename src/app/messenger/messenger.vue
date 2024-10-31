@@ -26,6 +26,7 @@ export default {
         enableImgModals: Boolean,
         isMultiple: Boolean,
         appError: Object,
+        metadata: Object,
     },
 
     created() {
@@ -1148,6 +1149,7 @@ export default {
             } else {
                 messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
             }
+            messageForm.Metadata = this.metadata;
             this.appendLocalMessage(messageForm);
 
             client.channelSend(this.channel, messageForm);

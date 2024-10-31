@@ -79,6 +79,7 @@ export default {
             chats: null,
             isMultipleChats: false,
             multiClient: null,
+            metadata: null,
         };
     },
 
@@ -102,6 +103,7 @@ export default {
                     this.enableImgModals = event.data.enableImgModals;
                     this.chats = event.data.chats;
                     this.isMultipleChats = event.data.isMultipleChats;
+                    this.metadata = event.data.metadata;
 
                     this.maybeSendPushToken();
                     this.getGreetings();
@@ -225,6 +227,7 @@ export default {
 
             client.refreshClient(this.credentials);
         },
+
         getGreetings() {
             client.getWidgetGreetingsWithRequestType(this.channel).then(res => {
                 this.greetings = {
@@ -284,6 +287,7 @@ export default {
                     :rating="rating",
                     :closeSystemChat="closeSystemChat",
                     :chats="chats",
+                    :metadata="metadata"
                 )
             template(v-else)
                 template(v-if="!client")
@@ -309,5 +313,6 @@ export default {
                     :rating="rating"
                     :closeSystemChat="closeSystemChat"
                     :app-error="appError",
+                    :metadata="metadata"
                 )
 </template>

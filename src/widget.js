@@ -71,7 +71,8 @@ class IQChannelsWidget extends EventEmitter {
 			iconOptions = {},
 			DOMIdentifier,
 			chats = [],
-			enableImgModals = true
+			enableImgModals = true,
+            metadata = null
 		}
 	) {
 		super();
@@ -84,6 +85,11 @@ class IQChannelsWidget extends EventEmitter {
 		this.project = project || '';
 		this.padBody = padBody;
 		this.requireName = requireName;
+
+        this.prepareMetadata(metadata);
+
+        this.iconOptions = cleanIconOptions(iconOptions);
+
 		this.pushToken = null;
 		this.opened = false;
 		this.DOMIdentifier = DOMIdentifier || null;
@@ -121,6 +127,38 @@ class IQChannelsWidget extends EventEmitter {
 
         this.initIcon();
 	}
+
+    prepareMetadata = (metadata) => {
+        this.metadata = JSON.parse(metadata || '{}');
+        if (this.metadata.version) {
+            this.metadata.Version = this.metadata.version;
+        }
+        if (this.metadata.manufacturer) {
+            this.metadata.Manufacturer = this.metadata.manufacturer;
+        }
+        if (this.metadata.model) {
+            this.metadata.Model = this.metadata.model;
+        }
+        delete this.metadata.version;
+        delete this.metadata.manufacturer;
+        delete this.metadata.model;
+
+        this.metadata.Fields = {
+            ...this.metadata,
+        }
+        delete this.metadata.Fields.Version;
+        delete this.metadata.Fields.OS;
+        delete this.metadata.Fields.Model;
+        delete this.metadata.Fields.Manufacturer;
+
+        if (!Object.keys(this.metadata.Fields).length) {
+            delete this.metadata.Fields;
+        }
+
+        if (!Object.keys(this.metadata).length) {
+            this.metadata = null;
+        }
+    }
 
 	initIcon = () => {
 		this.icon = document.createElement('a');
@@ -194,7 +232,7 @@ class IQChannelsWidget extends EventEmitter {
 		// Find and store frame window to post messages
 		const frame = document.getElementById('iqchannels-widget-iframe');
 		this.frameWindow = frame.contentWindow || frame.contentDocument.defaultView;
-
+        
 		frame.addEventListener('load', () => {
 			const event = newChatEvent('init', {
 				channel: this.channel,
@@ -202,6 +240,7 @@ class IQChannelsWidget extends EventEmitter {
 				mode: this.mode,
 				project: this.project,
 				requireName: this.requireName,
+                metadata: this.metadata,
 				pushToken: this.pushToken,
 				enableImgModals: this.enableImgModals,
 				chats: this.chats,

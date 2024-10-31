@@ -18,6 +18,7 @@ export default {
         rating: Number,
         multiClient: Object,
         chats: Array,
+        metadata: Object,
     },
 
     data() {
@@ -125,6 +126,7 @@ export default {
             :closeSystemChat="closeSystemChat",
             :is-multiple="true",
             :chat-type-prop="currentChatType",
+            :metadata="metadata"
         )
 
 </template>
