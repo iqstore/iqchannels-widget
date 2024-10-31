@@ -23,7 +23,7 @@ export default {
         typing: Object,
         rating: Number,
         client: Object,
-        enableImgModals: Boolean,
+        imgModalOptions: Object,
         isMultiple: Boolean,
         appError: Object,
         metadata: Object,
@@ -152,8 +152,8 @@ export default {
             this.scrollToMessage(newValue)
         },
         rating: function (newRating) {
-            if (newRating === 0) {
-                this.ignoreRating(0);
+            if (newRating == null) {
+                this.ignoreRating(null);
             }
         },
         closeSystemChat: function () {
@@ -214,6 +214,18 @@ export default {
             });
 
             this.resetUnreadCount();
+        },
+
+        scrollToRating(ratingId, index) {
+            const observer = new MutationObserver(() => {
+                const rating = document.getElementById('rating-' + ratingId + '-index-' + index);
+                if (rating) {
+                    observer.disconnect();
+                    rating.scrollIntoView(false);
+                }
+            })
+
+            observer.observe(document.body, { childList: true, subtree: true })
         },
 
         resetUnreadCount() {
@@ -389,8 +401,9 @@ export default {
             }
         },
 
-        appendLocalMessage(messageForm) {
+        appendLocalMessage(messageForm, scrollToMessage) {
             const message = Object.assign({}, messageForm, {
+                Id: new Date().getTime() + "",
                 Client: this.client,
                 ClientId: this.client.Id,
                 Author: "client",
@@ -398,7 +411,8 @@ export default {
                 ReplyToMessageId: messageForm.ReplyToMessageId
             });
             this.firstUnreadMessageId = null;
-            this.appendMessage(message);
+
+            this.appendMessage(message, scrollToMessage);
             return message;
         },
 
@@ -458,7 +472,10 @@ export default {
                         (msg.Id && msg.Id === message.Id) ||
                         msg.LocalId === message.LocalId
                     ) {
+                        const old = group.Messages[i].Id;
                         group.Messages[i] = { ...message };
+                        delete this.existingMsgIds[old];
+                        this.existingMsgIds[message.Id] = true;
 
                         if (i === group.Messages.length - 1) {
                             group.LastMessage = message;
@@ -482,7 +499,8 @@ export default {
                         (msg.Id && msg.Id === message.Id) ||
                         msg.LocalId === message.LocalId
                     ) {
-                        group.Messages.splice(i, 1);
+                        const deleted = group.Messages.splice(i, 1);
+                        delete this.existingMsgIds[deleted[0].Id];
                         if (group.Messages.length === 0) {
                             groups.splice(g, 1);
                         } else {
@@ -563,50 +581,6 @@ export default {
             }
             groups.push(group);
             this.existingMsgIds[message.Id] = true;
-        },
-
-        messageGroupsPrepend(groups, message) {
-            if (groups.length > 0) {
-                const firstGroup = groups[0];
-                const firstMessage = firstGroup.Messages[0];
-
-                if (
-                    firstGroup.Author === message.Author &&
-                    firstGroup.UserId === message.UserId &&
-                    firstGroup.ClientId === message.ClientId &&
-                    firstMessage.CreatedAt - message.CreatedAt < 60000 &&
-                    isSameDate(message.CreatedAt, firstMessage.CreatedAt)
-                ) {
-                    firstGroup.Messages = [message, ...firstGroup.Messages]
-                    this.existingMsgIds[message.Id] = true;
-                    return;
-                }
-            }
-
-            const isNewDay =
-                groups.length > 0
-                    ? !isSameDate(
-                        message.CreatedAt,
-                        groups[0].Messages[0].CreatedAt
-                    )
-                    : true;
-
-            const group = {
-                Id: groups.length + 1,
-                Author: message.Author,
-                UserId: message.UserId,
-                ClientId: message.ClientId,
-
-                User: message.User,
-                Client: message.Client,
-
-                Messages: [message],
-                LastMessage: message,
-                Rating: message.Rating,
-
-                IsNewDay: isNewDay
-            };
-            groups = [group, ...groups]
         },
 
         messageGroupsPrepend(groups, message) {
@@ -842,11 +816,11 @@ export default {
                 ignored => {
                     rating.Sending = null;
                     rating.State = ignored.State;
-                    rating.Value = 0;
+                    rating.Value = null;
                 },
                 error => {
                     rating.Sending = null;
-                    rating.Value = 0;
+                    rating.Value = null;
                 }
             );
         },
@@ -948,7 +922,10 @@ export default {
             } else {
                 this.$emit("on-file-clicked", file);
             }
+        },
 
+        clickFileImg(msg) {
+            this.$emit("on-image-clicked", msg);
         },
 
         longTap(msg) {
@@ -1025,7 +1002,11 @@ export default {
                         this.$emit("client-changed", event)
                         break;
                     default:
-                        console.log("Unhandled channel event", event);
+                        this.client.logMessage({
+                            Message: "Unhandled channel event" + JSON.stringify(event),
+                            Widget: true,
+                            Level: 2
+                        });
                 }
                 this.lastEventId = event.Id;
             }
@@ -1149,8 +1130,10 @@ export default {
             } else {
                 messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
             }
+            
             messageForm.Metadata = this.metadata;
-            this.appendLocalMessage(messageForm);
+            this.appendLocalMessage(messageForm, true);
+
 
             client.channelSend(this.channel, messageForm);
         },
@@ -1218,6 +1201,9 @@ export default {
         initScrollEvents() {
             const chat = document.getElementById('chat');
             chat.addEventListener('scroll', event => {
+                if (this.$refs.chat.$refs.msgContextMenu.active) {
+                    this.$refs.chat.$refs.msgContextMenu.hideContextMenu();
+                }
                 const container = event.currentTarget;
                 const atTop = container.scrollTop === 0;
                 if (atTop) {
@@ -1291,7 +1277,7 @@ export default {
                 :channel="channel",
                 :singleChoices="singleChoices",
                 :searching="searching",
-                :enableImgModals="enableImgModals",
+                :imgModalOptions="imgModalOptions",
                 :firstUnreadMessageId="firstUnreadMessageId",
                 @cancel-upload="cancelUpload",
                 @retry-upload="retryUpload",
@@ -1305,7 +1291,9 @@ export default {
                 @reply-msg="reply",
                 @scroll-to-message="(id) => scrollToFoundMessage(id)",
                 @scroll-to-bottom="() => scrollToBottom()",
+                @scroll-to-rating="(ratingId, index) => scrollToRating(ratingId, index)",
                 @click-file="clickFile",
+                @click-file-img="clickFileImg",
                 @download-file="downloadFile",
             )
             .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")

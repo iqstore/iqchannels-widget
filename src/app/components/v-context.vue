@@ -38,6 +38,7 @@ export default {
             item: null,
             menuHeight: null,
             menuWidth: null,
+            active: false,
         };
     },
     methods: {
@@ -67,10 +68,12 @@ export default {
             }
 
             menu.classList.add('vue-simple-context-menu--active');
+            this.active = true;
         },
         hideContextMenu() {
             this.$refs.ctxMenu.classList.remove('vue-simple-context-menu--active');
             this.$emit('menu-closed');
+            this.active = false;
         },
         onClickOutside() {
             this.hideContextMenu();

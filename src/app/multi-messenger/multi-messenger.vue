@@ -86,6 +86,10 @@ export default {
             return value.PersonalManagerId && value.MultiChatsInfo?.EnableForPersonalManagers ?
                 'personal_manager' : 'regular';
         },
+
+        onImageClicked(msg) {
+            this.$emit("on-image-clicked", msg);
+        },
     }
 }
 </script>
@@ -113,6 +117,7 @@ export default {
             @on-close="onClose",
             @on-logout="onLogout",
             @on-longtap="onLongTap",
+            @on-image-clicked='onImageClicked',
             @on-rating="onRating",
             @on-back="onBack",
             @on-messages-loaded="onMessagesLoaded",

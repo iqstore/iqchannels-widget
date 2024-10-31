@@ -6,9 +6,10 @@ import inforequest from './info-request.vue';
 import { humanDate, humanDateTime, humanSize } from '../../lib/filters';
 import MessageText from "./message-text.vue";
 import messages from './message-list.vue';
+import ModalImg from "../components/modal-img.vue";
 
 export default {
-    components: { MessageText, inforequest, avatar, rating, messages },
+    components: { ModalImg, MessageText, inforequest, avatar, rating, messages },
 
     props: {
         mode: String,
@@ -28,7 +29,7 @@ export default {
             showImageModal: false,
             modalImageMsg: null,
             animateMsgIds: {},
-            enableImgModals: true,
+            imgModalOptions: {},
         }
     },
 
@@ -36,11 +37,11 @@ export default {
         setTimeout(() => {
             this.scrollToLastMessage();
         }, 1500)
-        this.enableImgModals = this.$parent.$parent.$parent.enableImgModals;
+        this.imgModalOptions = this.$parent.$parent.$parent.imgModalOptions;
     },
 
     updated() {
-        this.enableImgModals = this.$parent.$parent.$parent.enableImgModals;
+        this.imgModalOptions = this.$parent.$parent.$parent.imgModalOptions;
     },
 
     methods: {
@@ -89,9 +90,13 @@ export default {
             }
             this.$emit("scroll-to-message", msg.Id);
         },
-
+        
         scrollToBottom(event) {
             this.$emit("scroll-to-bottom", event);
+        },
+
+        scrollToRating(ratingId, index) {
+            this.$emit("scroll-to-rating", ratingId, index);
         },
 
         getProductMsgText(message) {
@@ -241,9 +246,18 @@ export default {
         },
 
         clickFileImage(msg) {
-            if (this.enableImgModals) {
-                this.showImageModal = true;
-                this.modalImageMsg = msg;
+            if (!this.imgModalOptions.enabled) {
+                this.$emit("click-file", msg.File);
+                return;
+            }
+            switch (this.imgModalOptions.state) {
+                case 'mobile':
+                    this.showImageModal = true;
+                    this.modalImageMsg = msg;
+                    break;
+                case 'full':
+                    this.$emit("click-file-img", msg);
+                    break;
             }
         },
 
@@ -300,7 +314,12 @@ export default {
 
 <template lang="pug">
     .messages#list(:class="{ 'empty': (groups.length === 0) }")
-        modal-img#modal-img(@close="closeModalImg", :modal-image-msg="modalImageMsg", :show-image-modal="showImageModal")
+        modal-img#modal-img(
+            @close="closeModalImg",
+            @click-file="clickFile",
+            :modal-image-msg="modalImageMsg",
+            :show-image-modal="showImageModal",
+        )
 
         .no-messages-wrapper(v-if="groups.length === 0")
             span.no-messages Сообщений не найдено
@@ -317,6 +336,7 @@ export default {
                         :groups="groups",
                         :firstUnreadMessageId="firstUnreadMessageId",
                         :animateMsgIds="animateMsgIds",
+                        :imgModalOptions="imgModalOptions",
                         @reply-msg="optionClicked",
                         @swipe-rigth="swipeRight",
                         @send-message="trySendMessage",
@@ -343,7 +363,8 @@ export default {
                 :client="client",
                 :channel="channel",
                 @rate-rating="rateRating",
-                @ignore-rating="ignoreRating")
+                @ignore-rating="ignoreRating",
+                @on-poll-question-chaned="(ratingId, index) => scrollToRating(ratingId, index)")
             inforequest#info-request(
                 v-if="group.InfoRequest",
                 :request="group.InfoRequest",
@@ -500,82 +521,6 @@ export default {
     height: 36px;
     cursor: pointer;
     transition: border 0.3s, background 0.3s, color 0.3s;
-}
-
-.backdrop {
-    background: black;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    z-index: 4;
-    opacity: 0.7;
-}
-
-.pending {
-    z-index: 5;
-    position: fixed;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-size: 18px;
-    color: white;
-    height: 100%;
-
-    .modal_img {
-        height: 100%;
-        display: flex;
-
-        img {
-            object-fit: contain;
-            width: 100%;
-        }
-    }
-
-    .modal_img_footer {
-        padding: 25px;
-    }
-
-    .modal_img_header {
-        padding: 15px;
-        display: flex;
-        border-bottom: 1px gray solid;
-
-        .modal_img_header-icon {
-            padding: 10px;
-
-            svg {
-                fill: white;
-                width: 30px;
-                height: 30px;
-                transition: 0.3s ease;
-                opacity: 0.6;
-                cursor: pointer;
-
-                &:hover {
-                    opacity: 1;
-                }
-            }
-        }
-
-        .modal_img_header-title {
-            margin-left: 10px;
-            display: flex;
-            flex-flow: column;
-            justify-content: space-around;
-            width: 100%;
-
-            .modal_img_header-title_date {
-                opacity: 0.6;
-                font-size: 16px;
-            }
-        }
-    }
 }
 
 .no-messages-wrapper {
