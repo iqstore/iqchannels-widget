@@ -206,6 +206,7 @@ export default {
 
         scrollToBottom() {
             const chat = document.getElementById('chat');
+
             chat.scrollTo({
                 top: chat.scrollHeight + chat.scrollTop + chat.offsetHeight,
                 behavior: 'smooth'
@@ -1300,7 +1301,8 @@ export default {
                 @ignore-info="ignoreInfo",
                 @long-tap="longTap",
                 @reply-msg="reply",
-                @scrollToMessage="(id) => scrollToFoundMessage(id)",
+                @scroll-to-message="(id) => scrollToFoundMessage(id)",
+                @scroll-to-bottom="() => scrollToBottom()",
                 @click-file="clickFile",
                 @download-file="downloadFile",
             )
