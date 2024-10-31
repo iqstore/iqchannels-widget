@@ -249,10 +249,10 @@ export default {
 
         getRatingScaleMaxValue() {
             let maxValue = DEFAULT_RATING_MAX_VALUE;
-            if (this.rating.State === "finished" && this.rating.RatingPoll) {
+            if (this.rating && this.rating.State === "finished" && this.rating.RatingPoll) {
                 for (const question of this.rating.RatingPoll?.Questions) {
                     if (question.AsTicketRating && question.Type === "scale") {
-                        maxValue = question.Scale.ToValue
+                        maxValue = question.Scale?.ToValue
                     }
                 }
 
