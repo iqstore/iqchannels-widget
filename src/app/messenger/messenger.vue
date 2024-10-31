@@ -26,6 +26,7 @@ export default {
         imgModalOptions: Object,
         isMultiple: Boolean,
         appError: Object,
+        metadata: Object,
     },
 
     created() {
@@ -206,6 +207,7 @@ export default {
 
         scrollToBottom() {
             const chat = document.getElementById('chat');
+
             chat.scrollTo({
                 top: chat.scrollHeight + chat.scrollTop + chat.offsetHeight,
                 behavior: 'smooth'
@@ -1128,7 +1130,10 @@ export default {
             } else {
                 messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
             }
+            
+            messageForm.Metadata = this.metadata;
             this.appendLocalMessage(messageForm, true);
+
 
             client.channelSend(this.channel, messageForm);
         },
@@ -1285,6 +1290,7 @@ export default {
                 @long-tap="longTap",
                 @reply-msg="reply",
                 @scroll-to-message="(id) => scrollToFoundMessage(id)",
+                @scroll-to-bottom="() => scrollToBottom()",
                 @scroll-to-rating="(ratingId, index) => scrollToRating(ratingId, index)",
                 @click-file="clickFile",
                 @click-file-img="clickFileImg",

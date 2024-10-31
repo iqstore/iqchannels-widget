@@ -90,6 +90,10 @@ export default {
             }
             this.$emit("scroll-to-message", msg.Id);
         },
+        
+        scrollToBottom(event) {
+            this.$emit("scroll-to-bottom", event);
+        },
 
         scrollToRating(ratingId, index) {
             this.$emit("scroll-to-rating", ratingId, index);
@@ -341,7 +345,8 @@ export default {
                         @click-file="clickFile",
                         @click-file-image="clickFileImage",
                         @listen-audio="listenForAudioEvents",
-                        @scroll-to-message="scrollToMessage")
+                        @scroll-to-message="scrollToMessage"
+                        @scroll-to-bottom="scrollToBottom")
                 div#choices(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
                     div
                         div.choice_box_dropdown(v-for="choice in group.LastMessage.SingleChoices")

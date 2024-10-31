@@ -79,6 +79,10 @@ export default {
             this.$emit("scroll-to-message", msg, event)
         },
 
+        scrollToBottom(msg, event) {
+            this.$emit("scroll-to-bottom", msg, event);
+        },
+
         cancelUpload(localId) {
             this.$emit("cancel-upload", localId);
         },
@@ -163,16 +167,15 @@ export default {
                     a.image(
                         v-if="!imgModalOptions.enabled && msg.File",
                         :href="msg.File.URL",
-                        onload="scrollToMessage(msg, $event)",
                         target="_blank",
                         @click="clickFile(msg, $event)"
                     )
-                        img.bubble(v-if="msg.File && msg.File.Type === 'image'" :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL",  v-on:load="scrollToBottom(msg, $event)", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                     .image(
                         v-else-if="imgModalOptions.enabled && msg.File",
                         @click="clickFileImage(msg)"
                     )
-                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL",  v-on:load="scrollToBottom(msg, $event)", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                     div.img-caption
                         pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
                     .carousel-card-block(:class="getCardBlockClass(msg)", v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")

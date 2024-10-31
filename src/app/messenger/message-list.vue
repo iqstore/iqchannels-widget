@@ -23,6 +23,12 @@ export default {
             this.$emit("scroll-to-message", msg, event);
         },
 
+        scrollToBottom(msg, event) {
+            if (!this.firstUnreadMessageId) {
+                this.$emit("scroll-to-bottom", msg, event);
+            }
+        },
+
         sendMessage(messageText, botpressPayload, url) {
             this.$emit("send-message", messageText, botpressPayload, url)
         },
@@ -60,6 +66,7 @@ export default {
             v-if="!msg.Rating",
             @reply-msg="optionClicked",
             @scroll-to-message="scrollToMessage",
+            @scroll-to-bottom="scrollToBottom",
             @send-message="sendMessage",
             @cancel-upload="cancelUpload",
             @retry-upload="retryUpload",
