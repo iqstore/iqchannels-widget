@@ -659,6 +659,7 @@ export default {
                             Text: settings.Message,
                             Payload: 'text',
                             Read: true,
+                            SystemMessage: true, // for auto-invite logic
                             UserId: now.getTime(),
                             User: {
                                 DisplayName: settings.OperatorName,
@@ -1130,7 +1131,7 @@ export default {
             } else {
                 messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
             }
-            
+
             messageForm.Metadata = this.metadata;
             this.appendLocalMessage(messageForm, true);
 
