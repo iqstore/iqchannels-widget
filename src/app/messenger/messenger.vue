@@ -1129,7 +1129,7 @@ export default {
             } else {
                 messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
             }
-            
+
             messageForm.Metadata = this.metadata;
             this.appendLocalMessage(messageForm, true);
 

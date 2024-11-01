@@ -172,6 +172,10 @@ export default {
         },
 
         swipeRight(event, item) {
+            if (item.SystemMessage) {
+                event.preventDefault();
+                return;
+            }
             const eventType = event.changedPointers[0].type;
             const closest = event.target.closest('.message-wrapper');
 
