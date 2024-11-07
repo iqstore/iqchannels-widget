@@ -31,6 +31,9 @@ export default {
         },
 
         OnContextMessage($event) {
+            if (this.msg.SystemMessage) {
+                return;
+            }
             this.$parent.$parent.$refs.msgContextMenu.showMenu($event, this.msg);
         },
 
