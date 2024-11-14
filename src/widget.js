@@ -83,8 +83,7 @@ class IQChannelsWidget extends EventEmitter {
 			iconOptions = {},
 			DOMIdentifier,
 			chats = [],
-			enableImgModals = true,
-      metadata = null,
+            metadata = null,
 			imgModalOptions = {
 				enabled: true,
 				state: 'full'
