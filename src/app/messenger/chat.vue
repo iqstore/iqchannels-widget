@@ -337,7 +337,6 @@ export default {
                         :firstUnreadMessageId="firstUnreadMessageId",
                         :animateMsgIds="animateMsgIds",
                         :imgModalOptions="imgModalOptions",
-                        :enableImgModals="enableImgModals",
                         @reply-msg="optionClicked",
                         @swipe-rigth="swipeRight",
                         @send-message="trySendMessage",
