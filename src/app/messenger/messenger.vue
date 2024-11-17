@@ -607,49 +607,6 @@ export default {
             groups = [group, ...groups]
         },
 
-        messageGroupsPrepend(groups, message) {
-            if (groups.length > 0) {
-                const firstGroup = groups[0];
-                const firstMessage = firstGroup.Messages[0];
-
-                if (
-                    firstGroup.Author === message.Author &&
-                    firstGroup.UserId === message.UserId &&
-                    firstGroup.ClientId === message.ClientId &&
-                    firstMessage.CreatedAt - message.CreatedAt < 60000 &&
-                    isSameDate(message.CreatedAt, firstMessage.CreatedAt)
-                ) {
-                    firstGroup.Messages.unshift(message);
-                    this.existingMsgIds[message.Id] = true;
-                    return;
-                }
-            }
-
-            const isNewDay =
-                groups.length > 0
-                    ? !isSameDate(
-                        message.CreatedAt,
-                        groups[0].Messages[0].CreatedAt
-                    )
-                    : true;
-
-            const group = {
-                Id: groups.length + 1,
-                Author: message.Author,
-                UserId: message.UserId,
-                ClientId: message.ClientId,
-
-                User: message.User,
-                Client: message.Client,
-
-                Messages: [message],
-                LastMessage: message,
-                Rating: message.Rating,
-
-                IsNewDay: isNewDay
-            };
-            groups.unshift(group);
-        },
 
         sendGreeting() {
             if (this.systemChat === true) {
