@@ -9,6 +9,7 @@ import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
 import config from "../../config";
+import Rating from './rating.vue';
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -402,6 +403,11 @@ export default {
         },
 
         appendLocalMessage(messageForm, scrollToMessage) {
+            const lastGroup = this.groups[this.groups.length - 1]
+            if (['pending', 'poll'].includes(lastGroup.Rating?.State)) {
+                this.ignoreRating(lastGroup.Rating);
+            }
+
             const message = Object.assign({}, messageForm, {
                 Id: new Date().getTime() + "",
                 Client: this.client,
@@ -1003,7 +1009,7 @@ export default {
                         this.$emit("client-changed", event)
                         break;
                     default:
-                        this.client.logMessage({
+                        client.logMessage({
                             Message: "Unhandled channel event" + JSON.stringify(event),
                             Widget: true,
                             Level: 2
