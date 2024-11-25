@@ -51,7 +51,7 @@ export default {
             if (!this.personalDataForm) {
                 if (this.requireName) {
                     if (!this.personalDataConsent) return;
-                    if (!this.clientName.trim()) return;
+                    if (!this.clientName?.trim()) return;
                 }
             }
 
