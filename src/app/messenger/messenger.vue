@@ -403,10 +403,11 @@ export default {
         },
 
         appendLocalMessage(messageForm, scrollToMessage) {
-            const lastGroup = this.groups[this.groups.length - 1]
-            if (['pending', 'poll'].includes(lastGroup.Rating?.State)) {
-                this.ignoreRating(lastGroup.Rating);
-            }
+            this.groups.forEach((group) => {
+                if (['pending', 'poll'].includes(group.Rating?.State)) {
+                    this.ignoreRating(group.Rating);
+                }
+            })
 
             const message = Object.assign({}, messageForm, {
                 Id: new Date().getTime() + "",
