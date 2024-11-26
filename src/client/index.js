@@ -461,7 +461,7 @@ class Client {
       err = ErrMaxFileSize;
     }
     const split = file.name.split('.');
-    const ext = split[split.length - 1];
+    const ext = split[split.length - 1].toLowerCase();
     if (this.configFiles.ForbiddenExtensions && this.configFiles.ForbiddenExtensions.includes(ext) ||
       this.configFiles.AllowedExtensions && !this.configFiles.AllowedExtensions.includes(ext)
     ) {
