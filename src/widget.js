@@ -86,7 +86,7 @@ class IQChannelsWidget extends EventEmitter {
             metadata = null,
 			imgModalOptions = {
 				enabled: true,
-				state: 'full'
+				state: 'web'
 			},
 		}
 	) {
@@ -95,6 +95,9 @@ class IQChannelsWidget extends EventEmitter {
 
 		this.mode = mode === 'mobile' ? mode : 'web';
 		this.width = this.mode === 'mobile' ? window.innerWidth : width;
+		if (this.imgModalOptions) {
+			this.imgModalOptions.state = this.mode
+		}
 		this.channel = channel;
 		this.credentials = credentials || '';
 		this.project = project || '';
