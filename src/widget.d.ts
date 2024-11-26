@@ -49,7 +49,7 @@ interface ImgModalOptions {
     state: ImgModalState;
 }
 
-type ImgModalState = 'mobile' | 'full';
+type ImgModalState = 'mobile' | 'web';
 
 type WidgetErrorType = "connetion"
 

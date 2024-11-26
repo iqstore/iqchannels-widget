@@ -259,7 +259,7 @@ export default {
                     this.showImageModal = true;
                     this.modalImageMsg = msg;
                     break;
-                case 'full':
+                case 'web':
                     this.$emit("click-file-img", msg);
                     break;
             }
