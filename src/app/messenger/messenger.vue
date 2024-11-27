@@ -644,43 +644,41 @@ export default {
                     return;
                 }
             }
-            client.getChatSettings(this.channel).then(result => {
+            client.getChatSettings(this.channel, this.client.Id).then(result => {
                 const settings = result.Data
                 if (!settings) return;
 
                 this.systemChat = true
-                client.listTicketsByClient(this.channel, this.client.Id, { Open: true }).then(result => {
-                    if (result.Data.TotalCount) {
-                        this.systemChat = false;
-                        return;
-                    }
+                if (settings.TotalOpenedTickets) {
+                    this.systemChat = false;
+                    return;
+                }
 
-                    if (settings.GreetFrom === 'bot') {
-                        client.openSystemChat(this.channel)
-                    } else {
-                        const now = new Date()
-                        const message = {
-                            Id: now.getTime(),
-                            Author: "user",
-                            CreatedAt: now,
-                            Text: settings.Message,
-                            Payload: 'text',
-                            Read: true,
-                            SystemMessage: true, // for auto-invite logic
-                            UserId: now.getTime(),
-                            User: {
-                                DisplayName: settings.OperatorName,
-                                Name: settings.OperatorName,
-                                Active: true,
-                            }
-                        };
-                        this.appendMessage(message, true)
-                        setTimeout(() => {
-                            this.removeMessage(message);
-                            this.systemChat = false
-                        }, 1000 * settings.Lifetime)
-                    }
-                })
+                if (settings.GreetFrom === 'bot') {
+                    client.openSystemChat(this.channel)
+                } else {
+                    const now = new Date()
+                    const message = {
+                        Id: now.getTime(),
+                        Author: "user",
+                        CreatedAt: now,
+                        Text: settings.Message,
+                        Payload: 'text',
+                        Read: true,
+                        SystemMessage: true, // for auto-invite logic
+                        UserId: now.getTime(),
+                        User: {
+                            DisplayName: settings.OperatorName,
+                            Name: settings.OperatorName,
+                            Active: true,
+                        }
+                    };
+                    this.appendMessage(message, true)
+                    setTimeout(() => {
+                        this.removeMessage(message);
+                        this.systemChat = false
+                    }, 1000 * settings.Lifetime)
+                }
             })
         },
 
