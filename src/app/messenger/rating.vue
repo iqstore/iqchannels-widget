@@ -142,23 +142,14 @@ export default {
             this.pollResult = temp;
         },
 
-        isRatingPollAnswerEmpty() {
-            for (const arg of this.pollResult) {
-                if (Object.keys(arg).length <= 1) {
-                    return true;
-                }
-            }
-            return false;
-        },
-
         sendRatingPoll() {
-            for (const arg of this.pollResult) {
-                if (Object.keys(arg).length <= 1) {
-                    return;
+            const result = [];
+            this.pollResult.forEach(el => {
+                if (Object.keys(el).length !== 0) {
+                    result.push(el);
                 }
-            }
-
-            client.sendPoll(this.pollResult);
+            });
+            client.sendPoll(result);
             this.finishPoll();
         },
 
@@ -347,7 +338,7 @@ export default {
 
             .buttons-next-prev.mt(v-if="this.poll.Questions.length !== 1")
                 button.button(@click.prevent="prevQuestion()", :disabled="index === 0") Назад
-                button.button(@click.prevent="nextQuestion()", :disabled="isRatingPollAnswerEmpty() && index === poll.Questions.length - 1") Далее
+                button.button(@click.prevent="nextQuestion()") Далее
 
             .buttons-answer.mt(v-if="this.poll.Questions.length === 1")
                 button.button(@click="sendRatingPoll()") Отправить ответ
