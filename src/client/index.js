@@ -307,8 +307,8 @@ class Client {
     return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId, Rated: rated });
   }
 
-  getChatSettings (channel) {
-    return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`, {}, { shouldRetry: (error) => !error });
+  getChatSettings (channel, clientId) {
+    return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`, { ClientId: clientId }, { shouldRetry: (error) => !error });
   }
 
   openSystemChat (channel) {
