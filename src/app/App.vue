@@ -20,7 +20,10 @@ export default {
 
         const onClose = () => parent.postMessage({ type: 'iqchannels-widget-close' }, '*');
         const onMessageReceived = () => parent.postMessage({ type: 'iqchannels-widget-message' }, '*');
-        const onFileClicked = (url) => parent.postMessage({ type: 'iqchannels-widget-file', data: url }, '*');
+        const onFileClicked = (url) => {
+            console.debug("App: onFileClicked", url);
+            return parent.postMessage({ type: 'iqchannels-widget-file', data: url }, '*');
+        };
         const onUnreadChanged = (count) => parent.postMessage({ type: 'iqchannels-widget-unread', data: count }, '*');
         const onLongTap = (msg) => parent.postMessage({
             type: 'iqchannels-widget-longtap',
@@ -34,7 +37,10 @@ export default {
 
             parent.postMessage({ type: 'iqchannels-error', data: JSON.stringify(error) }, "*");
         };
-        const onImageClicked = (msg) => parent.postMessage({ type: 'iqchannels-image', data: JSON.stringify(msg) });
+        const onImageClicked = (msg) => {
+            console.debug("App: onImageClicked", msg);
+            return parent.postMessage({ type: 'iqchannels-image', data: JSON.stringify(msg) });
+        };
 
         provide('client', client);
 

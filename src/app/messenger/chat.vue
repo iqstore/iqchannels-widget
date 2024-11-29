@@ -233,6 +233,7 @@ export default {
         },
 
         clickFile(msg, event) {
+            console.debug("chat: clickFile", msg);
             let file = msg.File;
 
             if (!file) {
@@ -250,6 +251,7 @@ export default {
         },
 
         clickFileImage(msg) {
+            console.debug("chat: clickFileImage", msg, this.imgModalOptions);
             if (!this.imgModalOptions.enabled) {
                 this.$emit("click-file", msg.File);
                 return;

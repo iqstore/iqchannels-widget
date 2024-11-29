@@ -13,6 +13,8 @@ export default {
             this.$emit("close");
         },
         clickFile(msg, event) {
+            console.debug("modal-img: clickFile", msg, event);
+            
             this.$emit("click-file", msg, event);
         },
     }

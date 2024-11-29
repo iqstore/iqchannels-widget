@@ -909,6 +909,7 @@ export default {
         },
 
         clickFile(file) {
+            console.debug("messenger: clickFile", file);
             if (file.Id) {
                 client.fileSignedUrl(file.Id).then(
                     url => {
@@ -924,6 +925,7 @@ export default {
         },
 
         clickFileImg(msg) {
+            console.debug("messenger: clickFileImg", msg);
             this.$emit("on-image-clicked", msg);
         },
 
@@ -1001,7 +1003,7 @@ export default {
                         this.$emit("client-changed", event)
                         break;
                     default:
-                        this.client.logMessage({
+                        client.logMessage({
                             Message: "Unhandled channel event" + JSON.stringify(event),
                             Widget: true,
                             Level: 2

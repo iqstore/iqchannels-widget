@@ -67,10 +67,14 @@ export default {
         },
 
         clickFile(msg, event) {
+            console.debug("message: clickFile", msg);
+            
             this.$emit("click-file", msg, event);
         },
 
         clickFileImage(msg) {
+            console.debug("message: clickFileImage", msg);
+
             this.$emit("click-file-image", msg);
         },
 

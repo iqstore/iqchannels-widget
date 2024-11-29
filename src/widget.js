@@ -369,6 +369,7 @@ class IQChannelsWidget extends EventEmitter {
 				break;
 
 			case 'iqchannels-widget-file':
+				console.debug("widget: iqchannels-widget-file", data);
 				this.emit('file-clicked', data);
 				break;
 
@@ -392,6 +393,7 @@ class IQChannelsWidget extends EventEmitter {
 				break;
 
 			case 'iqchannels-image':
+				console.debug("widget: iqchannels-image", data);
 				if (!JSON.parse(data)) {
 					break;
 				}

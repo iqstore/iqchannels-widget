@@ -42,10 +42,12 @@ export default {
         },
 
         clickFileImage(msg) {
+            console.debug("message-list: clickFileImage", msg);
             this.$emit("click-file-image", msg);
         },
 
         clickFile(msg, event) {
+            console.debug("message-list: clickFile", msg, event);
             this.$emit("click-file", msg, event);
         },
     }
