@@ -13,10 +13,6 @@ export function imageSize (image) {
 				img.src = fileReader.result
 			}
 
-			fileReader.onloadend = () => {
-				console.log("END")
-			}
-
 			fileReader.readAsDataURL(image)
 		} catch (e) {
 			reject(e)

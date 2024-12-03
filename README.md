@@ -112,8 +112,11 @@ var widget = new IQChannelsWidget({
         backgroundColor: "#FFFFFF",
         style: {}
     },
-    url: 'https://app.iqstore.ru/widget/',
-    enableImgModals: true,
+    url: 'https://app.iqstore.ru/widget/', 
+    imgModalOptions: {
+        enabled: true,
+        state: 'mobile',
+    },
 });
 </script>
 ```
@@ -129,6 +132,10 @@ var widget = new IQChannelsWidget({
 * `iconOptions.color` — цвет иконки.
 * `iconOptions.backgroundColor` — цвет фона кнопки.
 * `url` — опциональный адрес сервера с виджетом, если не указан, то определяется автоматически.
+* `imgModalOptions` — настройки отображение изображений в модальном окне. Значение по умолчанию: `{ enabled: true, state: 'full'}`.
+* `imgModalOptions.enabled` — включает отображение изображений в модальном окне. При значении `false` изображения открываются в новой вкладке.
+* `imgModalOptions.state` — режим отображение модального окна с изображением. При значении `full` модальное окно открывается во все окно браузера, при значении `mobile` модальное окно открывается в рамках окна чата.
+
 
 Параметры для работы с кросс-сегментностью:
 * `channel, credentials` — убираются, переходят в раздел `chats`.

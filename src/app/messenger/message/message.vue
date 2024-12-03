@@ -18,7 +18,7 @@ export default {
         group: Object,
         groups: Array,
         msg: Object,
-        enableImgModals: Boolean,
+        imgModalOptions: Object,
     },
 
     methods: {
@@ -31,6 +31,9 @@ export default {
         },
 
         OnContextMessage($event) {
+            if (this.msg.SystemMessage) {
+                return;
+            }
             this.$parent.$parent.$refs.msgContextMenu.showMenu($event, this.msg);
         },
 
@@ -79,6 +82,10 @@ export default {
             this.$emit("scroll-to-message", msg, event)
         },
 
+        scrollToBottom(msg, event) {
+            this.$emit("scroll-to-bottom", msg, event);
+        },
+
         cancelUpload(localId) {
             this.$emit("cancel-upload", localId);
         },
@@ -123,7 +130,7 @@ export default {
                 :msg="msg",
                 :searching="searching",
                 :groups="groups",
-                :enableImgModals="enableImgModals",
+                :imgModalOptions="imgModalOptions",
                 @send-message="sendMessage",
                 @click-file="clickFile",
                 @click-file-image="clickFileImage"
@@ -161,17 +168,17 @@ export default {
                         v-for="action of msg.Actions", @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                 div(v-else-if="(msg.File && msg.File.Type === 'image') || msg.Payload === 'card'")
                     a.image(
-                        v-if="!enableImgModals && msg.File",
+                        v-if="!imgModalOptions?.enabled && msg.File",
                         :href="msg.File.URL",
                         target="_blank",
                         @click="clickFile(msg, $event)"
                     )
-                        img.bubble(v-if="msg.File && msg.File.Type === 'image'" :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL",  v-on:load="scrollToBottom(msg, $event)", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                     .image(
-                        v-else-if="enableImgModals && msg.File",
+                        v-else-if="imgModalOptions?.enabled && msg.File",
                         @click="clickFileImage(msg)"
                     )
-                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL",  v-on:load="scrollToBottom(msg, $event)", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                     div.img-caption
                         pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
                     .carousel-card-block(:class="getCardBlockClass(msg)", v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")

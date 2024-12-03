@@ -10,6 +10,7 @@ import Request from './request';
 import { reactive } from 'vue';
 import { imageSize } from "../lib/files";
 
+
 const XClientAuthorizationHeader = 'X-Client-Authorization';
 
 class Client {
@@ -49,7 +50,7 @@ class Client {
     if (channel && this.multiClientAuth[channel]) {
       this.setAuth(this.multiClientAuth[channel]);
     } else {
-      console.error('Неверный канал');
+        client.logMessage('Неверный канал')
     }
   }
 
@@ -462,8 +463,8 @@ class Client {
     }
     const split = file.name.split('.');
     const ext = split[split.length - 1];
-    if (this.configFiles.ForbiddenExtensions && this.configFiles.ForbiddenExtensions.includes(`.${ext}`) ||
-      this.configFiles.AllowedExtensions && !this.configFiles.AllowedExtensions.includes(`.${ext}`)
+    if (this.configFiles.ForbiddenExtensions && this.configFiles.ForbiddenExtensions.includes(ext) ||
+      this.configFiles.AllowedExtensions && !this.configFiles.AllowedExtensions.includes(ext)
     ) {
       err = ErrFileTypeNotAllowed;
     }
@@ -549,6 +550,17 @@ class Client {
     return source;
   }
 
+  logMessage(message) {
+    return this._enqueueRequest("/log/message",
+        { Widget: true,
+          Level: 2,
+          Message: message,
+        },
+        {
+            shouldRetry: () => false
+        }
+    );
+  }
   _enqueueRequest (url, data, options = { timeout: 0, shouldRetry: null }) {
     const req = new Request(url, data, options);
     const promise = new Promise((resolve, reject) => {
@@ -592,18 +604,16 @@ class Client {
 	      this._triggerFlush({ clearSending: true });
 	    })
 	    .catch(error => {
-	      this.state.error = { type: 'connection', data: error, retryAttempt: req.retryAttempt };
-	      const shouldRetry = req.shouldRetry(error);
-	      if (shouldRetry) {
-	        const timeout = req.retryTimeout();
-	        console.log(`Request to ${req.url} failed, retry in ${timeout}ms, error: ${error}`);
-	        this.sendQueue.unshift(req);
-	        this._triggerFlush({ timeout: timeout, clearSending: true });
-	      } else {
-	        console.log(`Request to ${req.url} failed, error: ${error}`);
-	        req.error(error);
-	        this._triggerFlush({ clearSending: true });
-	      }
+            const shouldRetry = req.shouldRetry(error);
+            if (shouldRetry) {
+                this.state.error = { type: 'connection', data: error, retryAttempt: req.retryAttempt };
+                const timeout = req.retryTimeout();
+                this.sendQueue.unshift(req);
+                this._triggerFlush({ timeout: timeout, clearSending: true });
+	        } else {
+                req.error(error);
+                this._triggerFlush({ clearSending: true });
+	        }
 	    });
 	}
 

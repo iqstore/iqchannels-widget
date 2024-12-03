@@ -8,7 +8,6 @@ import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
-import config from "../../config";
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -23,9 +22,10 @@ export default {
         typing: Object,
         rating: Number,
         client: Object,
-        enableImgModals: Boolean,
+        imgModalOptions: Object,
         isMultiple: Boolean,
         appError: Object,
+        metadata: Object,
     },
 
     created() {
@@ -193,8 +193,6 @@ export default {
             }
             const observer = new MutationObserver(() => {
                 const messageElement = document.getElementById('message-' + scrollToMessageId)
-                console.log({ messageElement });
-
                 if (messageElement) {
                     observer.disconnect()
                     messageElement.scrollIntoView({
@@ -208,6 +206,7 @@ export default {
 
         scrollToBottom() {
             const chat = document.getElementById('chat');
+
             chat.scrollTo({
                 top: chat.scrollHeight + chat.scrollTop + chat.offsetHeight,
                 behavior: 'smooth'
@@ -328,7 +327,7 @@ export default {
         onSubscriptionError(error) {
             this.attemptCount++;
             const timeout = retryTimeout(this.attemptCount);
-            console.log(`Subscribe error, retry in ${timeout}ms:`, error);
+            client.logMessage(`Subscribe error, retry in ${timeout}ms:` + error);
             this.subscriptionTimeout = setTimeout(this.subscribe, timeout);
         },
 
@@ -402,6 +401,12 @@ export default {
         },
 
         appendLocalMessage(messageForm, scrollToMessage) {
+            this.groups.forEach((group) => {
+                if (['pending', 'poll'].includes(group.Rating?.State)) {
+                    this.ignoreRating(group.Rating);
+                }
+            })
+
             const message = Object.assign({}, messageForm, {
                 Id: new Date().getTime() + "",
                 Client: this.client,
@@ -411,7 +416,6 @@ export default {
                 ReplyToMessageId: messageForm.ReplyToMessageId
             });
             this.firstUnreadMessageId = null;
-            console.log("appendLocalMessage", message.Id, { scrollToMessage });
 
             this.appendMessage(message, scrollToMessage);
             return message;
@@ -660,6 +664,7 @@ export default {
                             Text: settings.Message,
                             Payload: 'text',
                             Read: true,
+                            SystemMessage: true, // for auto-invite logic
                             UserId: now.getTime(),
                             User: {
                                 DisplayName: settings.OperatorName,
@@ -905,7 +910,7 @@ export default {
                     a.remove();
                 },
                 error => {
-                    console.log(error);
+                    client.logMessage(error);
                 }
             );
         },
@@ -917,13 +922,16 @@ export default {
                         this.$emit("on-file-clicked", url);
                     },
                     error => {
-                        console.log(error);
+                        client.logMessage(error);
                     }
                 );
             } else {
                 this.$emit("on-file-clicked", file);
             }
+        },
 
+        clickFileImg(msg) {
+            this.$emit("on-image-clicked", msg);
         },
 
         longTap(msg) {
@@ -1000,7 +1008,7 @@ export default {
                         this.$emit("client-changed", event)
                         break;
                     default:
-                        console.log("Unhandled channel event", event);
+                        client.logMessage("Unhandled channel event" + JSON.stringify(event));
                 }
                 this.lastEventId = event.Id;
             }
@@ -1124,7 +1132,10 @@ export default {
             } else {
                 messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
             }
+
+            messageForm.Metadata = this.metadata;
             this.appendLocalMessage(messageForm, true);
+
 
             client.channelSend(this.channel, messageForm);
         },
@@ -1268,7 +1279,7 @@ export default {
                 :channel="channel",
                 :singleChoices="singleChoices",
                 :searching="searching",
-                :enableImgModals="enableImgModals",
+                :imgModalOptions="imgModalOptions",
                 :firstUnreadMessageId="firstUnreadMessageId",
                 @cancel-upload="cancelUpload",
                 @retry-upload="retryUpload",
@@ -1281,8 +1292,10 @@ export default {
                 @long-tap="longTap",
                 @reply-msg="reply",
                 @scroll-to-message="(id) => scrollToFoundMessage(id)",
+                @scroll-to-bottom="() => scrollToBottom()",
                 @scroll-to-rating="(ratingId, index) => scrollToRating(ratingId, index)",
                 @click-file="clickFile",
+                @click-file-img="clickFileImg",
                 @download-file="downloadFile",
             )
             .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")

@@ -34,6 +34,7 @@ export default {
 
             parent.postMessage({ type: 'iqchannels-error', data: JSON.stringify(error) }, "*");
         };
+        const onImageClicked = (msg) => parent.postMessage({ type: 'iqchannels-image', data: JSON.stringify(msg) });
 
         provide('client', client);
 
@@ -52,6 +53,7 @@ export default {
             onLongTap,
             onRating,
             onError,
+            onImageClicked,
 
             appError,
         }
@@ -75,10 +77,14 @@ export default {
             replayedMsg: null,
             scrollToMsg: null,
             rating: null,
-            enableImgModals: null,
+            imgModalOptions: {
+                enabled: true,
+                state: 'full'
+            },
             chats: null,
             isMultipleChats: false,
             multiClient: null,
+            metadata: null,
         };
     },
 
@@ -99,9 +105,12 @@ export default {
                     this.project = event.data.project;
                     this.requireName = event.data.requireName ?? true;
                     this.pushToken = event.data.pushToken;
-                    this.enableImgModals = event.data.enableImgModals;
+                    if (event.data.imgModalOptions) {
+                        this.imgModalOptions = event.data.imgModalOptions;
+                    }
                     this.chats = event.data.chats;
                     this.isMultipleChats = event.data.isMultipleChats;
+                    this.metadata = event.data.metadata;
 
                     this.maybeSendPushToken();
                     this.getGreetings();
@@ -228,17 +237,28 @@ export default {
 
             client.refreshClient(this.credentials);
         },
+
         getGreetings() {
             client.getWidgetGreetingsWithRequestType(this.channel).then(res => {
                 this.greetings = {
                     Greeting: res.Data?.Greeting,
                     GreetingBold: res.Data?.GreetingBold
                 };
-
-                if (res.Data?.PersonalDataRequestType === 'full_form') {
-                    this.getPersonalDataForm()
-                } else {
-                    this.personalDataFormReady = true;
+                switch (res.Data?.PersonalDataRequestType) {
+                    case 'none':
+                        this.personalDataFormReady = true;
+                        this.requireName = false;
+                        break;
+                    case 'default':
+                        this.personalDataFormReady = true;
+                        this.requireName = true;
+                        break;
+                    case 'full_form':
+                        this.requireName = true;
+                        this.getPersonalDataForm()
+                        break;
+                    default:
+                        this.personalDataFormReady = true;
                 }
             });
         },
@@ -271,6 +291,7 @@ export default {
                     @on-unread-changed='onUnreadChanged',
                     @on-message-received='onMessageReceived',
                     @on-file-clicked='onFileClicked',
+                    @on-image-clicked='onImageClicked',
                     @on-close='onClose',
                     @on-logout='onLogout',
                     @on-longtap="onLongTap",
@@ -285,6 +306,7 @@ export default {
                     :rating="rating",
                     :closeSystemChat="closeSystemChat",
                     :chats="chats",
+                    :metadata="metadata"
                 )
             template(v-else)
                 template(v-if="!client")
@@ -295,6 +317,7 @@ export default {
                     @on-unread-changed='onUnreadChanged'
                     @on-message-received='onMessageReceived'
                     @on-file-clicked='onFileClicked'
+                    @on-image-clicked='onImageClicked'
                     @on-close='onClose'
                     @on-logout='onLogout'
                     @on-longtap="onLongTap"
@@ -310,5 +333,6 @@ export default {
                     :rating="rating"
                     :closeSystemChat="closeSystemChat"
                     :app-error="appError",
+                    :metadata="metadata"
                 )
 </template>
