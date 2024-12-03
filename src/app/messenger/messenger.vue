@@ -8,8 +8,6 @@ import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
-import config from "../../config";
-import Rating from './rating.vue';
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -329,7 +327,7 @@ export default {
         onSubscriptionError(error) {
             this.attemptCount++;
             const timeout = retryTimeout(this.attemptCount);
-            console.log(`Subscribe error, retry in ${timeout}ms:`, error);
+            client.logMessage(`Subscribe error, retry in ${timeout}ms:` + error);
             this.subscriptionTimeout = setTimeout(this.subscribe, timeout);
         },
 
@@ -912,7 +910,7 @@ export default {
                     a.remove();
                 },
                 error => {
-                    console.log(error);
+                    client.logMessage(error);
                 }
             );
         },
@@ -924,7 +922,7 @@ export default {
                         this.$emit("on-file-clicked", url);
                     },
                     error => {
-                        console.log(error);
+                        client.logMessage(error);
                     }
                 );
             } else {
@@ -1010,11 +1008,7 @@ export default {
                         this.$emit("client-changed", event)
                         break;
                     default:
-                        client.logMessage({
-                            Message: "Unhandled channel event" + JSON.stringify(event),
-                            Widget: true,
-                            Level: 2
-                        });
+                        client.logMessage("Unhandled channel event" + JSON.stringify(event));
                 }
                 this.lastEventId = event.Id;
             }

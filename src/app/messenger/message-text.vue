@@ -1,5 +1,7 @@
 <script>
 import { linkify } from "../../lib/linkify";
+import client from '../../client';
+
 
 export default {
     props: {
@@ -41,7 +43,7 @@ export default {
                     typographer: true
                 });
             } catch (error) {
-                console.error('Failed to load markdown-it:', error);
+                client.logMessage('Failed to load markdown-it:' + error)
             }
         },
     }

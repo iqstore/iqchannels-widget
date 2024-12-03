@@ -8,6 +8,7 @@ import MessageText from "./message-text.vue";
 import messages from './message-list.vue';
 import ModalImg from "../components/modal-img.vue";
 
+
 export default {
     components: { ModalImg, MessageText, inforequest, avatar, rating, messages },
 
@@ -306,7 +307,7 @@ export default {
                     break;
                 case "Копировать":
                     navigator.clipboard.writeText(event.item.Text).catch(err => {
-                        console.warn(err.message);
+                        client.logMessage(err.message);
                     });
                     break;
             }

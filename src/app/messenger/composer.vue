@@ -177,7 +177,7 @@ export default {
             });
 
             this.ws.microphone.on("deviceError", (code) => {
-                console.warn("Device error: " + code);
+                client.logMessage("Device error: " + code);
             });
 
         },
