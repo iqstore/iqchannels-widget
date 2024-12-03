@@ -168,14 +168,14 @@ export default {
                         v-for="action of msg.Actions", @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                 div(v-else-if="(msg.File && msg.File.Type === 'image') || msg.Payload === 'card'")
                     a.image(
-                        v-if="!imgModalOptions.enabled && msg.File",
+                        v-if="!imgModalOptions?.enabled && msg.File",
                         :href="msg.File.URL",
                         target="_blank",
                         @click="clickFile(msg, $event)"
                     )
                         img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL",  v-on:load="scrollToBottom(msg, $event)", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                     .image(
-                        v-else-if="imgModalOptions.enabled && msg.File",
+                        v-else-if="imgModalOptions?.enabled && msg.File",
                         @click="clickFileImage(msg)"
                     )
                         img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL",  v-on:load="scrollToBottom(msg, $event)", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")

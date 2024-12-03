@@ -78,14 +78,14 @@ export default {
                 ) {{ action.Title }}
             div(v-else-if="replyMsg.File && replyMsg.File.Type === 'image'")
                 a.image(
-                    v-if="!imgModalOptions.enabled",
+                    v-if="!imgModalOptions?.enabled",
                     :href="replyMsg.File.URL",
                     target="_blank",
                     @click="clickFile(replyMsg, $event)"
                 )
                     img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
                 .image(
-                    v-else-if="imgModalOptions.enabled",
+                    v-else-if="imgModalOptions?.enabled",
                     @click="clickFileImage(replyMsg, $event)"
                 )
                     img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")

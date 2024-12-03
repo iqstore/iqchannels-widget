@@ -251,11 +251,11 @@ export default {
         },
 
         clickFileImage(msg) {
-            if (!this.imgModalOptions.enabled) {
+            if (!this.imgModalOptions?.enabled) {
                 this.$emit("click-file", msg.File);
                 return;
             }
-            switch (this.imgModalOptions.state) {
+            switch (this.imgModalOptions?.state) {
                 case 'mobile':
                     this.showImageModal = true;
                     this.modalImageMsg = msg;

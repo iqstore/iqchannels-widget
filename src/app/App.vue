@@ -77,7 +77,10 @@ export default {
             replayedMsg: null,
             scrollToMsg: null,
             rating: null,
-            imgModalOptions: null,
+            imgModalOptions: {
+                enabled: true,
+                state: 'full'
+            },
             chats: null,
             isMultipleChats: false,
             multiClient: null,
@@ -102,7 +105,9 @@ export default {
                     this.project = event.data.project;
                     this.requireName = event.data.requireName ?? true;
                     this.pushToken = event.data.pushToken;
-                    this.imgModalOptions = event.data.imgModalOptions;
+                    if (event.data.imgModalOptions) {
+                        this.imgModalOptions = event.data.imgModalOptions;
+                    }
                     this.chats = event.data.chats;
                     this.isMultipleChats = event.data.isMultipleChats;
                     this.metadata = event.data.metadata;
