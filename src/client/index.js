@@ -50,7 +50,7 @@ class Client {
     if (channel && this.multiClientAuth[channel]) {
       this.setAuth(this.multiClientAuth[channel]);
     } else {
-        client.logMessage('Неверный канал')
+        console.log('Неверный канал')
     }
   }
 
@@ -520,17 +520,6 @@ class Client {
     return source;
   }
 
-  logMessage(message) {
-    return this._enqueueRequest("/log/message",
-        { Widget: true,
-          Level: 2,
-          Message: message,
-        },
-        {
-            shouldRetry: () => false
-        }
-    );
-  }
   _enqueueRequest (url, data, options = { timeout: 0, shouldRetry: null }) {
     const req = new Request(url, data, options);
     const promise = new Promise((resolve, reject) => {
