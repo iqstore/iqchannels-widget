@@ -8,8 +8,6 @@ import AppError, { ErrExpired, ErrFileImageDimensionsTooLarge, ErrFileTypeNotAll
 import Relations from './relations';
 import Request from './request';
 import { reactive } from 'vue';
-import { imageSize } from "../lib/files";
-import client from '../../client';
 
 
 const XClientAuthorizationHeader = 'X-Client-Authorization';
