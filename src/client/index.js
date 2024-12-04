@@ -21,7 +21,6 @@ class Client {
     this.authSessionID = null;
     this.multiClientAuth = {};
     this.iQVersion = null;
-    this.configFiles = {};
     this.state = reactive({
       error: null
     });
@@ -448,32 +447,6 @@ class Client {
     return this.get(`/files/get_file/${fileId}`, {});
   }
 
-  checkFileBeforeUpload(file, type, onError) {
-    let err = null;
-    if (type === 'image') {
-      imageSize(file).then(({ height, width }) => {
-        if (height > this.configFiles.MaxImageHeight || width > this.configFiles.MaxImageWidth) {
-          err = ErrFileImageDimensionsTooLarge;
-        }
-      });
-    }
-    if (file.size > this.configFiles.MaxFileSizeMb*1024*1024) {
-      err = ErrMaxFileSize;
-    }
-    const split = file.name.split('.');
-    const ext = split[split.length - 1];
-    if (this.configFiles.ForbiddenExtensions && this.configFiles.ForbiddenExtensions.includes(ext) ||
-      this.configFiles.AllowedExtensions && !this.configFiles.AllowedExtensions.includes(ext)
-    ) {
-      err = ErrFileTypeNotAllowed;
-    }
-    if (err) {
-      return new Promise((resolve, reject) => {
-        reject(onError(err));
-      })
-    }
-    return null;
-  }
 
   uploadFile (file, onSuccess, onError, onProgress) {
     let type = 'file';
@@ -483,10 +456,6 @@ class Client {
 
     if (file.type.toString().startsWith('audio')) {
       type = 'audio';
-    }
-    const checking = this.checkFileBeforeUpload(file, type, onError);
-    if (checking) {
-      return checking;
     }
     const data = new FormData();
     data.append('Type', type);

@@ -112,9 +112,6 @@ export default {
                     client.version().then(version => {
                         client.iQVersion = version?.Data?.Version;
                     });
-                    client.filesConfig().then(resp => {
-                        client.configFiles = resp?.Result;
-                    });
                     break;
 
                 case 'close':
