@@ -76,6 +76,11 @@ export default {
             setTimeout(() => {
                 this.typingVisible = false;
             }, 2500);
+        },
+
+        textTyped: function (newValue, oldValue) {
+            // Need to wait next event loop cycle to resize input to match height of initial text appended through appenText
+            setTimeout(() => this.resizeTextarea(oldValue), 0)
         }
     },
 
@@ -403,14 +408,11 @@ export default {
         },
 
         handleChange() {
-            const previousValue = this.textTyped
             const messageText = this.$refs.text.value
                 .replace(/[\r\n]{2,}/g, "\n")
                 .replace(/^[\s]+|[\s]+$/gm, "");
             this.titleVisible = !(this.$refs.text.value && messageText);
             this.textTyped = messageText;
-
-            this.resizeTextarea(previousValue);
 
             this.startTyping();
         },
@@ -436,11 +438,10 @@ export default {
                 return;
             }
 
-            // If scrollHeight is less than minimum value, no need to change anything, stay at minimum height
-            if (target.scrollHeight < TEXTAREA_HEIGHT) return
-
-            // Make textarea bigger 
-            target.style.height = target.scrollHeight + "px";
+            // Make textarea bigger if needed
+            if (target.scrollHeight > TEXTAREA_HEIGHT) {
+                target.style.height = target.scrollHeight + "px";
+            }
         },
 
         focusInput() {
