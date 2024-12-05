@@ -10,7 +10,7 @@ import { humanSize } from '../../lib/filters';
 import UploadFile from "../components/upload-file.vue";
 
 const TYPING_INTERVAL = 2000;
-const TEXTAREA_HEIGHT = '32px';
+const TEXTAREA_HEIGHT = 32;
 
 export default {
     components: { UploadFile },
@@ -57,6 +57,11 @@ export default {
 
         typingDisplay: function () {
             return this.typingVisible && this.operatorTyping && this.operatorTyping.Type === 'typing' && this.operatorTyping.Actor === 'user';
+        },
+
+        textTyped: function (newValue, oldValue) {
+            // Need to wait next event loop cycle to resize input to match height of initial text appended through appenText
+            setTimeout(() => this.resizeTextarea(oldValue), 0)
         }
     },
 
@@ -329,7 +334,7 @@ export default {
 
         resetReplayedMsg() {
             this.msgVisible = false;
-            this.$refs.text.style.height = TEXTAREA_HEIGHT;
+            this.$refs.text.style.height = TEXTAREA_HEIGHT + "px";
         },
 
         // Private
@@ -409,21 +414,34 @@ export default {
             this.titleVisible = !(this.$refs.text.value && messageText);
             this.textTyped = messageText;
 
-            this.resizeTextarea();
-
             this.startTyping();
         },
 
-        resizeTextarea() {
+        // Change textarea height on value change
+        resizeTextarea(previousValue) {
+            // Get textarea element
             const target = this.$refs.text;
 
-            target.style.height = TEXTAREA_HEIGHT;
+            // Set height to 0 to accurately measure situations where the textarea should shrink.
+            // Not needed when text is set to empty field or continues already typed text: 
+            // in these cases textarea should only become bigger.
+            if (!previousValue.length || !this.textTyped.startsWith(previousValue)) {
+                target.style.height = ''
+            }
+
+            // Set the minimum height
+            target.style.height = TEXTAREA_HEIGHT + "px";
+
+            // If current height is bigger than the widget itself, cut height down to header
             if (target.scrollHeight > document.documentElement.clientHeight) {
                 target.style.height = (document.documentElement.clientHeight - 120) + "px";
                 return;
             }
 
-            target.style.height = (target.scrollHeight) + "px";
+            // Make textarea bigger if needed
+            if (target.scrollHeight > TEXTAREA_HEIGHT) {
+                target.style.height = target.scrollHeight + "px";
+            }
         },
 
         focusInput() {
