@@ -57,11 +57,6 @@ export default {
 
         typingDisplay: function () {
             return this.typingVisible && this.operatorTyping && this.operatorTyping.Type === 'typing' && this.operatorTyping.Actor === 'user';
-        },
-
-        textTyped: function (newValue, oldValue) {
-            // Need to wait next event loop cycle to resize input to match height of initial text appended through appenText
-            setTimeout(() => this.resizeTextarea(oldValue), 0)
         }
     },
 
@@ -81,6 +76,11 @@ export default {
             setTimeout(() => {
                 this.typingVisible = false;
             }, 2500);
+        },
+
+        textTyped: function (newValue, oldValue) {
+            // Need to wait next event loop cycle to resize input to match height of initial text appended through appenText
+            setTimeout(() => this.resizeTextarea(oldValue), 0)
         }
     },
 
