@@ -362,6 +362,7 @@ export default {
                     button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
                         span {{ getProductMsgText(group.LastMessage) }}
                     button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
+                div(v-if="group.LastMessage", :id="'message-'+group.LastMessage?.Id")
             rating#rating(
                 v-if="group.Rating",
                 :rating="group.Rating",
