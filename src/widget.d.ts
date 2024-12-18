@@ -8,10 +8,11 @@ declare class IQChannelsWidget extends EventEmitter {
         width?: number;
         padBody?: boolean;
         requireName?: boolean;
-        iconOptions?: IconOptions;
+        iconOptions?: IconOptions; // deprecated
         DOMIdentifier?: string;
         chats?: Chat[];
-        enableImgModals?: boolean;
+        enableImgModals?: boolean; // deprecated
+        imgModalOptions?: ImgModalOptions;
     });
 
     open(text?: string): void;
@@ -43,6 +44,13 @@ interface WidgetError {
     retryAttempt?: number,
 }
 
+interface ImgModalOptions {
+    enabled: boolean;
+    state: ImgModalState;
+}
+
+type ImgModalState = 'mobile' | 'web';
+
 type WidgetErrorType = "connetion"
 
 interface Rating {
@@ -61,7 +69,7 @@ interface Rating {
 
 type RatingState = "pending" | "ignored" | "rated";
 
-export interface ChatMessage {
+interface ChatMessage {
     Id: number;
     ReplyToMessageId?: number;
     ChatId: number;
@@ -114,7 +122,7 @@ interface Chat {
     credentials?: string;
 }
 
-namespace EventEmitter {
+declare namespace EventEmitter {
     type EventListener = (...args: any[]) => void;
     type EmitterMethod = (type: string, listener: EventListener) => void;
 
@@ -129,5 +137,5 @@ namespace EventEmitter {
 function EventEmitter(obj?: any): EventEmitter.Emitter;
 
 declare namespace window {
-    export const IQChannelsWidget: typeof IQChannelsWidget;
+    export let IQChannelsWidget: IQChannelsWidget;
 }

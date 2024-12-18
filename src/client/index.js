@@ -4,10 +4,11 @@ import 'es6-promise/auto';
 import 'event-source-polyfill';
 import jsSHA from 'jssha';
 import config from '../config';
-import AppError, { ErrExpired } from './errors';
+import AppError, { ErrExpired, ErrFileImageDimensionsTooLarge, ErrFileTypeNotAllowed, ErrMaxFileSize } from './errors';
 import Relations from './relations';
 import Request from './request';
 import { reactive } from 'vue';
+
 
 const XClientAuthorizationHeader = 'X-Client-Authorization';
 
@@ -47,7 +48,7 @@ class Client {
     if (channel && this.multiClientAuth[channel]) {
       this.setAuth(this.multiClientAuth[channel]);
     } else {
-      console.error('Неверный канал');
+        console.log('Неверный канал')
     }
   }
 
@@ -305,8 +306,8 @@ class Client {
     return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId, Rated: rated });
   }
 
-  getChatSettings (channel) {
-    return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`, {}, { shouldRetry: (error) => !error });
+  getChatSettings (channel, clientId) {
+    return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`, { ClientId: clientId }, { shouldRetry: (error) => !error });
   }
 
   openSystemChat (channel) {
@@ -351,6 +352,10 @@ class Client {
 
   version () {
     return this._enqueueRequest(`/chats/version`, {}, { shouldRetry: (error) => !error });
+  }
+
+  filesConfig() {
+    return this.get(`/files/config`, {}, { shouldRetry: (error) => !error })
   }
 
   channelPushToken (channel, type, token) {
@@ -441,6 +446,7 @@ class Client {
   getFile (fileId) {
     return this.get(`/files/get_file/${fileId}`, {});
   }
+
 
   uploadFile (file, onSuccess, onError, onProgress) {
     let type = 'file';
@@ -555,18 +561,16 @@ class Client {
 	      this._triggerFlush({ clearSending: true });
 	    })
 	    .catch(error => {
-	      this.state.error = { type: 'connection', data: error, retryAttempt: req.retryAttempt };
-	      const shouldRetry = req.shouldRetry(error);
-	      if (shouldRetry) {
-	        const timeout = req.retryTimeout();
-	        console.log(`Request to ${req.url} failed, retry in ${timeout}ms, error: ${error}`);
-	        this.sendQueue.unshift(req);
-	        this._triggerFlush({ timeout: timeout, clearSending: true });
-	      } else {
-	        console.log(`Request to ${req.url} failed, error: ${error}`);
-	        req.error(error);
-	        this._triggerFlush({ clearSending: true });
-	      }
+            const shouldRetry = req.shouldRetry(error);
+            if (shouldRetry) {
+                this.state.error = { type: 'connection', data: error, retryAttempt: req.retryAttempt };
+                const timeout = req.retryTimeout();
+                this.sendQueue.unshift(req);
+                this._triggerFlush({ timeout: timeout, clearSending: true });
+	        } else {
+                req.error(error);
+                this._triggerFlush({ clearSending: true });
+	        }
 	    });
 	}
 

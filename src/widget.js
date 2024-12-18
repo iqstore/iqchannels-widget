@@ -1,6 +1,7 @@
 import EventEmitter from 'event-emitter';
 import './widget-normalize.scss';
 import './widget.scss';
+import { humanDateTime } from "./lib/filters";
 
 function getBaseUrl() {
 	const scripts = document.getElementsByTagName('script');
@@ -37,6 +38,17 @@ function objectAssign(dst, src) {
 	return to;
 }
 
+function clickDownload(url) {
+	const a = document.createElement("a");
+	a.style.display = "none";
+	a.href = url;
+	a.target = "blank";
+	a.download = "iQChannels_file";
+	document.body.appendChild(a);
+	a.click();
+	a.remove();
+}
+
 function cleanIconOptions(iconOptions) {
 	let show = iconOptions?.show !== undefined ? iconOptions.show : defaultIconOptions.show;
 
@@ -71,7 +83,11 @@ class IQChannelsWidget extends EventEmitter {
 			iconOptions = {},
 			DOMIdentifier,
 			chats = [],
-			enableImgModals = true
+            metadata = null,
+			imgModalOptions = {
+				enabled: true,
+				state: 'web'
+			},
 		}
 	) {
 		super();
@@ -79,15 +95,23 @@ class IQChannelsWidget extends EventEmitter {
 
 		this.mode = mode === 'mobile' ? mode : 'web';
 		this.width = this.mode === 'mobile' ? window.innerWidth : width;
+		if (this.imgModalOptions) {
+			this.imgModalOptions.state = this.mode
+		}
 		this.channel = channel;
 		this.credentials = credentials || '';
 		this.project = project || '';
 		this.padBody = padBody;
 		this.requireName = requireName;
+
+        this.prepareMetadata(metadata);
+
+        this.iconOptions = cleanIconOptions(iconOptions);
+
 		this.pushToken = null;
 		this.opened = false;
 		this.DOMIdentifier = DOMIdentifier || null;
-		this.enableImgModals = enableImgModals;
+		this.imgModalOptions = imgModalOptions;
 		this.chats = chats;
 		this.isMultipleChats = this.chats.length > 0;
 
@@ -119,8 +143,40 @@ class IQChannelsWidget extends EventEmitter {
 
 		this.frameContainer.appendChild(widgetDiv);
 
-        this.initIcon();
+		this.initIcon();
 	}
+
+    prepareMetadata = (metadata) => {
+        this.metadata = JSON.parse(metadata || '{}');
+        if (this.metadata.version) {
+            this.metadata.Version = this.metadata.version;
+        }
+        if (this.metadata.manufacturer) {
+            this.metadata.Manufacturer = this.metadata.manufacturer;
+        }
+        if (this.metadata.model) {
+            this.metadata.Model = this.metadata.model;
+        }
+        delete this.metadata.version;
+        delete this.metadata.manufacturer;
+        delete this.metadata.model;
+
+        this.metadata.Fields = {
+            ...this.metadata,
+        }
+        delete this.metadata.Fields.Version;
+        delete this.metadata.Fields.OS;
+        delete this.metadata.Fields.Model;
+        delete this.metadata.Fields.Manufacturer;
+
+        if (!Object.keys(this.metadata.Fields).length) {
+            delete this.metadata.Fields;
+        }
+
+        if (!Object.keys(this.metadata).length) {
+            this.metadata = null;
+        }
+    }
 
 	initIcon = () => {
 		this.icon = document.createElement('a');
@@ -144,19 +200,19 @@ class IQChannelsWidget extends EventEmitter {
 
 		this.icon.appendChild(svg);
 
-        this.icon.style.display = 'none';
+		this.icon.style.display = 'none';
 	}
 
-    displayIcon = () => {
-        let iconOptions = cleanIconOptions(this.iconOptions);
-        
-        this.icon.style.display = iconOptions.show ? 'block' : 'none';
+	displayIcon = () => {
+		let iconOptions = cleanIconOptions(this.iconOptions);
+
+		this.icon.style.display = iconOptions.show ? 'block' : 'none';
 		for (const property in iconOptions.style) {
 			if (iconOptions.style.hasOwnProperty(property)) {
 				this.icon.style[property] = iconOptions.style[property];
 			}
 		}
-    }
+	}
 
 	checkPageIsReady = () => {
 		switch (document.readyState) {
@@ -194,7 +250,7 @@ class IQChannelsWidget extends EventEmitter {
 		// Find and store frame window to post messages
 		const frame = document.getElementById('iqchannels-widget-iframe');
 		this.frameWindow = frame.contentWindow || frame.contentDocument.defaultView;
-
+        
 		frame.addEventListener('load', () => {
 			const event = newChatEvent('init', {
 				channel: this.channel,
@@ -202,8 +258,9 @@ class IQChannelsWidget extends EventEmitter {
 				mode: this.mode,
 				project: this.project,
 				requireName: this.requireName,
+                metadata: this.metadata,
 				pushToken: this.pushToken,
-				enableImgModals: this.enableImgModals,
+				imgModalOptions: this.imgModalOptions,
 				chats: this.chats,
 				isMultipleChats: this.isMultipleChats,
 			});
@@ -312,6 +369,7 @@ class IQChannelsWidget extends EventEmitter {
 				break;
 
 			case 'iqchannels-widget-file':
+				console.debug("widget: iqchannels-widget-file", data);
 				this.emit('file-clicked', data);
 				break;
 
@@ -334,8 +392,16 @@ class IQChannelsWidget extends EventEmitter {
 				this.emit('error', JSON.parse(data));
 				break;
 
+			case 'iqchannels-image':
+				console.debug("widget: iqchannels-image", data);
+				if (!JSON.parse(data)) {
+					break;
+				}
+				this.showImgModal(JSON.parse(data));
+				break;
+
 			case 'iqchannels-ready':
-		        this.displayIcon();
+				this.displayIcon();
 				this.emit('ready');
 				break;
 
@@ -393,6 +459,74 @@ class IQChannelsWidget extends EventEmitter {
 	sendRatingData = (rating) => {
 		const event = newChatEvent('get-rating', rating);
 		this.frameWindow.postMessage(JSON.stringify(event), '*');
+	}
+
+	showImgModal = (modalImageMsg) => {
+		const modal = document.createElement('div');
+		modal.className = 'iqchannels-modal';
+		const header = document.createElement('div');
+		header.className = 'iqchannels-modal_img_header';
+		const closeIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		closeIcon.setAttribute('height', '1em');
+		closeIcon.setAttribute('viewBox', '0 0 448 512');
+		closeIcon.innerHTML = '<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>';
+		closeIcon.addEventListener('click', () => {
+			document.body.removeChild(modal);
+		});
+
+		const closeIconContainer = document.createElement('div');
+		closeIconContainer.className = 'iqchannels-modal_img_header-icon';
+		closeIconContainer.appendChild(closeIcon);
+		header.appendChild(closeIconContainer);
+
+		const titleContainer = document.createElement('div');
+		titleContainer.className = 'iqchannels-modal_img_header-title';
+
+		const authorSpan = document.createElement('span');
+		authorSpan.textContent = modalImageMsg.Author === 'user'
+			? modalImageMsg.User.DisplayName
+			: modalImageMsg.Client.Name;
+
+		const dateSpan = document.createElement('span');
+		dateSpan.className = 'iqchannels-modal_img_header-title_date';
+		dateSpan.textContent = humanDateTime(new Date(modalImageMsg.CreatedAt));
+
+		titleContainer.appendChild(authorSpan);
+		titleContainer.appendChild(dateSpan);
+		header.appendChild(titleContainer);
+
+		const downloadLink = document.createElement('a');
+		downloadLink.addEventListener('click', () => {
+			clickDownload(modalImageMsg.File.ThumbnailURL);
+		});
+
+		const downloadIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		downloadIcon.setAttribute('height', '1em');
+		downloadIcon.setAttribute('viewBox', '0 0 512 512');
+		downloadIcon.innerHTML = '<path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/>';
+
+		const downloadIconContainer = document.createElement('div');
+		downloadIconContainer.className = 'iqchannels-modal_img_header-icon';
+		downloadIconContainer.appendChild(downloadIcon);
+		downloadLink.appendChild(downloadIconContainer);
+		header.appendChild(downloadLink);
+
+		const imageContainer = document.createElement('div');
+		imageContainer.className = 'iqchannels-modal_img';
+		imageContainer.style.backgroundImage = `url('${modalImageMsg.File.ThumbnailURL}')`;
+
+		let footer;
+		if (modalImageMsg.Text) {
+			footer = document.createElement('div');
+			footer.className = 'iqchannels-modal_img_footer';
+			footer.textContent = modalImageMsg.Text;
+		}
+
+		modal.appendChild(header);
+		modal.appendChild(imageContainer);
+		if (footer) modal.appendChild(footer);
+
+		document.body.appendChild(modal);
 	}
 }
 

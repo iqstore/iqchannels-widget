@@ -10,14 +10,8 @@ export default {
         group: Object,
         groups: Array,
         firstUnreadMessageId: Number,
-        enableImgModals: Boolean,
-        animateMsgIds: Array
-    },
-
-    data: function () {
-        return {
-            animateMsgIds: {},
-        }
+        imgModalOptions: Object,
+        animateMsgIds: Object
     },
 
     methods: {
@@ -27,6 +21,12 @@ export default {
 
         scrollToMessage(msg, event) {
             this.$emit("scroll-to-message", msg, event);
+        },
+
+        scrollToBottom(msg, event) {
+            if (!this.firstUnreadMessageId) {
+                this.$emit("scroll-to-bottom", msg, event);
+            }
         },
 
         sendMessage(messageText, botpressPayload, url) {
@@ -39,6 +39,16 @@ export default {
 
         retryUpload(localId) {
             this.$emit("retry-upload", localId);
+        },
+
+        clickFileImage(msg) {
+            console.debug("message-list: clickFileImage", msg);
+            this.$emit("click-file-image", msg);
+        },
+
+        clickFile(msg, event) {
+            console.debug("message-list: clickFile", msg, event);
+            this.$emit("click-file", msg, event);
         },
     }
 }
@@ -58,14 +68,17 @@ export default {
             v-if="!msg.Rating",
             @reply-msg="optionClicked",
             @scroll-to-message="scrollToMessage",
+            @scroll-to-bottom="scrollToBottom",
             @send-message="sendMessage",
             @cancel-upload="cancelUpload",
             @retry-upload="retryUpload",
+            @click-file-image="clickFileImage",
+            @click-file="clickFile",
             :group="group",
             :groups="groups",
             :msg="msg",
             :searching="searching",
-            :enableImgModals="enableImgModals",
+            :imgModalOptions="imgModalOptions",
         )
 
 

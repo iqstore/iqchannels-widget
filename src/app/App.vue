@@ -20,7 +20,10 @@ export default {
 
         const onClose = () => parent.postMessage({ type: 'iqchannels-widget-close' }, '*');
         const onMessageReceived = () => parent.postMessage({ type: 'iqchannels-widget-message' }, '*');
-        const onFileClicked = (url) => parent.postMessage({ type: 'iqchannels-widget-file', data: url }, '*');
+        const onFileClicked = (url) => {
+            console.debug("App: onFileClicked", url);
+            return parent.postMessage({ type: 'iqchannels-widget-file', data: url }, '*');
+        };
         const onUnreadChanged = (count) => parent.postMessage({ type: 'iqchannels-widget-unread', data: count }, '*');
         const onLongTap = (msg) => parent.postMessage({
             type: 'iqchannels-widget-longtap',
@@ -33,6 +36,10 @@ export default {
             } else appError.value = error;
 
             parent.postMessage({ type: 'iqchannels-error', data: JSON.stringify(error) }, "*");
+        };
+        const onImageClicked = (msg) => {
+            console.debug("App: onImageClicked", msg);
+            return parent.postMessage({ type: 'iqchannels-image', data: JSON.stringify(msg) });
         };
 
         provide('client', client);
@@ -52,6 +59,7 @@ export default {
             onLongTap,
             onRating,
             onError,
+            onImageClicked,
 
             appError,
         }
@@ -75,10 +83,11 @@ export default {
             replayedMsg: null,
             scrollToMsg: null,
             rating: null,
-            enableImgModals: null,
+            imgModalOptions: null,
             chats: null,
             isMultipleChats: false,
             multiClient: null,
+            metadata: null,
         };
     },
 
@@ -99,9 +108,10 @@ export default {
                     this.project = event.data.project;
                     this.requireName = event.data.requireName ?? true;
                     this.pushToken = event.data.pushToken;
-                    this.enableImgModals = event.data.enableImgModals;
+                    this.imgModalOptions = event.data.imgModalOptions;
                     this.chats = event.data.chats;
                     this.isMultipleChats = event.data.isMultipleChats;
+                    this.metadata = event.data.metadata;
 
                     this.maybeSendPushToken();
                     this.getGreetings();
@@ -225,6 +235,7 @@ export default {
 
             client.refreshClient(this.credentials);
         },
+
         getGreetings() {
             client.getWidgetGreetingsWithRequestType(this.channel).then(res => {
                 this.greetings = {
@@ -278,6 +289,7 @@ export default {
                     @on-unread-changed='onUnreadChanged',
                     @on-message-received='onMessageReceived',
                     @on-file-clicked='onFileClicked',
+                    @on-image-clicked='onImageClicked',
                     @on-close='onClose',
                     @on-logout='onLogout',
                     @on-longtap="onLongTap",
@@ -292,6 +304,7 @@ export default {
                     :rating="rating",
                     :closeSystemChat="closeSystemChat",
                     :chats="chats",
+                    :metadata="metadata"
                 )
             template(v-else)
                 template(v-if="!client")
@@ -302,6 +315,7 @@ export default {
                     @on-unread-changed='onUnreadChanged'
                     @on-message-received='onMessageReceived'
                     @on-file-clicked='onFileClicked'
+                    @on-image-clicked='onImageClicked'
                     @on-close='onClose'
                     @on-logout='onLogout'
                     @on-longtap="onLongTap"
@@ -317,5 +331,6 @@ export default {
                     :rating="rating"
                     :closeSystemChat="closeSystemChat"
                     :app-error="appError",
+                    :metadata="metadata"
                 )
 </template>

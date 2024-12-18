@@ -1,6 +1,8 @@
 <script>
 import client from "../../client";
 
+const DEFAULT_RATING_MAX_VALUE = 5;
+
 export default {
     props: {
         rating: Object,
@@ -17,6 +19,15 @@ export default {
         if (this.poll && this.rating.State === 'poll') {
             this.start = !this.poll.ShowOffer;
         }
+    },
+
+    watch: {
+        index: function (newValue, oldValue) {
+            this.$emit("on-poll-question-chaned", this.rating.Id, newValue);
+        },
+        start: function (newValue, oldValue) {
+            this.$emit("on-poll-question-chaned", this.rating.Id, this.index);
+        },
     },
 
     data() {
@@ -41,7 +52,10 @@ export default {
         },
 
         setPollStars(value) {
-            this.setRating(value);
+            if (this.poll.Questions[this.index].AsTicketRating) {
+                this.rating.Value = value;
+            }
+            this.value = value;
             let temp = [...this.pollResult];
             temp[this.index] = {
                 Type: "stars",
@@ -112,6 +126,10 @@ export default {
         },
 
         setPollVariantScale(value) {
+            if (this.poll.Questions[this.index].AsTicketRating) {
+                this.rating.Value = value;
+            }
+            this.value = value;
             let temp = [...this.pollResult];
             temp[this.index] = {
                 Type: "scale",
@@ -124,26 +142,14 @@ export default {
             this.pollResult = temp;
         },
 
-        isRatingPollAnswerEmpty() {
-            for (const arg of this.pollResult) {
-                if (Object.keys(arg).length <= 1) {
-                    return true;
-                }
-            }
-            return false;
-        },
-
         sendRatingPoll() {
-            for (const arg of this.pollResult) {
-                if (Object.keys(arg).length <= 1) {
-                    return;
+            const result = [];
+            this.pollResult.forEach(el => {
+                if (Object.keys(el).length !== 0) {
+                    result.push(el);
                 }
-            }
-
-            if (this.poll.Questions[this.index].AsTicketRating) {
-                this.sendRating();
-            }
-            client.sendPoll(this.pollResult);
+            });
+            client.sendPoll(result);
             this.finishPoll();
         },
 
@@ -194,14 +200,14 @@ export default {
         finishRating() {
             client.finishPoll(this.rating.Id, this.poll.Id, false).then(res => {
                 if (res.OK) {
-                    this.rating.State = "finished";
+                    this.rating.State = "ignored";
                     this.start = false;
                 }
             });
         },
 
         ignoreRating() {
-            this.rating.Value = 0;
+            this.rating.Value = null;
             this.$emit("ignore-rating", this.rating);
         },
 
@@ -226,6 +232,24 @@ export default {
                 event.preventDefault();
                 this.sendRating();
             }
+        },
+
+        isRated() {
+            return (this.rating.State === "rated" || this.rating.State === "finished") && this.rating.Value != null;
+        },
+
+        getRatingScaleMaxValue() {
+            let maxValue = DEFAULT_RATING_MAX_VALUE;
+            if (this.rating && this.rating.State === "finished" && this.rating.RatingPoll) {
+                for (const question of this.rating.RatingPoll?.Questions) {
+                    if (question.AsTicketRating && question.Type === "scale") {
+                        maxValue = question.Scale?.ToValue
+                    }
+                }
+
+            }
+
+            return maxValue
         }
     }
 };
@@ -235,8 +259,8 @@ export default {
     .rating
         .rated(v-if="rating.State === 'ignored'")
             span Без оценки оператора
-        .rated(v-if="rating.State === 'rated' && rating.Value")
-            span Оценка оператора: {{ rating.Value }} из 5
+        .rated(v-if="isRated()")
+            span Оценка оператора: {{ rating.Value }} из {{ getRatingScaleMaxValue() }}
 
         .pending(v-if="rating.State === 'pending'")
             .button-close(@click="ignoreRating")
@@ -314,7 +338,7 @@ export default {
 
             .buttons-next-prev.mt(v-if="this.poll.Questions.length !== 1")
                 button.button(@click.prevent="prevQuestion()", :disabled="index === 0") Назад
-                button.button(@click.prevent="nextQuestion()", :disabled="isRatingPollAnswerEmpty() && index === poll.Questions.length - 1") Далее
+                button.button(@click.prevent="nextQuestion()") Далее
 
             .buttons-answer.mt(v-if="this.poll.Questions.length === 1")
                 button.button(@click="sendRatingPoll()") Отправить ответ
@@ -324,6 +348,7 @@ export default {
                 svg(xmlns="http://www.w3.org/2000/svg" height="3em" fill="#2D98F4" viewBox="0 0 512 512")
                     path(d="M190.5 68.8L225.3 128H224 152c-22.1 0-40-17.9-40-40s17.9-40 40-40h2.2c14.9 0 28.8 7.9 36.3 20.8zM64 88c0 14.4 3.5 28 9.6 40H32c-17.7 0-32 14.3-32 32v64c0 17.7 14.3 32 32 32H480c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32H438.4c6.1-12 9.6-25.6 9.6-40c0-48.6-39.4-88-88-88h-2.2c-31.9 0-61.5 16.9-77.7 44.4L256 85.5l-24.1-41C215.7 16.9 186.1 0 154.2 0H152C103.4 0 64 39.4 64 88zm336 0c0 22.1-17.9 40-40 40H288h-1.3l34.8-59.2C329.1 55.9 342.9 48 357.8 48H360c22.1 0 40 17.9 40 40zM32 288V464c0 26.5 21.5 48 48 48H224V288H32zM288 512H432c26.5 0 48-21.5 48-48V288H288V512z")
                 .title.color-thanks {{ thanksFeedbackText }}
+    div(:id="'rating-'+rating.Id+'-index-'+index")
 
 </template>
 

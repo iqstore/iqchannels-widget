@@ -23,9 +23,10 @@ export default {
         typing: Object,
         rating: Number,
         client: Object,
-        enableImgModals: Boolean,
+        imgModalOptions: Object,
         isMultiple: Boolean,
         appError: Object,
+        metadata: Object,
     },
 
     created() {
@@ -151,8 +152,8 @@ export default {
             this.scrollToMessage(newValue)
         },
         rating: function (newRating) {
-            if (newRating === 0) {
-                this.ignoreRating(0);
+            if (newRating == null) {
+                this.ignoreRating(null);
             }
         },
         closeSystemChat: function () {
@@ -206,12 +207,25 @@ export default {
 
         scrollToBottom() {
             const chat = document.getElementById('chat');
+
             chat.scrollTo({
                 top: chat.scrollHeight + chat.scrollTop + chat.offsetHeight,
                 behavior: 'smooth'
             });
 
             this.resetUnreadCount();
+        },
+
+        scrollToRating(ratingId, index) {
+            const observer = new MutationObserver(() => {
+                const rating = document.getElementById('rating-' + ratingId + '-index-' + index);
+                if (rating) {
+                    observer.disconnect();
+                    rating.scrollIntoView(false);
+                }
+            })
+
+            observer.observe(document.body, { childList: true, subtree: true })
         },
 
         resetUnreadCount() {
@@ -387,8 +401,9 @@ export default {
             }
         },
 
-        appendLocalMessage(messageForm) {
+        appendLocalMessage(messageForm, scrollToMessage) {
             const message = Object.assign({}, messageForm, {
+                Id: new Date().getTime() + "",
                 Client: this.client,
                 ClientId: this.client.Id,
                 Author: "client",
@@ -396,7 +411,8 @@ export default {
                 ReplyToMessageId: messageForm.ReplyToMessageId
             });
             this.firstUnreadMessageId = null;
-            this.appendMessage(message);
+
+            this.appendMessage(message, scrollToMessage);
             return message;
         },
 
@@ -456,7 +472,10 @@ export default {
                         (msg.Id && msg.Id === message.Id) ||
                         msg.LocalId === message.LocalId
                     ) {
+                        const old = group.Messages[i].Id;
                         group.Messages[i] = { ...message };
+                        delete this.existingMsgIds[old];
+                        this.existingMsgIds[message.Id] = true;
 
                         if (i === group.Messages.length - 1) {
                             group.LastMessage = message;
@@ -480,7 +499,8 @@ export default {
                         (msg.Id && msg.Id === message.Id) ||
                         msg.LocalId === message.LocalId
                     ) {
-                        group.Messages.splice(i, 1);
+                        const deleted = group.Messages.splice(i, 1);
+                        delete this.existingMsgIds[deleted[0].Id];
                         if (group.Messages.length === 0) {
                             groups.splice(g, 1);
                         } else {
@@ -618,42 +638,41 @@ export default {
                     return;
                 }
             }
-            client.getChatSettings(this.channel).then(result => {
+            client.getChatSettings(this.channel, this.client.Id).then(result => {
                 const settings = result.Data
                 if (!settings) return;
 
                 this.systemChat = true
-                client.listTicketsByClient(this.channel, this.client.Id, { Open: true }).then(result => {
-                    if (result.Data.TotalCount) {
-                        this.systemChat = false;
-                        return;
-                    }
+                if (settings.TotalOpenedTickets) {
+                    this.systemChat = false;
+                    return;
+                }
 
-                    if (settings.GreetFrom === 'bot') {
-                        client.openSystemChat(this.channel)
-                    } else {
-                        const now = new Date()
-                        const message = {
-                            Id: now.getTime(),
-                            Author: "user",
-                            CreatedAt: now,
-                            Text: settings.Message,
-                            Payload: 'text',
-                            Read: true,
-                            UserId: now.getTime(),
-                            User: {
-                                DisplayName: settings.OperatorName,
-                                Name: settings.OperatorName,
-                                Active: true,
-                            }
-                        };
-                        this.appendMessage(message, true)
-                        setTimeout(() => {
-                            this.removeMessage(message);
-                            this.systemChat = false
-                        }, 1000 * settings.Lifetime)
-                    }
-                })
+                if (settings.GreetFrom === 'bot') {
+                    client.openSystemChat(this.channel)
+                } else {
+                    const now = new Date()
+                    const message = {
+                        Id: now.getTime(),
+                        Author: "user",
+                        CreatedAt: now,
+                        Text: settings.Message,
+                        Payload: 'text',
+                        Read: true,
+                        SystemMessage: true, // for auto-invite logic
+                        UserId: now.getTime(),
+                        User: {
+                            DisplayName: settings.OperatorName,
+                            Name: settings.OperatorName,
+                            Active: true,
+                        }
+                    };
+                    this.appendMessage(message, true)
+                    setTimeout(() => {
+                        this.removeMessage(message);
+                        this.systemChat = false
+                    }, 1000 * settings.Lifetime)
+                }
             })
         },
 
@@ -797,11 +816,11 @@ export default {
                 ignored => {
                     rating.Sending = null;
                     rating.State = ignored.State;
-                    rating.Value = 0;
+                    rating.Value = null;
                 },
                 error => {
                     rating.Sending = null;
-                    rating.Value = 0;
+                    rating.Value = null;
                 }
             );
         },
@@ -891,6 +910,7 @@ export default {
         },
 
         clickFile(file) {
+            console.debug("messenger: clickFile", file);
             if (file.Id) {
                 client.fileSignedUrl(file.Id).then(
                     url => {
@@ -903,7 +923,11 @@ export default {
             } else {
                 this.$emit("on-file-clicked", file);
             }
+        },
 
+        clickFileImg(msg) {
+            console.debug("messenger: clickFileImg", msg);
+            this.$emit("on-image-clicked", msg);
         },
 
         longTap(msg) {
@@ -980,7 +1004,7 @@ export default {
                         this.$emit("client-changed", event)
                         break;
                     default:
-                        console.log("Unhandled channel event", event);
+                        console.log("Unhandled channel event" + JSON.stringify(event))
                 }
                 this.lastEventId = event.Id;
             }
@@ -1104,7 +1128,10 @@ export default {
             } else {
                 messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
             }
-            this.appendLocalMessage(messageForm);
+
+            messageForm.Metadata = this.metadata;
+            this.appendLocalMessage(messageForm, true);
+
 
             client.channelSend(this.channel, messageForm);
         },
@@ -1172,6 +1199,9 @@ export default {
         initScrollEvents() {
             const chat = document.getElementById('chat');
             chat.addEventListener('scroll', event => {
+                if (this.$refs.chat.$refs.msgContextMenu.active) {
+                    this.$refs.chat.$refs.msgContextMenu.hideContextMenu();
+                }
                 const container = event.currentTarget;
                 const atTop = container.scrollTop === 0;
                 if (atTop) {
@@ -1245,7 +1275,7 @@ export default {
                 :channel="channel",
                 :singleChoices="singleChoices",
                 :searching="searching",
-                :enableImgModals="enableImgModals",
+                :imgModalOptions="imgModalOptions",
                 :firstUnreadMessageId="firstUnreadMessageId",
                 @cancel-upload="cancelUpload",
                 @retry-upload="retryUpload",
@@ -1257,8 +1287,11 @@ export default {
                 @ignore-info="ignoreInfo",
                 @long-tap="longTap",
                 @reply-msg="reply",
-                @scrollToMessage="(id) => scrollToFoundMessage(id)",
+                @scroll-to-message="(id) => scrollToFoundMessage(id)",
+                @scroll-to-bottom="() => scrollToBottom()",
+                @scroll-to-rating="(ratingId, index) => scrollToRating(ratingId, index)",
                 @click-file="clickFile",
+                @click-file-img="clickFileImg",
                 @download-file="downloadFile",
             )
             .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
