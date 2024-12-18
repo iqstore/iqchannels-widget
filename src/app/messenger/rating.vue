@@ -16,7 +16,7 @@ export default {
         if (this.poll) {
             this.pollResult = new Array(this.poll.Questions.length).fill({});
         }
-        if (this.poll && this.rating.State === 'poll') {
+        if (this.poll && this.rating.State === "poll") {
             this.start = !this.poll.ShowOffer;
         }
     },
@@ -42,11 +42,11 @@ export default {
             ratingComment: "",
             thanksFeedback: false,
             thanksFeedbackText: "",
+            tempStars: 0,
         };
     },
 
     methods: {
-
         startPoll() {
             this.start = true;
         },
@@ -121,7 +121,7 @@ export default {
             const widthPercentage = 100 / itemsCount;
 
             return {
-                gridTemplateColumns: `repeat(${itemsCount}, ${widthPercentage}%)`
+                gridTemplateColumns: `repeat(${itemsCount}, ${widthPercentage}%)`,
             };
         },
 
@@ -142,23 +142,14 @@ export default {
             this.pollResult = temp;
         },
 
-        isRatingPollAnswerEmpty() {
-            for (const arg of this.pollResult) {
-                if (Object.keys(arg).length <= 1) {
-                    return true;
-                }
-            }
-            return false;
-        },
-
         sendRatingPoll() {
-            for (const arg of this.pollResult) {
-                if (Object.keys(arg).length <= 1) {
-                    return;
+            const result = [];
+            this.pollResult.forEach((el) => {
+                if (Object.keys(el).length !== 0) {
+                    result.push(el);
                 }
-            }
-
-            client.sendPoll(this.pollResult);
+            });
+            client.sendPoll(result);
             this.finishPoll();
         },
 
@@ -175,6 +166,7 @@ export default {
                 return;
             }
             this.index++;
+            this.tempStars = 0;
         },
 
         setRating(value) {
@@ -183,22 +175,25 @@ export default {
         },
 
         finishPoll() {
-            client.finishPoll(this.rating.Id, this.poll.Id, true).then(res => {
-                if (res.OK) {
-                    this.rating.State = "finished";
-                    if (this.poll.FeedbackThanks) {
-                        this.thanksFeedback = true;
-                        this.thanksFeedbackText = this.poll.FeedbackThanksText;
+            client
+                .finishPoll(this.rating.Id, this.poll.Id, true)
+                .then((res) => {
+                    if (res.OK) {
+                        this.rating.State = "finished";
+                        if (this.poll.FeedbackThanks) {
+                            this.thanksFeedback = true;
+                            this.thanksFeedbackText =
+                                this.poll.FeedbackThanksText;
+                        }
+                        this.start = false;
+                        if (this.poll.FeedbackThanks) {
+                            const bye = setTimeout(() => {
+                                this.thanksFeedback = false;
+                                clearTimeout(bye);
+                            }, 1000);
+                        }
                     }
-                    this.start = false;
-                    if (this.poll.FeedbackThanks) {
-                        const bye = setTimeout(() => {
-                            this.thanksFeedback = false;
-                            clearTimeout(bye);
-                        }, 1000)
-                    }
-                }
-            });
+                });
         },
 
         sendRating() {
@@ -207,12 +202,14 @@ export default {
         },
 
         finishRating() {
-            client.finishPoll(this.rating.Id, this.poll.Id, false).then(res => {
-                if (res.OK) {
-                    this.rating.State = "ignored";
-                    this.start = false;
-                }
-            });
+            client
+                .finishPoll(this.rating.Id, this.poll.Id, false)
+                .then((res) => {
+                    if (res.OK) {
+                        this.rating.State = "ignored";
+                        this.start = false;
+                    }
+                });
         },
 
         ignoreRating() {
@@ -225,7 +222,7 @@ export default {
         },
 
         onMouseOverPoll(value) {
-            this.pollResult[this.index].AnswerStars = value;
+            this.tempStars = value;
         },
 
         onMouseOut() {
@@ -233,7 +230,7 @@ export default {
         },
 
         onMouseOutPoll() {
-            this.pollResult[this.index].AnswerStars = this.value;
+            this.tempStars = this.value;
         },
 
         onEnterPressed(event) {
@@ -244,7 +241,11 @@ export default {
         },
 
         isRated() {
-            return (this.rating.State === "rated" || this.rating.State === "finished") && this.rating.Value != null;
+            return (
+                (this.rating.State === "rated" ||
+                    this.rating.State === "finished") &&
+                this.rating.Value != null
+            );
         },
 
         getRatingScaleMaxValue() {
@@ -252,15 +253,14 @@ export default {
             if (this.rating.State === "finished" && this.rating.RatingPoll) {
                 for (const question of this.rating.RatingPoll?.Questions) {
                     if (question.AsTicketRating && question.Type === "scale") {
-                        maxValue = question.Scale.ToValue
+                        maxValue = question.Scale.ToValue;
                     }
                 }
-
             }
 
-            return maxValue
-        }
-    }
+            return maxValue;
+        },
+    },
 };
 </script>
 
@@ -310,7 +310,7 @@ export default {
             .title.mt {{ poll.Questions[index].Text }}
             .stars(@mouseout="onMouseOutPoll()", v-if="poll.Questions[index].Type === 'stars'")
                 .star(v-for="n in 5",
-                    :class="{'star-selected': n <= pollResult[index].AnswerStars}",
+                    :class="{'star-selected': n <= this.tempStars}",
                     @mouseover="onMouseOverPoll(n)",
                     @click.prevent="setPollStars(n)")
                     svg.star-background(aria-hidden="true" focusable="false"
@@ -347,7 +347,7 @@ export default {
 
             .buttons-next-prev.mt(v-if="this.poll.Questions.length !== 1")
                 button.button(@click.prevent="prevQuestion()", :disabled="index === 0") Назад
-                button.button(@click.prevent="nextQuestion()", :disabled="isRatingPollAnswerEmpty() && index === poll.Questions.length - 1") Далее
+                button.button(@click.prevent="nextQuestion()") Далее
 
             .buttons-answer.mt(v-if="this.poll.Questions.length === 1")
                 button.button(@click="sendRatingPoll()") Отправить ответ
@@ -370,7 +370,6 @@ export default {
     font-weight: bold;
     font-style: italic;
     text-align: center;
-
 }
 
 .pending {
@@ -402,7 +401,6 @@ export default {
     .stars {
         text-align: center;
         padding: 10px 0 20px;
-
     }
 
     .star {
@@ -432,7 +430,7 @@ export default {
         }
 
         .star-outline {
-            color: #2EB8FE;
+            color: #2eb8fe;
         }
 
         &:hover {
@@ -442,11 +440,11 @@ export default {
         &:hover,
         &.star-selected {
             .star-background {
-                color: #2EB8FE;
+                color: #2eb8fe;
             }
 
             .star-outline {
-                color: #2EB8FE;
+                color: #2eb8fe;
             }
         }
     }
@@ -466,12 +464,12 @@ export default {
 
     .buttons {
         text-align: center;
-        border-top: 1px solid #C8C7CC;
+        border-top: 1px solid #c8c7cc;
         display: flex;
         justify-content: space-between;
 
         div {
-            color: #2EB8FE;
+            color: #2eb8fe;
             width: 100%;
 
             font-weight: 400;
@@ -485,22 +483,21 @@ export default {
 
             &:hover {
                 cursor: pointer;
-                color: #2EB8FE;
+                color: #2eb8fe;
             }
 
             &:disabled {
-                color: #2EB8FE;
+                color: #2eb8fe;
             }
-
         }
 
         .ignore {
-            color: #2EB8FE;
-            border-right: 1px solid #C8C7CC;
+            color: #2eb8fe;
+            border-right: 1px solid #c8c7cc;
 
             &:hover {
                 cursor: pointer;
-                color: #2EB8FE;
+                color: #2eb8fe;
             }
         }
     }
@@ -515,13 +512,11 @@ export default {
     left: 0;
     z-index: 2;
     opacity: 0.3;
-
 }
 
 .disabled {
     opacity: 0.4;
     pointer-events: none;
-
 }
 
 .check-label {
@@ -544,7 +539,7 @@ export default {
 
 .poll_text {
     width: 85%;
-    border: 1px solid #C8C7CC;
+    border: 1px solid #c8c7cc;
     resize: none;
     padding: 10px;
     outline: none;
@@ -558,7 +553,7 @@ export default {
 }
 
 .color-thanks {
-    color: #2D98F4 !important;
+    color: #2d98f4 !important;
     font-size: 18px !important;
     margin-top: 5px !important;
 }
@@ -594,7 +589,7 @@ export default {
         button.button {
             border-bottom-left-radius: 5px;
             border-top-left-radius: 5px;
-            border-left: 1px #2EB8FE solid;
+            border-left: 1px #2eb8fe solid;
         }
     }
 
@@ -604,7 +599,7 @@ export default {
         button.button {
             border-bottom-right-radius: 5px;
             border-top-right-radius: 5px;
-            border-right: 1px #2EB8FE solid;
+            border-right: 1px #2eb8fe solid;
         }
     }
 
@@ -650,8 +645,8 @@ export default {
 
     &.button_one_of_list {
         background-color: white;
-        border: 1px #2EB8FE solid;
-        color: #2EB8FE;
+        border: 1px #2eb8fe solid;
+        color: #2eb8fe;
 
         &:hover {
             background-color: #3cbdff;
@@ -660,7 +655,7 @@ export default {
     }
 
     &.button_active {
-        background-color: #2EB8FE;
+        background-color: #2eb8fe;
         color: white;
     }
 
