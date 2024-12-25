@@ -324,10 +324,10 @@ export default {
             }
         },
 
-        onSubscriptionError(error) {
+        onSubscriptionError(error, data) {
             this.attemptCount++;
             const timeout = retryTimeout(this.attemptCount);
-            client.logMessage(`channelListen: Subscribe error, retry in ${timeout}ms:` + error);
+            client.logMessage(`channelListen: Subscribe error, retry in ${timeout}ms:` + error + `, event: ` + data);
             this.subscriptionTimeout = setTimeout(this.subscribe, timeout);
         },
 

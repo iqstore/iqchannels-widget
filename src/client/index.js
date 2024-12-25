@@ -540,7 +540,7 @@ class Client {
         }
       } catch (error) {
         source.close();
-        onError(error);
+        onError(error, message.data);
       }
     });
     source.addEventListener('error', error => {
