@@ -327,7 +327,7 @@ export default {
         onSubscriptionError(error) {
             this.attemptCount++;
             const timeout = retryTimeout(this.attemptCount);
-            client.logMessage(`Subscribe error, retry in ${timeout}ms:` + error);
+            client.logMessage(`channelListen: Subscribe error, retry in ${timeout}ms:` + error);
             this.subscriptionTimeout = setTimeout(this.subscribe, timeout);
         },
 
@@ -951,7 +951,7 @@ export default {
         },
 
         onChatTypeSelected(event) {
-            this.chatType = event.target.value;
+            this.chatType = event?.target.value;
             this.loadHistory();
         },
 
@@ -968,9 +968,9 @@ export default {
             let messagesReceived = false;
 
             for (let event of events) {
-                switch (event.Type) {
+                switch (event?.Type) {
                     case schema.ChatEventMessageCreated:
-                        if (this.handleIncomingMessage(event.Message)) {
+                        if (this.handleIncomingMessage(event?.Message)) {
                             messagesReceived = true;
                         }
                         break;
@@ -1028,7 +1028,7 @@ export default {
                 this.appendMessage(message);
 
                 const scrollOptions = {}
-                if (message.CreatedAt - lastMsg.CreatedAt > 200) {
+                if (message?.CreatedAt - lastMsg.CreatedAt > 200) {
                     scrollOptions.checkIsBottom = true
                     scrollOptions.scrollIsBottomValue = true
                 }
@@ -1052,7 +1052,7 @@ export default {
                 return;
             }
             message.Read = message.Received = true;
-            message.ReadAt = message.ReceivedAt = event.CreatedAt;
+            message.ReadAt = message.ReceivedAt = event?.CreatedAt;
             this.replaceMessage(message);
         },
 
@@ -1062,7 +1062,7 @@ export default {
                 return;
             }
             message.Listened = message.Received = true;
-            message.ListenedAt = message.ReceivedAt = event.CreatedAt;
+            message.ListenedAt = message.ReceivedAt = event?.CreatedAt;
             this.replaceMessage(message);
         },
 
@@ -1076,7 +1076,7 @@ export default {
                 return;
             }
             message.Received = true;
-            message.ReceivedAt = event.CreatedAt;
+            message.ReceivedAt = event?.CreatedAt;
             this.replaceMessage(message);
         },
 
@@ -1085,7 +1085,7 @@ export default {
         },
 
         handleIncomingUpdatedFile(event) {
-            const message = this.getMessageById(event.MessageId);
+            const message = this.getMessageById(event?.MessageId);
             if (!message) {
                 return;
             }
@@ -1204,7 +1204,7 @@ export default {
                 if (this.$refs.chat.$refs.msgContextMenu.active) {
                     this.$refs.chat.$refs.msgContextMenu.hideContextMenu();
                 }
-                const container = event.currentTarget;
+                const container = event?.currentTarget;
                 const atTop = container.scrollTop === 0;
                 if (atTop) {
                     this.onScrolledToTop()
