@@ -325,6 +325,8 @@ export default {
         },
 
         onSubscriptionError(error, data) {
+            console.log("onSubscriptionError", { error, data });
+
             this.attemptCount++;
             const timeout = retryTimeout(this.attemptCount);
             client.logMessage(`channelListen: Subscribe error, retry in ${timeout}ms:` + error + `, event: ` + data);

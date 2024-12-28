@@ -539,11 +539,15 @@ class Client {
           onMessage(events);
         }
       } catch (error) {
+        console.log("channelListen catch", {error});
+        
         source.close();
         onError(error, message.data);
       }
     });
     source.addEventListener('error', error => {
+        console.log("channelListen addEventListener error", {error});
+
       source.close();
       onError(error);
     });
