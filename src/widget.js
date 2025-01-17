@@ -2,6 +2,7 @@ import EventEmitter from 'event-emitter';
 import './widget-normalize.scss';
 import './widget.scss';
 import { humanDateTime } from "./lib/filters";
+import { LINK_TYPE_DEFAULT, LINK_TYPE_EMAIL, LINK_TYPE_PHONE } from './lib/linkify';
 
 function getBaseUrl() {
 	const scripts = document.getElementsByTagName('script');
@@ -69,6 +70,25 @@ function cleanIconOptions(iconOptions) {
 	};
 }
 
+const defaultHandlers = {
+	onLinkClick: (type, value) => {
+		if (!value) {
+			return;
+		}
+		switch (type) {
+			case LINK_TYPE_DEFAULT:
+				window.open(value, '_blank');
+				break;
+			case LINK_TYPE_EMAIL:
+				window.location.href = `mailto:${value}`;
+				break;
+			case LINK_TYPE_PHONE:
+				window.location.href = `tel:${value}`;
+				break;
+		} 
+	},
+}
+
 class IQChannelsWidget extends EventEmitter {
 	constructor(
 		{
@@ -88,6 +108,7 @@ class IQChannelsWidget extends EventEmitter {
 				enabled: true,
 				state: 'web'
 			},
+			handlers = defaultHandlers,
 		}
 	) {
 		super();
@@ -114,6 +135,7 @@ class IQChannelsWidget extends EventEmitter {
 		this.imgModalOptions = imgModalOptions;
 		this.chats = chats;
 		this.isMultipleChats = this.chats.length > 0;
+		this.handlers = handlers;
 
 		// split
 		this.frameContainer = document.createElement('div');
@@ -401,6 +423,11 @@ class IQChannelsWidget extends EventEmitter {
 			case 'iqchannels-ready':
 				this.displayIcon();
 				this.emit('ready');
+				break;
+
+			case 'iqchannels-widget-link':
+				const { linkType, value } = JSON.parse(data);
+				this.handlers.onLinkClick(linkType, value);
 				break;
 
 			default:
