@@ -1,7 +1,7 @@
 <script>
 import client from "../client";
 import inforequest from "./messenger/info-request.vue";
-
+import { linkPostMessage } from "../lib/linkify";
 
 export default {
     components: { inforequest },
@@ -82,6 +82,9 @@ export default {
             this.clientName = info.Form.Fields.find((field) => field.Name === 'Имя')?.CorrespondingField
             this.create();
         },
+        onLinkClicked() {
+            linkPostMessage(this.processDataLink)
+        },
     },
 };
 </script>
@@ -113,8 +116,9 @@ export default {
                     input(type="text" placeholder="Ваше имя" ref="name" :disabled="creating" @keydown.enter="create" v-model="clientName")
                     div.client-consent
                         input#personal-data-consent(type="checkbox" v-model="personalDataConsent").checkbox-custom
-                        label(for="personal-data-consent") Согласие на обработку
-                            a(style="text-decoration:underline" :href="processDataLink" target="_blank") &nbsp;персональных данных
+                        label Согласие на обработку
+                            | &nbsp;
+                            a(style="text-decoration:underline" @click="onLinkClicked") персональных данных
                     button.button(:disabled="!personalDataConsent || requireName && !clientName?.trim()" @click.prevent="create" href="#")
                         span(v-if="!creating") Начать чат
                         scale-loader.loader(v-if="creating", color="#fff", height="12px")
