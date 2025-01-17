@@ -13,6 +13,7 @@ declare class IQChannelsWidget extends EventEmitter {
         chats?: Chat[];
         enableImgModals?: boolean; // deprecated
         imgModalOptions?: ImgModalOptions;
+        handlers?: WidgetHandlers;
     });
 
     open(text?: string): void;
@@ -37,6 +38,12 @@ declare class IQChannelsWidget extends EventEmitter {
     on(event: 'error', listener: (error: WidgetError) => void): void;
     on(event: 'ready', listener: () => void): void;
 }
+
+interface WidgetHandlers {
+    onLinkClick: (type: LinkType, value: string) => {}
+}
+
+type LinkType = "URL" | "PHONE" | "EMAIL";
 
 interface WidgetError {
     type: WidgetErrorType,

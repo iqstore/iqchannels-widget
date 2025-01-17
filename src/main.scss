@@ -87,3 +87,22 @@ a {
     margin-top: 6px;
   }
 }
+
+a.iqchannels-chat-link {
+  color: #0000EE; /* Синий цвет */
+  text-decoration: underline; /* Подчеркивание */
+  background-color: transparent; /* Прозрачный фон */
+  cursor: pointer; /* Рука-указатель */
+}
+
+a.iqchannels-chat-link:visited {
+  color: #551A8B; /* Фиолетовый цвет */
+}
+
+a.iqchannels-chat-link:hover {
+  color: #FF0000; /* Красный цвет при наведении */
+}
+
+a.iqchannels-chat-link:active {
+  color: #FF0000; /* Красный цвет при клике */
+}
