@@ -99,8 +99,20 @@ export default {
                 return '';
             }
             return msg.Actions[0].Payload.split('|')[0];
-        }
-    }
+        },
+
+        shouldShowAvatar(msg) {
+            if (this.group.Messages.length === 1) {
+                return msg.Author === 'user' && msg.Text;
+            }
+            const isLastMessage = msg.Id === this.group.Messages[this.group.Messages.length - 1].Id;
+            const isBeforeLast = msg.Id === this.group.Messages[this.group.Messages.length - 2]?.Id;
+            
+            return msg.Author === 'user' && 
+                   msg.Text && 
+                   (isLastMessage || (isBeforeLast && !this.group.Messages[this.group.Messages.length - 1].Text));
+        },
+    },
 
 }
 
@@ -114,8 +126,8 @@ export default {
     .message-inner
         message-avatar(
             v-if="group.User",
-            :showEmpty="group.Messages[group.Messages.length - 1].Id !== msg.Id",
-            :showAvatar="msg.Author === 'user' && group.Messages[group.Messages.length - 1].Id === msg.Id",
+            :showEmpty="!shouldShowAvatar(msg)",
+            :showAvatar="shouldShowAvatar(msg)",
             v-bind:user="group.User"
         )
 
