@@ -1,4 +1,5 @@
 <script>
+import client from "../../../client";
 
 export default {
     props: {
@@ -7,8 +8,19 @@ export default {
         msg: Object,
         imgModalOptions: Object
     },
+    data: () => ({
+        thumbnailUrl: null
+    }),
+    mounted() {
+        if (this.msg?.File?.Type === 'image') {
+            this.fetchThumbnail(this.msg.File);
+        }
+    },
 
     methods: {
+        async fetchThumbnail(file) {
+            this.thumbnailUrl = await client.getThumbnailImage(file);
+        },
         goToMessage(msg) {
             if (!this.searching) {
                 return
@@ -83,12 +95,12 @@ export default {
                     target="_blank",
                     @click="clickFile(replyMsg, $event)"
                 )
-                    img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
+                    img.bubble(:src="thumbnailUrl", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
                 .image(
                     v-else-if="imgModalOptions.enabled",
                     @click="clickFileImage(replyMsg, $event)"
                 )
-                    img.bubble(:src="replyMsg.File.ThumbnailURL", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
+                    img.bubble(:src="thumbnailUrl", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
                 div(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'")
                     button.img-button(
                         v-for="action of replyMsg.Actions") {{ action.Title }}

@@ -8,6 +8,8 @@ import AppError, { ErrExpired, ErrFileImageDimensionsTooLarge, ErrFileTypeNotAll
 import Relations from './relations';
 import Request from './request';
 import { reactive } from 'vue';
+import { imageSize } from "../lib/files";
+import * as schema from "../schema"
 
 
 const XClientAuthorizationHeader = 'X-Client-Authorization';
@@ -24,6 +26,7 @@ class Client {
     this.state = reactive({
       error: null
     });
+    this.imageBlobs = {}; // fileID: blob
   }
 
   clearAuth () {
@@ -91,7 +94,7 @@ class Client {
     });
   }
 
-  get (path, data) {
+  get (path, data, responseType = 'json') {
     let headers = {};
     if (this.authToken) {
       headers[XClientAuthorizationHeader] = this.authToken;
@@ -102,6 +105,7 @@ class Client {
       const url = config.apiUrl(path);
 
       xhr.open('GET', url, true);
+      xhr.responseType = responseType;
       xhr.withCredentials = true;
 
       xhr.setRequestHeader('Content-Type', 'application/json');
@@ -111,7 +115,7 @@ class Client {
 
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(JSON.parse(xhr.responseText));
+          resolve(xhr.response);
         } else {
           reject(AppError.fromRequest(xhr));
         }
@@ -355,7 +359,7 @@ class Client {
   }
 
   filesConfig() {
-    return this.get(`/files/config`, {}, { shouldRetry: (error) => !error })
+    return this.get(`/files/config`, {})
   }
 
   channelPushToken (channel, type, token) {
@@ -431,6 +435,18 @@ class Client {
     return this.post(`/files/token`, request).then(response => {
       let token = response.Result;
       return token.Token;
+    });
+  }
+
+  getThumbnailImage(file) {
+    return this.get(`/files/image/${file.Id}?size=${schema.ImageSizeThumbnail}`, null, 'blob').then(blob => {
+      if (blob instanceof Blob) {
+        const objectUrl = URL.createObjectURL(blob);
+        this.imageBlobs[file.Id] = objectUrl;
+        return objectUrl;
+      } else {
+        throw new Error('Response is not a valid Blob.');
+      }
     });
   }
 

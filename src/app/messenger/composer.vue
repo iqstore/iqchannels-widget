@@ -32,6 +32,7 @@ export default {
             typingVisible: false,
             timer: null,
             currentFiles: [],
+            thumbnailUrl: null,
         };
     },
 
@@ -97,6 +98,9 @@ export default {
     },
 
     mounted() {
+        if (this.msg?.File?.Type === 'image') {
+            this.fetchThumbnail(this.msg.File);
+        }
         this.timer = setInterval(this.tryStopTyping, TYPING_INTERVAL);
         client.checkIfAudioMsgEnabled(this.channel).then(r => {
             this.audioMsgEnabled = r.Data;
@@ -119,6 +123,9 @@ export default {
     },
 
     methods: {
+        async fetchThumbnail(file) {
+            this.thumbnailUrl = await client.getThumbnailImage(file);
+        },
         humanSize,
         trySendFile() {
             if (!this.currentFiles.length) {
@@ -541,7 +548,7 @@ export default {
                         :href="msg.File.URL",
                         target="_blank",
                         @click="clickFile(msg, $event)")
-                        img.bubble(:src="msg.File.ThumbnailURL")
+                        img.bubble(:src="thumbnailUrl")
                     div(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")
                         button.img-button(v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                 div(v-else-if="msg.File && msg.File.Type === 'file'")
