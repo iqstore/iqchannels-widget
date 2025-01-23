@@ -22,6 +22,7 @@ export default {
     },
     data: () => ({
         thumbnailUrl: null,
+        thumbnailError: false,
     }),
     created() {
         if (this.msg?.File?.Type === 'image') {
@@ -30,9 +31,16 @@ export default {
     },
     methods: {
         fetchThumbnail(file) {
-            client.getThumbnailImage(file).then(url => {
-                this.thumbnailUrl = url;
-            });
+            this.thumbnailError = false;
+            client.getThumbnailImage(file)
+                .then(url => {
+                    this.thumbnailUrl = url;
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки миниатюры:', error);
+                    this.thumbnailError = true;
+                    this.thumbnailUrl = file.URL;
+                });
         },
         humanSize,
         getTitle() {
@@ -116,8 +124,17 @@ export default {
             }
             return msg.Actions[0].Payload.split('|')[0];
         }
+    },
+    watch: {
+        'msg.File': {
+            handler(newFile) {
+                if (newFile?.Type === 'image') {
+                    this.fetchThumbnail(newFile);
+                }
+            },
+            deep: true
+        }
     }
-
 }
 
 </script>
@@ -127,7 +144,9 @@ export default {
         span(v-if="group.User") {{ group.User.DisplayName }}
         span(v-if="group.Client") {{ group.Client.Name }}
 
-    .message-inner
+    .message-inner(
+        :ref="`message-${msg.Id}`"
+    )
         message-avatar(
             v-if="group.User",
             :showEmpty="group.Messages[group.Messages.length - 1].Id !== msg.Id",

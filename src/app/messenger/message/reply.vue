@@ -1,5 +1,6 @@
 <script>
 import client from "../../../client";
+import { humanSize } from '../../../lib/filters';
 
 export default {
     props: {
@@ -32,28 +33,39 @@ export default {
         },
 
         getReplyMsg(message) {
-            const messages = this.groups.map(group => group?.Messages).reduce((result, current) => [...current, ...result]);
-            return messages.reduce((result, current) => {
-                if (message.ReplyToMessageId === current.Id) {
-                    result.push(current)
-                    return result
-                }
-                return result
-            }, []);
+            if (!message.ReplyToMessageId) return [];
+            
+            const messages = this.groups
+                .filter(group => group?.Messages)
+                .map(group => group.Messages)
+                .flat();
+            
+            const replyMessage = messages.find(msg => message.ReplyToMessageId === msg.Id);
+            return replyMessage ? [replyMessage] : [];
         },
 
         getAuthorAndText(message) {
-            const messages = this.groups.map(x => x?.Messages).reduce((x, acc) => [...acc, ...x]);
-            const msg = messages.find(msg => message.ReplyToMessageId === msg.Id);
-            if (msg) {
+            if (!message.ReplyToMessageId) {
+                return { author: '', text: '' };
+            }
+
+            const messages = this.groups
+                .filter(group => group?.Messages)
+                .map(group => group.Messages)
+                .flat();
+            
+            const replyMsg = messages.find(msg => message.ReplyToMessageId === msg.Id);
+            console.log('Reply message in getAuthorAndText:', replyMsg);
+
+            if (replyMsg) {
                 return {
-                    author: msg.Author === 'client' ? 'Вы' : msg.User.DisplayName,
-                    text: msg.Text
-                }
-            } else return {
-                author: '',
-                text: ''
-            };
+                    author: replyMsg.Author === 'client' ? 'Вы' : replyMsg.User?.DisplayName,
+                    text: replyMsg.Text || '',
+                    file: replyMsg.File
+                };
+            }
+            
+            return { author: '', text: '' };
         },
 
         sendMessage(messageText, botpressPayload, url) {
@@ -68,8 +80,33 @@ export default {
             this.$emit("click-file-image", msg);
         },
 
-        listenForAudioEvents() {
-            this.$emit("listen-audio", msg)
+        listenForAudioEvents(msg) {
+            this.$emit("listen-audio", msg);
+        },
+
+        getIcon(msg) {
+            if (!msg.File) return ['fas', 'fa-file'];
+            
+            const splittedPath = msg.File.Path.split(".");
+            const fileType = splittedPath[splittedPath.length - 1];
+
+            if (fileType.includes("doc")) return ['fas', 'fa-file-word'];
+            if (fileType.includes("xls")) return ['fas', 'fa-file-excel'];
+            if (fileType.includes("pdf")) return ['fas', 'fa-file-pdf'];
+
+            return ['fas', 'fa-file'];
+        },
+
+        humanSize
+    },
+    watch: {
+        'msg.ReplyToMessage.File': {
+            handler(newFile) {
+                if (newFile?.Type === 'image') {
+                    this.fetchThumbnail(newFile);
+                }
+            },
+            deep: true
         }
     }
 }
@@ -95,12 +132,12 @@ export default {
                     target="_blank",
                     @click="clickFile(replyMsg, $event)"
                 )
-                    img.bubble(:src="thumbnailUrl", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
+                    img(:src="replyMsg.File.URL")
                 .image(
-                    v-else-if="imgModalOptions.enabled",
-                    @click="clickFileImage(replyMsg, $event)"
+                    v-else,
+                    @click="clickFileImage(replyMsg)"
                 )
-                    img.bubble(:src="thumbnailUrl", :class="{ first: index === 0, last: index === group?.Messages.length - 1 }")
+                    img(:src="replyMsg.File.URL")
                 div(v-if="replyMsg.Payload === 'carousel' || replyMsg.Payload === 'card'")
                     button.img-button(
                         v-for="action of replyMsg.Actions") {{ action.Title }}
@@ -108,8 +145,11 @@ export default {
                 :href="replyMsg.File.URL"
                 target="_blank"
                 @click="clickFile(replyMsg, $event)")
-                span.file
+                span.file-icon
+                    i(:class="getIcon(replyMsg)")
+                span.file-info
                     .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ replyMsg.File.Name }}
+                    .filesize {{ humanSize(replyMsg.File.Size) }}
             audio(v-else-if="replyMsg.File && replyMsg.File.Type === 'audio'"  controls="true" :id="`audio-track-${replyMsg.Id}`"
                 :src="replyMsg.File.URL",  @play.prevent="listenForAudioEvents(replyMsg)")
             .reply-text {{ getAuthorAndText(msg).text }}

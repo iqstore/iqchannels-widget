@@ -746,8 +746,26 @@ export default {
                     message.Uploading = undefined;
                     message.File = file;
                     message.FileId = file.Id;
-                    client.channelSend(this.channel, message);
-                    this.replaceMessage(message, true);
+                    client.channelSend(this.channel, message)
+                        .then(response => {
+                            const updatedMessage = {
+                                ...message,
+                                ...response,
+                                File: {
+                                    ...file,
+                                    URL: file.URL || response.File?.URL
+                                }
+                            };
+                            this.$nextTick(() => {
+                                this.replaceMessage(updatedMessage, true);
+                                if (updatedMessage.File?.Type === 'image') {
+                                    const msgComponent = this.$refs.chat.$refs[`message-${updatedMessage.Id}`];
+                                    if (msgComponent) {
+                                        msgComponent.fetchThumbnail(updatedMessage.File);
+                                    }
+                                }
+                            });
+                        })
                 },
                 error => {
                     message.UploadError = error.http() ? "Ошибка загрузки" : error.text;
@@ -1019,28 +1037,50 @@ export default {
             if (!message) {
                 return false;
             }
+            
+            console.log('Получено входящее сообщение:', message);
+            
             if (!message.My) {
-                const lastGroup = this.groups[this.groups.length - 1]
-                const lastMsg = lastGroup?.Messages[lastGroup.Messages.length - 1]
+                const lastGroup = this.groups[this.groups.length - 1];
+                const lastMsg = lastGroup?.Messages[lastGroup.Messages.length - 1];
 
                 this.appendMessage(message);
 
-                const scrollOptions = {}
-                if (message.CreatedAt - lastMsg.CreatedAt > 200) {
-                    scrollOptions.checkIsBottom = true
-                    scrollOptions.scrollIsBottomValue = true
+                const scrollOptions = {};
+                if (message.CreatedAt - lastMsg?.CreatedAt > 200) {
+                    scrollOptions.checkIsBottom = true;
+                    scrollOptions.scrollIsBottomValue = true;
                 }
                 if (message.Text?.length > 500) {
-                    scrollOptions.block = "end"
+                    scrollOptions.block = "end";
                 }
 
-                this.scrollToMessage(message, scrollOptions);
+                this.scrollToMessage(message.Id, scrollOptions);
                 return true;
             }
 
-            if (!this.replaceMessage(message, true)) {
-                this.appendMessage(message);
+            // Если это наше сообщение с файлом, обновляем его
+            if (message.File) {
+                console.log('Обновление сообщения с файлом:', message);
+                if (!this.replaceMessage(message, true)) {
+                    this.appendMessage(message, true);
+                }
+                
+                // Если это изображение, обновляем thumbnail
+                if (message.File.Type === 'image') {
+                    this.$nextTick(() => {
+                        const msgComponent = this.$refs.chat.$refs[`message-${message.Id}`];
+                        if (msgComponent) {
+                            msgComponent.fetchThumbnail(message.File);
+                        }
+                    });
+                }
+            } else {
+                if (!this.replaceMessage(message, true)) {
+                    this.appendMessage(message);
+                }
             }
+            
             return false;
         },
 

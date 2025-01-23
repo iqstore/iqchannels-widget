@@ -82,6 +82,15 @@ export default {
         textTyped: function (newValue, oldValue) {
             // Need to wait next event loop cycle to resize input to match height of initial text appended through appenText
             setTimeout(() => this.resizeTextarea(oldValue), 0)
+        },
+
+        'msg.File': {
+            immediate: true,
+            handler(newFile) {
+                if (newFile?.Type === 'image') {
+                    this.loadThumbnail(newFile);
+                }
+            }
         }
     },
 
@@ -525,8 +534,32 @@ export default {
             if (data) return { type: "image", data };
 
             return { data }
-        }
+        },
 
+        loadThumbnail(file) {
+            if (!file || !file.URL) return;
+            
+            client.getThumbnailImage(file)
+                .then(url => {
+                    this.thumbnailUrl = url;
+                })
+                .catch(() => {
+                    this.thumbnailUrl = file.URL;
+                });
+        },
+
+        clickFile(msg, event) {
+            event.preventDefault();
+            if (msg.File && msg.File.Type === 'image') {
+                this.trySendMessage(null, null, msg.File.URL);
+            }
+        },
+
+        listenForAudioEvents(msg) {
+            if (msg.File && msg.File.Type === 'audio') {
+                this.trySendMessage(null, null, msg.File.URL);
+            }
+        }
     }
 };
 </script>
@@ -719,6 +752,35 @@ export default {
         flex-direction: column;
         display: flex;
         width: 90%;
+        
+        .image {
+            display: block;
+            max-width: 200px;
+            margin: 5px 0;
+            
+            img {
+                max-width: 100%;
+                border-radius: 4px;
+            }
+        }
+        
+        .file {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            margin: 5px 0;
+            
+            .filename {
+                font-weight: 500;
+            }
+            
+            .filesize {
+                font-size: 0.8em;
+                color: #666;
+                margin-left: 8px;
+            }
+        }
     }
 
     &-text {
