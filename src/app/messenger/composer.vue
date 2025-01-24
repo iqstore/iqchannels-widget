@@ -32,6 +32,7 @@ export default {
             typingVisible: false,
             timer: null,
             currentFiles: [],
+            thumbnailUrl: null,
         };
     },
 
@@ -81,6 +82,15 @@ export default {
         textTyped: function (newValue, oldValue) {
             // Need to wait next event loop cycle to resize input to match height of initial text appended through appenText
             setTimeout(() => this.resizeTextarea(oldValue), 0)
+        },
+
+        'msg.File': {
+            immediate: true,
+            handler(newFile) {
+                if (newFile?.Type === 'image') {
+                    this.loadThumbnail(newFile);
+                }
+            }
         }
     },
 
@@ -97,6 +107,9 @@ export default {
     },
 
     mounted() {
+        if (this.msg?.File?.Type === 'image') {
+            this.fetchThumbnail(this.msg.File);
+        }
         this.timer = setInterval(this.tryStopTyping, TYPING_INTERVAL);
         client.checkIfAudioMsgEnabled(this.channel).then(r => {
             this.audioMsgEnabled = r.Data;
@@ -119,6 +132,9 @@ export default {
     },
 
     methods: {
+        async fetchThumbnail(file) {
+            this.thumbnailUrl = await client.getThumbnailImage(file);
+        },
         humanSize,
         trySendFile() {
             if (!this.currentFiles.length) {
@@ -518,8 +534,32 @@ export default {
             if (data) return { type: "image", data };
 
             return { data }
-        }
+        },
 
+        loadThumbnail(file) {
+            if (!file || !file.URL) return;
+            
+            client.getThumbnailImage(file)
+                .then(url => {
+                    this.thumbnailUrl = url;
+                })
+                .catch(() => {
+                    this.thumbnailUrl = file.URL;
+                });
+        },
+
+        clickFile(msg, event) {
+            event.preventDefault();
+            if (msg.File && msg.File.Type === 'image') {
+                this.trySendMessage(null, null, msg.File.URL);
+            }
+        },
+
+        listenForAudioEvents(msg) {
+            if (msg.File && msg.File.Type === 'audio') {
+                this.trySendMessage(null, null, msg.File.URL);
+            }
+        }
     }
 };
 </script>
@@ -541,7 +581,7 @@ export default {
                         :href="msg.File.URL",
                         target="_blank",
                         @click="clickFile(msg, $event)")
-                        img.bubble(:src="msg.File.ThumbnailURL")
+                        img.bubble(:src="thumbnailUrl")
                     div(v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")
                         button.img-button(v-for="action of msg.Actions", @click.prevent="trySendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
                 div(v-else-if="msg.File && msg.File.Type === 'file'")
@@ -712,6 +752,35 @@ export default {
         flex-direction: column;
         display: flex;
         width: 90%;
+        
+        .image {
+            display: block;
+            max-width: 200px;
+            margin: 5px 0;
+            
+            img {
+                max-width: 100%;
+                border-radius: 4px;
+            }
+        }
+        
+        .file {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            margin: 5px 0;
+            
+            .filename {
+                font-weight: 500;
+            }
+            
+            .filesize {
+                font-size: 0.8em;
+                color: #666;
+                margin-left: 8px;
+            }
+        }
     }
 
     &-text {

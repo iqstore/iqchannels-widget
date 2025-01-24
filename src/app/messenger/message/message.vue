@@ -4,7 +4,7 @@ import MessageText from "../message-text.vue";
 import messageAvatar from "./message-avatar.vue";
 import { humanSize } from '../../../lib/filters';
 import { linkify } from "../../../lib/linkify";
-
+import client from "../../../client";
 
 import reply from "./reply.vue";
 import messageFooter from "./message-footer.vue";
@@ -20,8 +20,28 @@ export default {
         msg: Object,
         imgModalOptions: Object,
     },
-
+    data: () => ({
+        thumbnailUrl: null,
+        thumbnailError: false,
+    }),
+    created() {
+        if (this.msg?.File?.Type === 'image') {
+            this.fetchThumbnail(this.msg.File);
+        }
+    },
     methods: {
+        fetchThumbnail(file) {
+            this.thumbnailError = false;
+            client.getThumbnailImage(file)
+                .then(url => {
+                    this.thumbnailUrl = url;
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки миниатюры:', error);
+                    this.thumbnailError = true;
+                    this.thumbnailUrl = file.URL;
+                });
+        },
         humanSize,
         getTitle() {
             if (this.searching) {
@@ -104,8 +124,17 @@ export default {
             }
             return msg.Actions[0].Payload.split('|')[0];
         }
+    },
+    watch: {
+        'msg.File': {
+            handler(newFile) {
+                if (newFile?.Type === 'image') {
+                    this.fetchThumbnail(newFile);
+                }
+            },
+            deep: true
+        }
     }
-
 }
 
 </script>
@@ -115,7 +144,9 @@ export default {
         span(v-if="group.User") {{ group.User.DisplayName }}
         span(v-if="group.Client") {{ group.Client.Name }}
 
-    .message-inner
+    .message-inner(
+        :ref="`message-${msg.Id}`"
+    )
         message-avatar(
             v-if="group.User",
             :showEmpty="group.Messages[group.Messages.length - 1].Id !== msg.Id",
@@ -177,12 +208,12 @@ export default {
                         target="_blank",
                         @click="clickFile(msg, $event)"
                     )
-                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL",  v-on:load="scrollToBottom(msg, $event)", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="thumbnailUrl",  v-on:load="scrollToBottom(msg, $event)", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                     .image(
                         v-else-if="imgModalOptions.enabled && msg.File",
                         @click="clickFileImage(msg)"
                     )
-                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="msg.File.ThumbnailURL",  v-on:load="scrollToBottom(msg, $event)", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
+                        img.bubble(v-if="msg.File && msg.File.Type === 'image'", :src="thumbnailUrl",  v-on:load="scrollToBottom(msg, $event)", :class="{ first: index === 0, last: index === group.Messages.length - 1 }")
                     div.img-caption
                         pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
                     .carousel-card-block(:class="getCardBlockClass(msg)", v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")

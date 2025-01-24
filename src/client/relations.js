@@ -1,4 +1,5 @@
 import * as schema from '../schema';
+import client from '.';
 
 export default class Relations {
   /**
