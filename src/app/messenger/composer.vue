@@ -538,7 +538,7 @@ export default {
 
         loadThumbnail(file) {
             if (!file || !file.URL) return;
-            
+
             client.getThumbnailImage(file)
                 .then(url => {
                     this.thumbnailUrl = url;
@@ -602,7 +602,7 @@ export default {
                 upload-file(:current-file="file", @reset-upload="resetUploadFile")
 
         .composer-inputs(:class="{'disabled': disableFreeText}")
-            input.hidden(type="file" ref="uploadInput" @change="uploadFile" multiple)
+            input.hidden(type="file" accept="image/*" capture ref="uploadInput" @change="uploadFile" multiple)
             a.button.csm-btn(id="record-cancel" v-if="recording || recordingStopped" @click="cancelRecording()", style="cursor:pointer")
                 svg(xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512")
                     path(d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z")
@@ -752,29 +752,29 @@ export default {
         flex-direction: column;
         display: flex;
         width: 90%;
-        
+
         .image {
             display: block;
             max-width: 200px;
             margin: 5px 0;
-            
+
             img {
                 max-width: 100%;
                 border-radius: 4px;
             }
         }
-        
+
         .file {
             display: flex;
             align-items: center;
             text-decoration: none;
             color: inherit;
             margin: 5px 0;
-            
+
             .filename {
                 font-weight: 500;
             }
-            
+
             .filesize {
                 font-size: 0.8em;
                 color: #666;
