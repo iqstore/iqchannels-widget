@@ -102,6 +102,9 @@ export default {
         },
 
         shouldShowAvatar(msg) {
+            if (!this.group.Messages) {
+                return false;
+            }
             if (this.group.Messages.length === 1) {
                 return msg.Author === 'user' && msg.Text;
             }
