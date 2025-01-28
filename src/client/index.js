@@ -532,6 +532,7 @@ class Client {
       try {
         const response = JSON.parse(message.data);
         if (!response.OK) {
+            console.log("response not ok", {response}); 
           throw AppError.fromApiError(response.Error);
         }
         const events = new Relations(config, response.Rels).events(response.Result);
@@ -539,11 +540,13 @@ class Client {
           onMessage(events);
         }
       } catch (error) {
+        console.log("catch err in event stream", {error})
         source.close();
         onError(error);
       }
     });
     source.addEventListener('error', error => {
+        console.log("catch err in event error listener", {error})
       source.close();
       onError(error);
     });
