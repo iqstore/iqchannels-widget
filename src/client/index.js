@@ -332,6 +332,10 @@ class Client {
     return this._enqueueRequest(`/widget/personal_data_form/${channel}`, {}, { shouldRetry: (error) => !error });
   }
 
+  getEndAppealSettings(channel){
+    return this.get(`/widget/get_end_appeals_settings/${channel}`, {}, { shouldRetry: (error) => !error });
+  }
+
   acceptProductMessage (messageId, productId) {
     return this._enqueueRequest(`/chats/messages/accept_product`, { MessageId: messageId, ProductId: productId });
   }
