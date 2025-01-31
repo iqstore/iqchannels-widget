@@ -174,6 +174,7 @@ export default {
         setRating(value) {
             this.rating.Value = value;
             this.value = value;
+            this.$emit("on-poll-question-chaned", this.rating.Id, this.index);
         },
 
         finishPoll() {
