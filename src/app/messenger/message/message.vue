@@ -102,18 +102,23 @@ export default {
         },
 
         shouldShowAvatar(msg) {
-            if (!this.group.Messages) {
+            const hasMessages = this.group.Messages && this.group.Messages.length > 0;
+            const isUserMessage = msg.Author === 'user';
+            const hasTextOrFile = msg.Text || msg.File;
+
+            if (!hasMessages && !msg.File) {
                 return false;
             }
             if (this.group.Messages.length === 1) {
-                return msg.Author === 'user' && msg.Text;
+                return isUserMessage && (msg.Text || msg.File);
             }
-            const isLastMessage = msg.Id === this.group.Messages[this.group.Messages.length - 1].Id;
-            const isBeforeLast = msg.Id === this.group.Messages[this.group.Messages.length - 2]?.Id;
-            
-            return msg.Author === 'user' && 
-                   msg.Text && 
-                   (isLastMessage || (isBeforeLast && !this.group.Messages[this.group.Messages.length - 1].Text));
+
+            const lastMessage = this.group.Messages[this.group.Messages.length - 1];
+            const secondLastMessage = this.group.Messages[this.group.Messages.length - 2];
+            const isLastMessage = msg.Id === lastMessage.Id;
+            const isBeforeLast = msg.Id === secondLastMessage?.Id;
+
+            return isUserMessage && hasTextOrFile && (isLastMessage || (isBeforeLast && !lastMessage.Text));
         },
     },
 
