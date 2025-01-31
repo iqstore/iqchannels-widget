@@ -110,7 +110,7 @@ export default {
                 return false;
             }
             if (this.group.Messages.length === 1) {
-                return isUserMessage && (msg.Text || msg.File);
+                return isUserMessage && hasTextOrFile;
             }
 
             const lastMessage = this.group.Messages[this.group.Messages.length - 1];
