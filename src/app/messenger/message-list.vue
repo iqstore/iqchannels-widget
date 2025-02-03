@@ -57,7 +57,7 @@ export default {
     .message-wrapper(v-for="(msg, index) in group.Messages",
         v-hammer:pan="(event) => swipeRight(event, msg)",
         :class="{ scroll_msg_animation_client: msg.My && animateMsgIds[msg.Id], scroll_msg_animation_user: !msg.My && animateMsgIds[msg.Id] }",
-        :id="'message-'+msg.Id")
+        )
 
         .unread-divider(v-if="firstUnreadMessageId === msg.Id")
             span Непрочитанные сообщения
@@ -78,7 +78,8 @@ export default {
             :searching="searching",
             :imgModalOptions="imgModalOptions",
         )
-
+    
+        div(v-if="msg.Id !== group.LastMessage?.Id", :id="'message-'+msg.Id")
 
 </template>
 

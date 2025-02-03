@@ -307,6 +307,12 @@ export default {
 
         subscribe() {
             this.unsubscribe();
+            if (this.subscription) {
+                this.subscription.close();
+            }
+            if (this.subscriptionTimeout) {
+                clearTimeout(this.subscriptionTimeout);
+            }
             this.subscription = client.channelListen(
                 this.channel,
                 this.chatType,
@@ -315,6 +321,7 @@ export default {
                 this.onSubscriptionError
             );
         },
+
         unsubscribe() {
             if (this.subscription) {
                 this.subscription.close();
@@ -1028,7 +1035,7 @@ export default {
                 this.appendMessage(message);
 
                 const scrollOptions = {}
-                if (message.CreatedAt - lastMsg.CreatedAt > 200) {
+                if (lastMsg && message && message.CreatedAt - lastMsg.CreatedAt > 200) {
                     scrollOptions.checkIsBottom = true
                     scrollOptions.scrollIsBottomValue = true
                 }

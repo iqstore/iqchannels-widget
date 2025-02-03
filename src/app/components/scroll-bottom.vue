@@ -89,6 +89,7 @@ export default {
     transition: 0.2s ease;
 
     &.invisible {
+        pointer-events: none;
         opacity: 0;
     }
 }
