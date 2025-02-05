@@ -312,6 +312,7 @@ export default {
                 this.subscription.close();
             }
             if (this.subscriptionTimeout) {
+                this.loadHistory();
                 clearTimeout(this.subscriptionTimeout);
             }
             this.subscription = client.channelListen(
