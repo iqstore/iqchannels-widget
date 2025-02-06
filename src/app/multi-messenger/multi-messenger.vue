@@ -90,6 +90,9 @@ export default {
         onImageClicked(msg) {
             this.$emit("on-image-clicked", msg);
         },
+        onTyping(){
+            this.$emit("on-typing"); 
+        }
     }
 }
 </script>
@@ -119,6 +122,7 @@ export default {
             @on-longtap="onLongTap",
             @on-image-clicked='onImageClicked',
             @on-rating="onRating",
+            @on-typing="onTyping",
             @on-back="onBack",
             @on-messages-loaded="onMessagesLoaded",
             :mode="mode",

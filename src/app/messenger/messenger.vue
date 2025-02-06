@@ -1167,6 +1167,7 @@ export default {
         },
 
         onStartTyping(text) {
+            this.$emit("on-typing"); 
             client.channelTyping(this.channel, this.chatType, text).catch(() => {
                 // ignore error, cause event is transitive
             });
