@@ -51,7 +51,7 @@ export default {
 
     mounted() {
         this.loadHistory();
-        this.sendGreeting();
+
         this.initScrollEvents();
     },
 
@@ -302,6 +302,7 @@ export default {
                 }
 
                 this.$emit('on-messages-loaded')
+                this.sendGreeting();
             });
         },
 
@@ -643,12 +644,12 @@ export default {
             if (this.systemChat === true) {
                 return;
             }
-            if (this.groups[this.groups.length - 1] && !this.groups[this.groups.length - 1]) {
-                const lastGroup = this.groups[this.groups.length - 1]
-                if (lastGroup.Rating && !lastGroup.LastMessage.RatingId) {
-                    return;
-                }
+
+            const lastGroup = this.groups[this.groups.length - 1]
+            if (lastGroup && !lastGroup.Rating) {
+                return;
             }
+
             client.getChatSettings(this.channel, this.client.Id).then(result => {
                 const settings = result.Data
                 if (!settings) return;
