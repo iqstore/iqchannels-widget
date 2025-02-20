@@ -105,7 +105,6 @@ var widget = new IQChannelsWidget({
     mode: 'web', // web || mobile
     width: 280,
     padBody: true,
-    requireName: false,
     iconOptions: {
         show: true,
         color: "#000000",
@@ -125,7 +124,6 @@ var widget = new IQChannelsWidget({
 * `mode` - режим работы виджета `web` или `mobile`, по умолчанию `web`, в мобильном режиме отключается открытие файлов в новых вкладках браузера.
 * `width` — ширина виджета в пикселях.
 * `padBody` — автоматическое добавление паддинга к тегу `body` при открытии виджета.
-* `requireName` — выключает требование представиться у анонимного клиента.
 * `iconOptions` — настройки отображения кнопки виджета.
 * `iconOptions.show` — отображать кнопку или нет.
 * `iconOptions.style` — дополнительные CSS-стили для кнопки.

@@ -264,7 +264,6 @@ export default {
         },
         getPersonalDataForm() {
             client.getWidgetPersonalDataForm(this.channel).then(res => {
-
                 this.personalDataForm = {
                     State: 'pending',
                     Form: res.Data
