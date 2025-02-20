@@ -76,6 +76,7 @@ export default {
             loadingMore: false,
             existingMsgIds: {},
             isBottom: false,
+            sseReconnectRetryCount: 5,
         };
     },
 
@@ -312,6 +313,9 @@ export default {
                 this.subscription.close();
             }
             if (this.subscriptionTimeout) {
+                if (this.sseReconnectRetryCount && this.sseReconnectRetryCount <= this.attemptCount) {
+                    return
+                }
                 this.loadHistory();
                 clearTimeout(this.subscriptionTimeout);
             }
