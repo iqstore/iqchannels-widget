@@ -508,6 +508,15 @@ class Client {
   channelListen (channel, chatType, lastEventId, onMessage, onError) {
     let token = this._encryptToken();
     let url = config.apiUrl(`/sse/chats/channel/events/${channel}`);
+    let lastPingTime = Date.now();
+
+    const checkPingTimeout = () => {
+      const currentTime = Date.now();
+      if (currentTime - lastPingTime > 60000) {
+        source.close();
+        onError(new Error('Ping timeout'));
+      }
+    };
 
     if (chatType || lastEventId || token) {
       url += '?';
@@ -532,22 +541,30 @@ class Client {
     }
 
     const source = new EventSource(url, { withCredentials: true });
+    const pingCheckInterval = setInterval(checkPingTimeout, 60000);
     source.addEventListener('message', message => {
       try {
         const response = JSON.parse(message.data);
         if (!response.OK) {
           throw AppError.fromApiError(response.Error);
         }
+
+        if (response.type === "ping"){
+          lastPingTime = Date.now();
+          return
+        }
         const events = new Relations(config, response.Rels).events(response.Result);
         if (events.length) {
           onMessage(events);
         }
       } catch (error) {
+        clearInterval(pingCheckInterval);
         source.close();
         onError(error);
       }
     });
     source.addEventListener('error', error => {
+      clearInterval(pingCheckInterval);
       source.close();
       onError(error);
     });
