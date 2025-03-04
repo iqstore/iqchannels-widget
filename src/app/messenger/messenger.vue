@@ -51,7 +51,6 @@ export default {
 
     mounted() {
         this.loadHistory();
-
         this.initScrollEvents();
     },
 
@@ -121,7 +120,9 @@ export default {
                     composer.style.display = '';
                     this.scrollToBottom();
                 }, 0);
-
+                if (!this.systemChat){
+                    this.sendGreeting();
+                }
             }
 
             // widget closed
