@@ -307,7 +307,6 @@ export default {
         },
 
         subscribe() {
-            this.unsubscribe();
             if (this.subscription) {
                 this.subscription.close();
             }
