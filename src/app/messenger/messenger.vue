@@ -335,7 +335,7 @@ export default {
         onSubscriptionError(error) {
             this.attemptCount++;
             const timeout = retryTimeout(this.attemptCount);
-            client.logMessage(`Subscribe error, retry in ${timeout}ms:` + error);
+            client.logMessage(`Subscribe error, retry in ${timeout}ms:` + JSON.stringify(error));
             this.subscriptionTimeout = setTimeout(this.subscribe, timeout);
         },
 
