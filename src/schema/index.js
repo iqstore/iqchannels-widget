@@ -21,6 +21,7 @@ export const ChatEventCloseSystemChat = 'close-system-chat';
 export const ChatEventTyping = 'typing';
 export const ChatEventFileUpdated = 'file_updated';
 export const ChatEventClientChanged = 'client_changed';
+export const ChatEventRatingIgnored = 'rating_ignored';
 
 export const LOCALSTORAGE_CHANNEL_NAME = 'iq-channel-name';
 export const LOCALSTORAGE_WIDGET_CONFIG = 'iq-widget-config';

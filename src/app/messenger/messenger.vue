@@ -8,6 +8,7 @@ import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
+import {ChatEventRatingIgnored} from "../../schema";
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -498,6 +499,11 @@ export default {
                             this.disableFreeText = group.LastMessage.DisableFreeText
 
                         }
+
+                        if (group.Rating && message.Rating) {
+                          group.Rating = message.Rating;
+                        }
+
                         return true;
                     }
                 }
@@ -539,7 +545,8 @@ export default {
                     lastGroup.UserId === message.UserId &&
                     lastGroup.ClientId === message.ClientId &&
                     message.CreatedAt - lastMessage.CreatedAt < 60000 &&
-                    isSameDate(message.CreatedAt, lastMessage.CreatedAt)
+                    isSameDate(message.CreatedAt, lastMessage.CreatedAt) &&
+                    message.TicketId === lastMessage.TicketId
                 ) {
 
                     if (!message.Read && message.Author === 'user'
@@ -1014,6 +1021,9 @@ export default {
                         break;
                     case schema.ChatEventClientChanged:
                         this.$emit("client-changed", event)
+                        break;
+                    case schema.ChatEventRatingIgnored:
+                        this.replaceMessage(event.Message, false);
                         break;
                     default:
                         client.logMessage("Unhandled channel event" + JSON.stringify(event));
