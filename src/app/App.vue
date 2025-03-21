@@ -27,6 +27,9 @@ export default {
             data: JSON.stringify(msg)
         }, '*');
         const onRating = (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*');
+        const onTyping = () => {
+            parent.postMessage({ type: 'iqchannels-widget-typing'}, '*') 
+        };
         const onError = (error) => {
             if (!error) {
                 appError.value = null;
@@ -54,6 +57,7 @@ export default {
             onRating,
             onError,
             onImageClicked,
+            onTyping,
 
             appError,
         }
@@ -264,7 +268,6 @@ export default {
         },
         getPersonalDataForm() {
             client.getWidgetPersonalDataForm(this.channel).then(res => {
-
                 this.personalDataForm = {
                     State: 'pending',
                     Form: res.Data
@@ -296,6 +299,7 @@ export default {
                     @on-logout='onLogout',
                     @on-longtap="onLongTap",
                     @on-rating="onRating",
+                    @on-typing="onTyping",
                     @on-messages-loaded="onMessagesLoaded",
                     :mode='mode',
                     :multiClient='multiClient',
@@ -322,6 +326,7 @@ export default {
                     @on-logout='onLogout'
                     @on-longtap="onLongTap"
                     @on-rating="onRating"
+                    @on-typing="onTyping"
                     @client-changed="onClientChanged"
                     @on-messages-loaded="onMessagesLoaded"
                     :mode='mode'

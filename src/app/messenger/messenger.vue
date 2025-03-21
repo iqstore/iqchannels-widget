@@ -8,6 +8,7 @@ import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
+import {ChatEventRatingIgnored} from "../../schema";
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -51,7 +52,6 @@ export default {
 
     mounted() {
         this.loadHistory();
-        this.sendGreeting();
         this.initScrollEvents();
     },
 
@@ -121,7 +121,9 @@ export default {
                     composer.style.display = '';
                     this.scrollToBottom();
                 }, 0);
-
+                if (!this.systemChat){
+                    this.sendGreeting();
+                }
             }
 
             // widget closed
@@ -302,6 +304,7 @@ export default {
                 }
 
                 this.$emit('on-messages-loaded')
+                this.sendGreeting();
             });
         },
 
@@ -311,6 +314,7 @@ export default {
                 this.subscription.close();
             }
             if (this.subscriptionTimeout) {
+                this.loadHistory(false);
                 clearTimeout(this.subscriptionTimeout);
             }
             this.subscription = client.channelListen(
@@ -334,7 +338,7 @@ export default {
         onSubscriptionError(error) {
             this.attemptCount++;
             const timeout = retryTimeout(this.attemptCount);
-            client.logMessage(`Subscribe error, retry in ${timeout}ms:` + error);
+            client.logMessage(`Subscribe error, retry in ${timeout}ms:` + JSON.stringify(error));
             this.subscriptionTimeout = setTimeout(this.subscribe, timeout);
         },
 
@@ -495,6 +499,11 @@ export default {
                             this.disableFreeText = group.LastMessage.DisableFreeText
 
                         }
+
+                        if (group.Rating && message.Rating) {
+                          group.Rating = message.Rating;
+                        }
+
                         return true;
                     }
                 }
@@ -536,7 +545,8 @@ export default {
                     lastGroup.UserId === message.UserId &&
                     lastGroup.ClientId === message.ClientId &&
                     message.CreatedAt - lastMessage.CreatedAt < 60000 &&
-                    isSameDate(message.CreatedAt, lastMessage.CreatedAt)
+                    isSameDate(message.CreatedAt, lastMessage.CreatedAt) &&
+                    message.TicketId === lastMessage.TicketId
                 ) {
 
                     if (!message.Read && message.Author === 'user'
@@ -643,12 +653,12 @@ export default {
             if (this.systemChat === true) {
                 return;
             }
-            if (this.groups[this.groups.length - 1] && !this.groups[this.groups.length - 1]) {
-                const lastGroup = this.groups[this.groups.length - 1]
-                if (lastGroup.Rating && !lastGroup.LastMessage.RatingId) {
-                    return;
-                }
+
+            const lastGroup = this.groups[this.groups.length - 1]
+            if (lastGroup && !lastGroup.Rating) {
+                return;
             }
+
             client.getChatSettings(this.channel, this.client.Id).then(result => {
                 const settings = result.Data
                 if (!settings) return;
@@ -1012,6 +1022,9 @@ export default {
                     case schema.ChatEventClientChanged:
                         this.$emit("client-changed", event)
                         break;
+                    case schema.ChatEventRatingIgnored:
+                        this.replaceMessage(event.Message, false);
+                        break;
                     default:
                         client.logMessage("Unhandled channel event" + JSON.stringify(event));
                 }
@@ -1167,6 +1180,7 @@ export default {
         },
 
         onStartTyping(text) {
+            this.$emit("on-typing"); 
             client.channelTyping(this.channel, this.chatType, text).catch(() => {
                 // ignore error, cause event is transitive
             });
