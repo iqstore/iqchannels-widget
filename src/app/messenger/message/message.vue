@@ -156,7 +156,7 @@ export default {
                 @click-file-image="clickFileImage"
             )
 
-            .message-data(:class="{ 'audio-message-data': (msg.File && msg.File.Type === 'audio'), 'message-data-with-file' : (msg.File && msg.File.Type === 'image') }")
+        .message-data(:class="{ 'audio-message-data': (msg.File && msg.File.Type === 'audio'), 'message-data-with-file' : (msg.File && msg.File.Type === 'image' && (!msg.File.State || msg.File.State === '' || msg.File.State === 'approved')) }")
                 message-text(v-if="isTextPayload(msg.Payload)",
                     v-bind:msg="msg",
                     @scroll-to-message="scrollToMessage")
