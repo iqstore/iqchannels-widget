@@ -143,7 +143,7 @@ export default {
             v-touch:longtap="longtapEvent(msg)",
             @contextmenu.prevent="($event) => OnContextMessage($event)",
             :title="getTitle()",
-            :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1 && ! (msg.File && msg.File.Type === 'image'), 'message-with-file': msg.File && msg.File.Type === 'image', 'message-with-file-no-reply' :  msg.File && msg.File.Type === 'image' && !msg.ReplyToMessageId  }"
+            :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1 && ! (msg.File && msg.File.Type === 'image'), 'message-with-file': msg.File && msg.File.Type === 'image' && (!msg.File.State || msg.File.State  === '' || msg.File.State === 'approved'), 'message-with-file-no-reply' :  msg.File && msg.File.Type === 'image' && !msg.ReplyToMessageId && (!msg.File.State || msg.File.State  === '' || msg.File.State === 'approved')  }"
         )
 
             reply(
@@ -156,7 +156,7 @@ export default {
                 @click-file-image="clickFileImage"
             )
 
-            .message-data(:class="{ 'audio-message-data': (msg.File && msg.File.Type === 'audio'), 'message-data-with-file' : (msg.File && msg.File.Type === 'image') }")
+            .message-data(:class="{ 'audio-message-data': (msg.File && msg.File.Type === 'audio'), 'message-data-with-file' : (msg.File && msg.File.Type === 'image' && (!msg.File.State || msg.File.State  === '' || msg.File.State === 'approved')) }")
                 message-text(v-if="isTextPayload(msg.Payload)",
                     v-bind:msg="msg",
                     @scroll-to-message="scrollToMessage")
