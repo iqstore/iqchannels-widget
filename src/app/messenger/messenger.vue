@@ -8,7 +8,7 @@ import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
-import {ChatEventRatingIgnored} from "../../schema";
+import { ChatEventRatingIgnored } from "../../schema";
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -121,7 +121,7 @@ export default {
                     composer.style.display = '';
                     this.scrollToBottom();
                 }, 0);
-                if (!this.systemChat){
+                if (!this.systemChat) {
                     this.sendGreeting();
                 }
             }
@@ -501,7 +501,7 @@ export default {
                         }
 
                         if (group.Rating && message.Rating) {
-                          group.Rating = message.Rating;
+                            group.Rating = message.Rating;
                         }
 
                         return true;
@@ -683,6 +683,7 @@ export default {
                         SystemMessage: true, // for auto-invite logic
                         UserId: now.getTime(),
                         User: {
+                            Id: settings.UserId,
                             DisplayName: settings.OperatorName,
                             Name: settings.OperatorName,
                             Active: true,
@@ -1180,7 +1181,7 @@ export default {
         },
 
         onStartTyping(text) {
-            this.$emit("on-typing"); 
+            this.$emit("on-typing");
             client.channelTyping(this.channel, this.chatType, text).catch(() => {
                 // ignore error, cause event is transitive
             });
