@@ -27,6 +27,7 @@ export default {
         isMultiple: Boolean,
         appError: Object,
         metadata: Object,
+        chatTypeProp: String,
     },
 
     created() {
@@ -48,6 +49,7 @@ export default {
         // sure next generated value will be greater
         this.lastLocalId = 0;
 
+        this.chatType = this.chatTypeProp;
     },
 
     mounted() {

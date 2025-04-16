@@ -83,8 +83,12 @@ export default {
         },
 
         getChatType(value) {
-            return value.PersonalManagerId && value.MultiChatsInfo?.EnableForPersonalManagers ?
-                'personal_manager' : 'regular';
+            if (value.PersonalManagerId && value.MultiChatsInfo?.EnableForPersonalManagers) {
+                return 'personal_manager'
+            }
+            if (value.MultiChatsInfo?.EnableChat) {
+                return 'regular'
+            }
         },
 
         onImageClicked(msg) {
@@ -100,7 +104,12 @@ export default {
 <template lang="pug">
     .chats
         template(v-for="(value, name) in multiClient")
-            .chat(v-wave, :id="'channel-'+getChatType(value)+'-'+name", @click.prevent="setCurrentChat(name, 'regular')")
+            .chat(
+                v-wave,
+                :id="'channel-'+getChatType(value)+'-'+name",
+                @click.prevent="setCurrentChat(name, 'regular')",
+                v-if="value.MultiChatsInfo?.EnableChat"
+            )
                 chat-container(:chat="value" :chat-name="name")
             .chat(
                 v-wave,
