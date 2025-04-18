@@ -684,9 +684,10 @@ export default {
                         UserId: now.getTime(),
                         User: {
                             Id: settings.UserId,
-                            DisplayName: settings.OperatorName,
+                            DisplayName: settings.Pseudonym ? settings.Pseudonym :  settings.OperatorName,
                             Name: settings.OperatorName,
                             Active: true,
+                            AvatarId: settings.AvatarId
                         }
                     };
                     this.appendMessage(message, true)

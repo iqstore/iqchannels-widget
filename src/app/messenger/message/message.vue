@@ -4,6 +4,8 @@ import MessageText from "../message-text.vue";
 import messageAvatar from "./message-avatar.vue";
 import { humanSize } from '../../../lib/filters';
 import { linkify } from "../../../lib/linkify";
+import config from "../../../config";
+import * as schema from "../../../schema";
 
 
 import reply from "./reply.vue";
@@ -105,6 +107,12 @@ export default {
             const hasMessages = this.group.Messages && this.group.Messages.length > 0;
             const isUserMessage = msg.Author === 'user';
             const hasTextOrFile = msg.Text || msg.File;
+            const hasAvatarId = msg.User.AvatarId ?? false;
+
+            if (hasAvatarId && msg.SystemMessage && isUserMessage){                
+                msg.User.AvatarURL = config.imageUrl(msg.User.AvatarId,schema.ImageSizeAvatar)
+                return true
+            }
 
             if (!hasMessages && !msg.File) {
                 return false;
