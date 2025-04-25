@@ -286,7 +286,7 @@ class IQChannelsWidget extends EventEmitter {
 				chats: this.chats,
 				isMultipleChats: this.isMultipleChats,
 			});
-			this.frameWindow.postMessage(JSON.stringify(event), '*');
+			this.frameWindow?.postMessage(JSON.stringify(event), '*');
 		});
 	}
 
@@ -342,7 +342,7 @@ class IQChannelsWidget extends EventEmitter {
 
 	appendText = (text) => {
 		const event = newChatEvent('append_text', { text: text });
-		this.frameWindow.postMessage(JSON.stringify(event), '*');
+		this.frameWindow?.postMessage(JSON.stringify(event), '*');
 	};
 
 	close = () => {
@@ -441,12 +441,12 @@ class IQChannelsWidget extends EventEmitter {
 
 	logout = () => {
 		const event = newChatEvent('logout');
-		this.frameWindow.postMessage(JSON.stringify(event), '*');
+		this.frameWindow?.postMessage(JSON.stringify(event), '*');
 	};
 
 	refreshClient = () => {
 		const event = newChatEvent('refresh_client');
-		this.frameWindow.postMessage(JSON.stringify(event), '*');
+		this.frameWindow?.postMessage(JSON.stringify(event), '*');
 	};
 
 	setIPhonePushToken = (token) => {
@@ -454,7 +454,7 @@ class IQChannelsWidget extends EventEmitter {
 		const event = newChatEvent('push_token', data);
 
 		if (this.frameWindow) {
-			this.frameWindow.postMessage(JSON.stringify(event), '*');
+			this.frameWindow?.postMessage(JSON.stringify(event), '*');
 		} else {
 			this.pushToken = data;
 		}
@@ -465,7 +465,7 @@ class IQChannelsWidget extends EventEmitter {
 		const event = newChatEvent('push_token', data);
 
 		if (this.frameWindow) {
-			this.frameWindow.postMessage(JSON.stringify(event), '*');
+			this.frameWindow?.postMessage(JSON.stringify(event), '*');
 		} else {
 			this.pushToken = data;
 		}
@@ -473,17 +473,17 @@ class IQChannelsWidget extends EventEmitter {
 
 	replyMessage = (msg) => {
 		const event = newChatEvent('reply-message', msg);
-		this.frameWindow.postMessage(JSON.stringify(event), '*');
+		this.frameWindow?.postMessage(JSON.stringify(event), '*');
 	};
 
 	scrollToMessage = (msg) => {
 		const event = newChatEvent('scroll-to-message', msg);
-		this.frameWindow.postMessage(JSON.stringify(event), '*');
+		this.frameWindow?.postMessage(JSON.stringify(event), '*');
 	};
 
 	sendRatingData = (rating) => {
 		const event = newChatEvent('get-rating', rating);
-		this.frameWindow.postMessage(JSON.stringify(event), '*');
+		this.frameWindow?.postMessage(JSON.stringify(event), '*');
 	}
 
 	showImgModal = (modalImageMsg) => {
