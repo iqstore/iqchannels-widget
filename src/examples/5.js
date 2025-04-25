@@ -16,6 +16,7 @@ window.widget = new IQChannelsWidget({
       state: 'mobile'
     },
     onLinkClick: (type, value) => {
+
         if (!value) {
             return;
           }
