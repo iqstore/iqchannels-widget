@@ -40,35 +40,7 @@ export const DefaultThirdClientConfig = {
 };
 export const DefaultAnonClientConfig = {
   channel: localStorage.getItem(LOCALSTORAGE_CHANNEL_NAME) || 'support',
-
+  width: 425,
   requireName: true,
-
-width: 280,
-padBody: false,
-iconOptions: {
-  show: false,
-},
-DOMIdentifier: 'ion-nav',
-mode: 'mobile',
-imgModalOptions: {
-  enabled: true,
-  state: 'mobile'
-},
-onLinkClick: (type, value) => {
-
-    if (!value) {
-        return;
-      }
-      switch (type) {
-        case 'URL':
-          window.open(value, '_system');
-          break;
-        case 'EMAIL':
-          window.location.href = 'email';
-          break;
-        case 'PHONE':
-          window.location.href = 'phone';
-          break;
-      }
-    }
+  iconOptions: { show: true }
 }
