@@ -9,4 +9,6 @@ window.onload = () => {
 	current.innerHTML = config ? `${JSON.stringify(config, null, 2)}` : `Нету конфигурации.`;
 };
 /* globals IQChannelsWidget */
-window.widget = new IQChannelsWidget(JSON.parse(localStorage.getItem(LOCALSTORAGE_WIDGET_0_CONFIG)) ?? DefaultAnonClientConfig);
+window.widget = new IQChannelsWidget(
+
+    DefaultAnonClientConfig);
