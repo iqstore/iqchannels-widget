@@ -28,7 +28,7 @@ w.on('open', function () {
       Search: "Клиент"
     }
   };
-  frameWindow.postMessage(msg, '*');
+  frameWindow?.postMessage(msg, '*');
 });
 w.on('file-clicked', function (url) {
   window.alert(url);
