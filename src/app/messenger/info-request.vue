@@ -82,7 +82,7 @@ export default {
                     }
                 }
 
-                if (f.ValidationRegexp && f.ValidationRegexp?.length) {
+                if (f.ValidationRegexp && f.ValidationRegexp?.length && f.Required) {
                     const regexp = REGEXP[f.ValidationRegexp] ?? f.ValidationRegexp
                     if (!f.CorrespondingField.match(regexp)) {
                         this.dataError = "Неправильно значение в поле " + f.Label;
