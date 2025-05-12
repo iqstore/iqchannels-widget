@@ -374,13 +374,15 @@ export default {
         },
 
         appendMessages(messages, scrollToLastMessage) {
-            if (messages.length > 0) {
-                this.disableFreeText = messages[messages.length - 1].DisableFreeText || false;
-            }
+            const lastDisable = messages.length
+                ? messages[messages.length - 1].DisableFreeText
+                : false;    
 
             for (let message of messages) {
                 this.appendMessage(message);
             }
+            
+            if (!lastDisable) this.disableFreeText = false;
 
             if (messages.length > 0 && scrollToLastMessage) {
                 this.scrollToMessage();
@@ -529,7 +531,7 @@ export default {
                         } else {
                             group.LastMessage = group.Messages[group.Messages.length - 1];
                             this.singleChoices = group.Messages[group.Messages.length - 1].SingleChoices;
-                            this.disableFreeText = group.LastMessage.DisableFreeText
+                            this.disableFreeText = group.LastMessage.DisableFreeText ?? false
                         }
                         return true;
                     }
@@ -686,7 +688,7 @@ export default {
                         UserId: now.getTime(),
                         User: {
                             Id: settings.UserId,
-                            DisplayName: settings.Pseudonym ? settings.Pseudonym :  settings.OperatorName,
+                            DisplayName: settings.Pseudonym ? settings.Pseudonym : settings.OperatorName,
                             Name: settings.OperatorName,
                             Active: true,
                             AvatarId: settings.AvatarId
