@@ -169,31 +169,27 @@ export default {
                     v-bind:msg="msg",
                     @scroll-to-message="scrollToMessage")
 
-                .file.text(v-if="msg.Upload")
-                    div(v-if="msg.Uploading")
-                        .filename {{ msg.Upload.name }}
-                        .filesize {{ humanSize(msg.Upload.size) }} - Загружено {{ msg.UploadProgress }}%
-                        a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
+                .file.text(v-if="msg.Upload || (msg.File && msg.File.State && msg.File.State !== 'approved')")
+                    div
+                        .filename {{ msg.Upload?.name || msg.File?.Name }}
+                        .filesize {{ humanSize(msg.Upload?.size || msg.File?.Size || 0) }} - Загружено {{ msg.UploadProgress || 100 }}%
+                        a.button.cancel(
+                            v-if="msg.LocalId",
+                            @click.prevent="cancelUpload(msg.LocalId)",
+                            href="#"
+                        ) Отмена
                     div(v-if="msg.UploadError")
-                        .filename {{ msg.Upload.name }}
-                        .filesize {{ humanSize(msg.Upload.size) }}
+                        .filename {{ msg.Upload?.name }}
+                        .filesize {{ humanSize(msg.Upload?.size || 0) }}
                         .error {{ msg.UploadError }}
                         a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
                         a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
-                div(v-if="msg.File && msg.File.State && msg.File.State !== 'approved'")
-                    .file_state-not_approved
-                        .check_error(v-if="msg.File.State === 'check_error'")
-                            span Ошибка проверки файла
-                        .on_checking(v-if="msg.File.State === 'on_checking'")
-                            span Файл на проверке
-                        .sent_for_checking(v-if="msg.File.State === 'sent_for_checking'")
-                            span Файл отправлен на проверку
-                        .rejected(v-if="msg.File.State === 'rejected'")
-                            span Небезопасный файл
+
                 div(v-else-if="msg.Payload === 'carousel' && !msg.File")
                     pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
                     button.img-button(
                         v-for="action of msg.Actions", @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+
                 div(v-else-if="(msg.File && msg.File.Type === 'image') || msg.Payload === 'card'")
                     a.image(
                         v-if="!imgModalOptions?.enabled && msg.File",
@@ -212,6 +208,7 @@ export default {
                     .carousel-card-block(:class="getCardBlockClass(msg)", v-if="msg.Payload === 'carousel' || msg.Payload === 'card'")
                         button.img-button(
                             v-for="action of msg.Actions", @click.prevent="sendMessage(action.Title, action.Payload, action.URL)" ) {{ action.Title }}
+
                 div(v-else-if="msg.File && msg.File.Type === 'file'")
                     a.message_file(
                         :href="msg.File.URL"
@@ -221,6 +218,7 @@ export default {
                         span.file
                             .filename(:class="{ 'filename-client': msg.Author === 'client', 'filename-user': msg.Author === 'user' }") {{ msg.File.Name }}
                             .filesize(:class="{ 'filesize-client': msg.Author === 'client', 'filesize-user': msg.Author === 'user' }") {{ humanSize(msg.File.Size) }}
+
                     div.img-caption(v-if="msg.Text")
                         pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
                 audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"

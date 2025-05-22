@@ -1109,12 +1109,12 @@ export default {
         },
 
         handleIncomingUpdatedFile(event) {
-            const message = this.getMessageById(event.MessageId);
+            let message = this.getMessageById(event.MessageId);
             if (!message) {
                 return;
             }
-            client.getFile(message.FileId).then(file => {
-                message.File.State = file.State;
+            client.getFile(message.FileId).then(resp => {
+                message = { ...message, File: resp.Result};
                 this.replaceMessage(message);
             })
         },
