@@ -26,6 +26,8 @@ class Client {
     this.state = reactive({
       error: null
     });
+
+    this.endAppealSettings = null;
   }
 
   clearAuth () {
@@ -333,7 +335,10 @@ class Client {
   }
 
   getEndAppealSettings(channel){
-    return this.get(`/widget/get_end_appeals_settings/${channel}`, {}, { shouldRetry: (error) => !error });
+    if (!this.endAppealSettings) {
+        this.endAppealSettings = this.get(`/widget/get_end_appeals_settings/${channel}`, {}, { shouldRetry: (error) => !error });
+    }
+    return this.endAppealSettings
   }
 
   acceptProductMessage (messageId, productId) {

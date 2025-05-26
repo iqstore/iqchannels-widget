@@ -19,7 +19,9 @@ export default {
         if (this.poll && this.rating.State === "poll") {
             this.start = !this.poll.ShowOffer;
         }
-        this.getEndAppealSettings();
+        if (this.rating.State === "pending") {
+            this.getEndAppealSettings();
+        }
     },
 
     watch: {
@@ -250,12 +252,13 @@ export default {
                 this.rating.Value != null
             );
         },
-        getEndAppealSettings(){
-            client.getEndAppealSettings(this.channel).then(res=>{
+
+        getEndAppealSettings() {
+            client.getEndAppealSettings(this.channel).then(res => {
                 this.endAppealSetting = res.Data;
             })
-            
         },
+
         getRatingScaleMaxValue() {
             let maxValue = DEFAULT_RATING_MAX_VALUE;
             if (this.rating.State === "finished" && this.rating.RatingPoll) {
