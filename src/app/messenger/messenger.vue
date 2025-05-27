@@ -1113,8 +1113,8 @@ export default {
             if (!message) {
                 return;
             }
-            client.getFile(message.FileId).then(resp => {
-                message = { ...message, File: resp.Result};
+            client.getFile(message.FileId).then(file => {
+                message = { ...message, File: file};
                 this.replaceMessage(message);
             })
         },

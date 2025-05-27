@@ -9,6 +9,7 @@ import Relations from './relations';
 import Request from './request';
 import { reactive } from 'vue';
 import { imageSize } from "../lib/files";
+import * as schema from "../schema";
 
 
 const XClientAuthorizationHeader = 'X-Client-Authorization';
@@ -455,7 +456,16 @@ class Client {
   }
 
   getFile (fileId) {
-    return this.get(`/files/get_file/${fileId}`, {});
+    return this.get(`/files/get_file/${fileId}`, {}).
+      then(resp => resp.Result).
+      then(file => {
+        file.URL = config.fileUrl(file.Id);
+        if (file.Type === schema.FileTypeImage) {
+          file.ThumbnailURL = config.imageUrl(file.Id, schema.ImageSizeThumbnail);
+          file.PreviewURL = config.imageUrl(file.Id, schema.ImageSizePreview);
+        }
+        return file;
+      });
   }
 
   checkFileBeforeUpload(file, type, onError) {
