@@ -209,20 +209,6 @@ class Client {
       });
   }
 
-  // Deprecated
-  anonymousCreate (name, channel) {
-    const data = { Name: name, Channel: channel };
-    const options = { shouldRetry: (error) => error.http() };
-
-    return this._enqueueRequest('/clients/anonymous/create', data, options)
-      .then(response => {
-        let auth = response.Result;
-        this.setAuth(auth);
-
-        return auth.Client;
-      });
-  }
-
   authorize (credentials, channel) {
     const data = {
       Credentials: credentials,
