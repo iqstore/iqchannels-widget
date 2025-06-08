@@ -663,11 +663,9 @@ export default {
             }
 
             client.getChatSettings(this.channel, this.client.Id).then(result => {
-                const settings = result.Data
-                if (!settings) return;
+                if (!result.Data) return;
 
-
-                this.settings = settings;
+                this.settings = result.Data;
 
                 this.systemChat = true
                 if (settings.TotalOpenedTickets) {
@@ -1258,7 +1256,7 @@ export default {
         .header#header(v-else)
             .content#header-content(v-if="!isMultiple")
                 div.client-name-container(v-if="mode !== 'mobile'")
-                    p {{ settings.TitleLabel }}
+                    p {{ settings.ChatTitle }}
                     p(v-if="anonymous")
                         a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
                     a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
