@@ -670,12 +670,12 @@ export default {
                 this.settings = result.Data;
 
                 this.systemChat = true
-                if (settings.TotalOpenedTickets) {
+                if (this.settings.TotalOpenedTickets) {
                     this.systemChat = false;
                     return;
                 }
 
-                if (settings.GreetFrom === 'bot') {
+                if (this.settings.GreetFrom === 'bot') {
                     client.openSystemChat(this.channel)
                 } else {
                     const now = new Date()
@@ -683,24 +683,24 @@ export default {
                         Id: now.getTime(),
                         Author: "user",
                         CreatedAt: now,
-                        Text: settings.Message,
+                        Text: this.settings.Message,
                         Payload: 'text',
                         Read: true,
                         SystemMessage: true, // for auto-invite logic
                         UserId: now.getTime(),
                         User: {
-                            Id: settings.UserId,
-                            DisplayName: settings.Pseudonym ? settings.Pseudonym : settings.OperatorName,
-                            Name: settings.OperatorName,
+                            Id: this.settings.UserId,
+                            DisplayName: this.settings.Pseudonym ? this.settings.Pseudonym :  this.settings.OperatorName,
+                            Name: this.settings.OperatorName,
                             Active: true,
-                            AvatarId: settings.AvatarId
+                            AvatarId: this.settings.AvatarId
                         }
                     };
                     this.appendMessage(message, true)
                     setTimeout(() => {
                         this.removeMessage(message);
                         this.systemChat = false
-                    }, 1000 * settings.Lifetime)
+                    }, 1000 * this.settings.Lifetime)
                 }
             })
         },
