@@ -375,17 +375,11 @@ export default {
         },
 
         appendMessages(messages, scrollToLastMessage) {
-            const lastDisable = messages.length
-                ? messages[messages.length - 1].DisableFreeText
-                : false;    
-
             for (let message of messages) {
                 this.appendMessage(message);
             }
-            
-            if (!lastDisable) this.disableFreeText = false;
 
-            if (messages.length > 0 && scrollToLastMessage) {
+            if (messages.length && scrollToLastMessage) {
                 this.scrollToMessage();
             }
         },
@@ -501,8 +495,7 @@ export default {
                         if (i === group.Messages.length - 1) {
                             group.LastMessage = message;
                             this.singleChoices = group.LastMessage.SingleChoices
-                            this.disableFreeText = group.LastMessage.DisableFreeText
-
+                            this.disableFreeText = group.LastMessage.DisableFreeText ?? false
                         }
 
                         if (group.Rating && message.Rating) {
@@ -565,16 +558,17 @@ export default {
                     lastGroup.Messages.push(message);
                     this.existingMsgIds[message.Id] = true;
                     lastGroup.LastMessage = message;
-                    this.singleChoices = lastGroup.LastMessage.SingleChoices
-                    this.disableFreeText = lastGroup.LastMessage.DisableFreeText
+
+                    this.singleChoices = message.SingleChoices
+                    this.disableFreeText = message.DisableFreeText ?? false
 
                     if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
                         lastGroup.InfoRequest = message.InfoRequest;
                     }
-
                     if (message.Rating) {
                         lastGroup.Rating = message.Rating;
                     }
+
                     return;
                 }
             }
@@ -603,9 +597,15 @@ export default {
                 IsNewDay: isNewDay
             };
 
+            this.singleChoices = message.SingleChoices
+            this.disableFreeText = message.DisableFreeText ?? false
             if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
                 group.InfoRequest = message.InfoRequest;
             }
+            if (message.Rating) {
+                group.Rating = message.Rating;
+            }
+
             groups.push(group);
             this.existingMsgIds[message.Id] = true;
         },
@@ -690,7 +690,7 @@ export default {
                         UserId: now.getTime(),
                         User: {
                             Id: this.settings.UserId,
-                            DisplayName: this.settings.Pseudonym ? this.settings.Pseudonym :  this.settings.OperatorName,
+                            DisplayName: this.settings.Pseudonym ? this.settings.Pseudonym : this.settings.OperatorName,
                             Name: this.settings.OperatorName,
                             Active: true,
                             AvatarId: this.settings.AvatarId
@@ -1118,7 +1118,7 @@ export default {
                 return;
             }
             client.getFile(message.FileId).then(file => {
-                message = { ...message, File: file};
+                message = { ...message, File: file };
                 this.replaceMessage(message);
             })
         },
@@ -1161,7 +1161,6 @@ export default {
 
             messageForm.Metadata = this.metadata;
             this.appendLocalMessage(messageForm, true);
-
 
             client.channelSend(this.channel, messageForm);
         },
