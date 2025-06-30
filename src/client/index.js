@@ -328,6 +328,17 @@ class Client {
     return this.endAppealSettings
   }
 
+  getLanguagesList(channel){
+    return this.get(`/widget/localization/${channel}/languages`, {}, { shouldRetry: (error) => !error })
+                .then(({Data}) => Data)
+                .then(({Languages}) => {
+                    for (const language of Languages) {
+                        language.IconUrl = config.imageUrl(language.IconId, schema.ImageSizePreview);
+                    }
+                    return Languages
+                });
+  }
+
   acceptProductMessage (messageId, productId) {
     return this._enqueueRequest(`/chats/messages/accept_product`, { MessageId: messageId, ProductId: productId });
   }

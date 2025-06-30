@@ -27,7 +27,7 @@ export default {
         isMultiple: Boolean,
         appError: Object,
         metadata: Object,
-        chatTypeProp: String,
+        chatTypeProp: String
     },
 
     created() {
@@ -54,6 +54,7 @@ export default {
 
     mounted() {
         this.loadHistory();
+        this.loadLanguages();
         this.initScrollEvents();
     },
 
@@ -78,7 +79,8 @@ export default {
             loadingMore: false,
             existingMsgIds: {},
             isBottom: false,
-            settings: {}
+            settings: {},
+            languages: {}
         };
     },
 
@@ -311,6 +313,12 @@ export default {
             });
         },
 
+        loadLanguages() {
+            client.getLanguagesList(this.channel).then((languages) => {
+                this.languages = languages
+            });
+        },
+
         subscribe() {
             this.unsubscribe();
             if (this.subscription) {
@@ -377,12 +385,12 @@ export default {
         appendMessages(messages, scrollToLastMessage) {
             const lastDisable = messages.length
                 ? messages[messages.length - 1].DisableFreeText
-                : false;    
+                : false;
 
             for (let message of messages) {
                 this.appendMessage(message);
             }
-            
+
             if (!lastDisable) this.disableFreeText = false;
 
             if (messages.length > 0 && scrollToLastMessage) {
@@ -655,19 +663,19 @@ export default {
         },
 
         sendGreeting() {
-            if (this.systemChat === true) {
-                return;
-            }
-
-            const lastGroup = this.groups[this.groups.length - 1]
-            if (lastGroup && !lastGroup.Rating) {
-                return;
-            }
-
             client.getChatSettings(this.channel, this.client.Id).then(result => {
                 if (!result.Data) return;
 
                 this.settings = result.Data;
+
+                if (this.systemChat === true) {
+                    return;
+                }
+
+                const lastGroup = this.groups[this.groups.length - 1]
+                if (lastGroup && !lastGroup.Rating) {
+                    return;
+                }
 
                 this.systemChat = true
                 if (this.settings.TotalOpenedTickets) {
@@ -690,7 +698,7 @@ export default {
                         UserId: now.getTime(),
                         User: {
                             Id: this.settings.UserId,
-                            DisplayName: this.settings.Pseudonym ? this.settings.Pseudonym :  this.settings.OperatorName,
+                            DisplayName: this.settings.Pseudonym ? this.settings.Pseudonym : this.settings.OperatorName,
                             Name: this.settings.OperatorName,
                             Active: true,
                             AvatarId: this.settings.AvatarId
@@ -980,6 +988,10 @@ export default {
             this.loadHistory();
         },
 
+        onClientLanguageSelected(event) {
+            console.log({ language: event.target.value });
+        },
+
         onChannelEvents(events) {
             // Clear subscribe attempts count,
             // this is the only way to know that we successfully
@@ -1118,7 +1130,7 @@ export default {
                 return;
             }
             client.getFile(message.FileId).then(file => {
-                message = { ...message, File: file};
+                message = { ...message, File: file };
                 this.replaceMessage(message);
             })
         },
@@ -1257,7 +1269,12 @@ export default {
                 p Ожидание сети...
         .header#header(v-else)
             .content#header-content(v-if="!isMultiple")
-                div.client-name-container(v-if="mode !== 'mobile'")
+                div.chat-header(v-if="mode !== 'mobile'")
+                    select(name="language" @change="onClientLanguageSelected").language-select
+                        option(v-for="language in languages", :value="language.Code")
+                            div.language-option
+                                img(v-if="language.IconUrl", :src="language.IconUrl")
+                                p {{ language.Name }}
                     p {{ settings.ChatTitle }}
                     p(v-if="anonymous")
                         a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
@@ -1367,7 +1384,7 @@ export default {
         text-align: center;
         flex: 1;
 
-        .client-name-container {
+        .chat-header {
             display: block;
         }
 
@@ -1571,5 +1588,17 @@ a.logout:focus {
     .loader {
         top: 10px;
     }
+}
+
+.language-option {
+    display: flex;
+    gap: 5px;
+}
+
+.language-select {
+    position: absolute;
+    transform: translate(55px, -2px);
+    background-color: transparent;
+    border: 0;
 }
 </style>
