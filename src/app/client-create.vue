@@ -25,9 +25,11 @@ export default {
     },
 
     mounted() {
-        client.getInfoLinkByChannel(this.channel).then((link) => {
-            this.processDataLink = link.Data
-            this.personalDataForm.ProcessingDataLink = link.Data
+        client.getInfoLinkByChannel(this.channel).then(({ Data }) => {
+            this.processDataLink = Data
+            if (this.personalDataForm) {
+                this.personalDataForm.ProcessingDataLink = Data
+            }
         })
     },
 

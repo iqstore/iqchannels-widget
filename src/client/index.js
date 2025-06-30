@@ -321,11 +321,27 @@ class Client {
     return this._enqueueRequest(`/widget/personal_data_form/${channel}`, {}, { shouldRetry: (error) => !error });
   }
 
-  getEndAppealSettings(channel){
+  getEndAppealSettings(channel) {
     if (!this.endAppealSettings) {
         this.endAppealSettings = this.get(`/widget/get_end_appeals_settings/${channel}`, {}, { shouldRetry: (error) => !error });
     }
     return this.endAppealSettings
+  }
+
+  getLanguages(channel) {
+    return this.get(`/widget/localization/${channel}/languages`, {}, { shouldRetry: (error) => !error })
+                .then(({Data}) => Data)
+                .then(({Languages}) => {
+                    if (!Languages) return []
+                    for (const language of Languages) {
+                        language.IconUrl = config.imageUrl(language.IconId, schema.ImageSizePreview);
+                    }
+                    return Languages
+                });
+  }
+
+  setLanguage(code) {
+    return this._enqueueRequest(`/clients/set_language`, { Code: code });
   }
 
   acceptProductMessage (messageId, productId) {
