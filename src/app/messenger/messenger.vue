@@ -80,7 +80,8 @@ export default {
             existingMsgIds: {},
             isBottom: false,
             settings: {},
-            languages: {}
+            languages: [],
+            clientLanguageCode: ""
         };
     },
 
@@ -314,9 +315,23 @@ export default {
         },
 
         loadLanguages() {
-            client.getLanguagesList(this.channel).then((languages) => {
+            client.getLanguages(this.channel).then((languages) => {
                 this.languages = languages
+
+                if (this.client.LanguageCode) {
+                    const clientLanguage = this.languages.find((language) => language.Code === this.client.LanguageCode)
+                    this.clientLanguageCode = clientLanguage.Code
+                } else {
+                    const defaultLanguage = this.languages.find((language) => language.Default)
+                    if (defaultLanguage) {
+                        this.clientLanguageCode = defaultLanguage.Code
+                    }
+                }
             });
+        },
+
+        setLanguage(code) {
+            client.setLanguage(code);
         },
 
         subscribe() {
@@ -989,7 +1004,8 @@ export default {
         },
 
         onClientLanguageSelected(event) {
-            console.log({ language: event.target.value });
+            const languageCode = event.target.value
+            this.setLanguage(languageCode);
         },
 
         onChannelEvents(events) {
@@ -1270,7 +1286,7 @@ export default {
         .header#header(v-else)
             .content#header-content(v-if="!isMultiple")
                 div.chat-header(v-if="mode !== 'mobile'")
-                    select(name="language" @change="onClientLanguageSelected").language-select
+                    select(v-if="languages?.length", name="language" @change="onClientLanguageSelected" v-model="clientLanguageCode").language-select
                         option(v-for="language in languages", :value="language.Code")
                             div.language-option
                                 img(v-if="language.IconUrl", :src="language.IconUrl")
