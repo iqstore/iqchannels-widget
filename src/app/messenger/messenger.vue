@@ -81,7 +81,7 @@ export default {
             isBottom: false,
             settings: {},
             languages: [],
-            clientLanguageCode: ""
+            clientLanguage: {}
         };
     },
 
@@ -320,11 +320,12 @@ export default {
 
                 if (this.client.LanguageCode) {
                     const clientLanguage = this.languages.find((language) => language.Code === this.client.LanguageCode)
-                    this.clientLanguageCode = clientLanguage.Code
+                    this.clientLanguage = clientLanguage
                 } else {
                     const defaultLanguage = this.languages.find((language) => language.Default)
                     if (defaultLanguage) {
-                        this.clientLanguageCode = defaultLanguage.Code
+                        this.client.LanguageCode = defaultLanguage.Code
+                        this.clientLanguage = defaultLanguage
                     }
                 }
             });
@@ -1005,6 +1006,9 @@ export default {
 
         onClientLanguageSelected(event) {
             const languageCode = event.target.value
+            client.LanguageCode = languageCode
+            const clientLanguage = this.languages.find((language) => language.Code === this.client.LanguageCode)
+            this.clientLanguage = clientLanguage
             this.setLanguage(languageCode);
         },
 
@@ -1286,11 +1290,13 @@ export default {
         .header#header(v-else)
             .content#header-content(v-if="!isMultiple")
                 div.chat-header(v-if="mode !== 'mobile'")
-                    select(v-if="languages?.length", name="language" @change="onClientLanguageSelected" v-model="clientLanguageCode").language-select
-                        option(v-for="language in languages", :value="language.Code")
-                            div.language-option
-                                img(v-if="language.IconUrl", :src="language.IconUrl")
-                                p {{ language.Name }}
+                    .language
+                        img(v-if="clientLanguage.IconUrl", :src="clientLanguage.IconUrl").language-image
+                        select(v-if="languages?.length", name="language" @change="onClientLanguageSelected" v-model="client.LanguageCode").language-select
+                            option(v-for="language in languages", :value="language.Code")
+                                div.language-option
+                                    div(v-if="language.IconUrl", :style="{ 'background-image': 'url(' + language.IconUrl + ')' }")
+                                    p {{ language.Name }}
                     p {{ settings.ChatTitle }}
                     p(v-if="anonymous")
                         a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
@@ -1611,10 +1617,22 @@ a.logout:focus {
     gap: 5px;
 }
 
-.language-select {
+.language {
+    display: flex;
+    gap: 5px;
     position: absolute;
-    transform: translate(55px, -2px);
-    background-color: transparent;
-    border: 0;
+    transform: translate(245px, -7px);
+
+
+    .language-select {
+        background-color: transparent;
+        border: 0;
+    }
+
+    .language-image {
+        width: 30px;
+        height: 30px;
+        border-radius: 30px;
+    }
 }
 </style>
