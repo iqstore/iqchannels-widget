@@ -702,12 +702,20 @@ export default {
                 if (this.settings.GreetFrom === 'bot') {
                     client.openSystemChat(this.channel)
                 } else {
+                    let text = this.settings.Message
+                    if (this.settings?.Translations?.length) {
+                        const translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
+                        if (translation) {
+                            text = translation.Translation
+                        }
+                    }
+
                     const now = new Date()
                     const message = {
                         Id: now.getTime(),
                         Author: "user",
                         CreatedAt: now,
-                        Text: this.settings.Message,
+                        Text: text,
                         Payload: 'text',
                         Read: true,
                         SystemMessage: true, // for auto-invite logic
