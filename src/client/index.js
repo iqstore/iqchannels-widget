@@ -333,9 +333,6 @@ class Client {
                 .then(({Data}) => Data)
                 .then(({Languages}) => {
                     if (!Languages) return []
-                    for (const language of Languages) {
-                        language.IconUrl = config.imageUrl(language.IconId, schema.ImageSizePreview);
-                    }
                     return Languages
                 });
   }

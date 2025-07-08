@@ -54,7 +54,6 @@ export default {
 
     mounted() {
         this.loadHistory();
-        this.loadLanguages();
         this.initScrollEvents();
     },
 
@@ -701,7 +700,9 @@ export default {
 
                 if (this.settings.GreetFrom === 'bot') {
                     client.openSystemChat(this.channel)
-                } else {
+                } else if (this.settings.Languages) {
+                    this.loadLanguages();
+
                     let text = this.settings.Message
                     if (this.settings?.Translations?.length) {
                         const translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
@@ -1299,11 +1300,9 @@ export default {
             .content#header-content(v-if="!isMultiple")
                 div.chat-header(v-if="mode !== 'mobile'")
                     .language
-                        img(v-if="clientLanguage.IconUrl", :src="clientLanguage.IconUrl").language-image
                         select(v-if="languages?.length", name="language" @change="onClientLanguageSelected" v-model="client.LanguageCode").language-select
                             option(v-for="language in languages", :value="language.Code")
                                 div.language-option
-                                    div(v-if="language.IconUrl", :style="{ 'background-image': 'url(' + language.IconUrl + ')' }")
                                     p {{ language.Name }}
                     p {{ settings.ChatTitle }}
                     p(v-if="anonymous")
@@ -1629,18 +1628,11 @@ a.logout:focus {
     display: flex;
     gap: 5px;
     position: absolute;
-    transform: translate(245px, -7px);
-
+    transform: translate(265px, -2px);
 
     .language-select {
         background-color: transparent;
         border: 0;
-    }
-
-    .language-image {
-        width: 30px;
-        height: 30px;
-        border-radius: 30px;
     }
 }
 </style>

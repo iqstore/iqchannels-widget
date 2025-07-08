@@ -109,8 +109,8 @@ export default {
             const hasTextOrFile = msg.Text || msg.File;
             const hasAvatarId = msg.User.AvatarId ?? false;
 
-            if (hasAvatarId && msg.SystemMessage && isUserMessage){                
-                msg.User.AvatarURL = config.imageUrl(msg.User.AvatarId,schema.ImageSizeAvatar)
+            if (hasAvatarId && msg.SystemMessage && isUserMessage) {
+                msg.User.AvatarURL = config.imageUrl(msg.User.AvatarId, schema.ImageSizeAvatar)
                 return true
             }
 
