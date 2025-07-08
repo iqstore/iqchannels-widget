@@ -683,6 +683,18 @@ export default {
 
                 this.settings = result.Data;
 
+                if (this.settings.Languages) {
+                    this.loadLanguages();
+
+                    let text = this.settings.Message
+                    if (this.settings?.Translations?.length) {
+                        const translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
+                        if (translation) {
+                            text = translation.Translation
+                        }
+                    }
+                }
+
                 if (this.systemChat === true) {
                     return;
                 }
@@ -700,17 +712,7 @@ export default {
 
                 if (this.settings.GreetFrom === 'bot') {
                     client.openSystemChat(this.channel)
-                } else if (this.settings.Languages) {
-                    this.loadLanguages();
-
-                    let text = this.settings.Message
-                    if (this.settings?.Translations?.length) {
-                        const translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
-                        if (translation) {
-                            text = translation.Translation
-                        }
-                    }
-
+                } else {
                     const now = new Date()
                     const message = {
                         Id: now.getTime(),
