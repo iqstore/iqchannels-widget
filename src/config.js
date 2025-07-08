@@ -13,7 +13,7 @@ class Config {
 
   fileUrl = (fileId) => this.apiUrl(`/files/get/${fileId}`);
 
-  imageUrl = (imageId, size) => this.apiUrl(`/files/image/${imageId}`);
+  imageUrl = (imageId, size) => this.apiUrl(`/files/image/${imageId}?size=${size}`);
 
 }
 
