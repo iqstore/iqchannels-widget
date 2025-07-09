@@ -9,6 +9,7 @@ import Relations from './relations';
 import Request from './request';
 import { reactive } from 'vue';
 import { imageSize } from "../lib/files";
+import * as schema from "../schema";
 
 
 const XClientAuthorizationHeader = 'X-Client-Authorization';
@@ -26,6 +27,8 @@ class Client {
     this.state = reactive({
       error: null
     });
+
+    this.endAppealSettings = null;
   }
 
   clearAuth () {
@@ -206,20 +209,6 @@ class Client {
       });
   }
 
-  // Deprecated
-  anonymousCreate (name, channel) {
-    const data = { Name: name, Channel: channel };
-    const options = { shouldRetry: (error) => error.http() };
-
-    return this._enqueueRequest('/clients/anonymous/create', data, options)
-      .then(response => {
-        let auth = response.Result;
-        this.setAuth(auth);
-
-        return auth.Client;
-      });
-  }
-
   authorize (credentials, channel) {
     const data = {
       Credentials: credentials,
@@ -333,7 +322,10 @@ class Client {
   }
 
   getEndAppealSettings(channel){
-    return this.get(`/widget/get_end_appeals_settings/${channel}`, {}, { shouldRetry: (error) => !error });
+    if (!this.endAppealSettings) {
+        this.endAppealSettings = this.get(`/widget/get_end_appeals_settings/${channel}`, {}, { shouldRetry: (error) => !error });
+    }
+    return this.endAppealSettings
   }
 
   acceptProductMessage (messageId, productId) {
@@ -450,7 +442,16 @@ class Client {
   }
 
   getFile (fileId) {
-    return this.get(`/files/get_file/${fileId}`, {});
+    return this.get(`/files/get_file/${fileId}`, {}).
+      then(resp => resp.Result).
+      then(file => {
+        file.URL = config.fileUrl(file.Id);
+        if (file.Type === schema.FileTypeImage) {
+          file.ThumbnailURL = config.imageUrl(file.Id, schema.ImageSizeThumbnail);
+          file.PreviewURL = config.imageUrl(file.Id, schema.ImageSizePreview);
+        }
+        return file;
+      });
   }
 
   checkFileBeforeUpload(file, type, onError) {
@@ -566,7 +567,7 @@ class Client {
     );
   }
   _enqueueRequest (url, data, options = { timeout: 0, shouldRetry: null }) {
-    const req = new Request(url, data, options);
+    const req = new Request(url, data ?? {}, options);
     const promise = new Promise((resolve, reject) => {
       req.onError(reject);
       req.onDone(resolve);

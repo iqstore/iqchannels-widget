@@ -31,10 +31,6 @@ export const DefaultThirdClientConfig = {
     {
       channel: 'support',
       credentials: '3'
-    },
-    {
-      channel: 'finance',
-      credentials: '3'
     }
   ]
 };

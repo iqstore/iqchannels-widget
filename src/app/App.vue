@@ -199,6 +199,7 @@ export default {
 
         onMultiLogin(multiClient) {
             this.multiClient = multiClient;
+            parent.postMessage({ type: 'iqchannels-ready' }, "*");
         },
 
         onFailedLogin() {

@@ -8,7 +8,7 @@ import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
-import {ChatEventRatingIgnored} from "../../schema";
+import { ChatEventRatingIgnored } from "../../schema";
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -27,6 +27,7 @@ export default {
         isMultiple: Boolean,
         appError: Object,
         metadata: Object,
+        chatTypeProp: String,
     },
 
     created() {
@@ -48,6 +49,7 @@ export default {
         // sure next generated value will be greater
         this.lastLocalId = 0;
 
+        this.chatType = this.chatTypeProp;
     },
 
     mounted() {
@@ -76,6 +78,7 @@ export default {
             loadingMore: false,
             existingMsgIds: {},
             isBottom: false,
+            settings: {}
         };
     },
 
@@ -121,7 +124,7 @@ export default {
                     composer.style.display = '';
                     this.scrollToBottom();
                 }, 0);
-                if (!this.systemChat){
+                if (!this.systemChat) {
                     this.sendGreeting();
                 }
             }
@@ -372,15 +375,11 @@ export default {
         },
 
         appendMessages(messages, scrollToLastMessage) {
-            if (messages.length > 0) {
-                this.disableFreeText = messages[messages.length - 1].DisableFreeText || false;
-            }
-
             for (let message of messages) {
                 this.appendMessage(message);
             }
 
-            if (messages.length > 0 && scrollToLastMessage) {
+            if (messages.length && scrollToLastMessage) {
                 this.scrollToMessage();
             }
         },
@@ -496,12 +495,11 @@ export default {
                         if (i === group.Messages.length - 1) {
                             group.LastMessage = message;
                             this.singleChoices = group.LastMessage.SingleChoices
-                            this.disableFreeText = group.LastMessage.DisableFreeText
-
+                            this.disableFreeText = group.LastMessage.DisableFreeText ?? false
                         }
 
                         if (group.Rating && message.Rating) {
-                          group.Rating = message.Rating;
+                            group.Rating = message.Rating;
                         }
 
                         return true;
@@ -527,7 +525,7 @@ export default {
                         } else {
                             group.LastMessage = group.Messages[group.Messages.length - 1];
                             this.singleChoices = group.Messages[group.Messages.length - 1].SingleChoices;
-                            this.disableFreeText = group.LastMessage.DisableFreeText
+                            this.disableFreeText = group.LastMessage.DisableFreeText ?? false
                         }
                         return true;
                     }
@@ -560,16 +558,17 @@ export default {
                     lastGroup.Messages.push(message);
                     this.existingMsgIds[message.Id] = true;
                     lastGroup.LastMessage = message;
-                    this.singleChoices = lastGroup.LastMessage.SingleChoices
-                    this.disableFreeText = lastGroup.LastMessage.DisableFreeText
+
+                    this.singleChoices = message.SingleChoices
+                    this.disableFreeText = message.DisableFreeText ?? false
 
                     if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
                         lastGroup.InfoRequest = message.InfoRequest;
                     }
-
                     if (message.Rating) {
                         lastGroup.Rating = message.Rating;
                     }
+
                     return;
                 }
             }
@@ -598,9 +597,15 @@ export default {
                 IsNewDay: isNewDay
             };
 
+            this.singleChoices = message.SingleChoices
+            this.disableFreeText = message.DisableFreeText ?? false
             if (message.InfoRequest && message.InfoRequest.State !== 'finished') {
                 group.InfoRequest = message.InfoRequest;
             }
+            if (message.Rating) {
+                group.Rating = message.Rating;
+            }
+
             groups.push(group);
             this.existingMsgIds[message.Id] = true;
         },
@@ -660,16 +665,17 @@ export default {
             }
 
             client.getChatSettings(this.channel, this.client.Id).then(result => {
-                const settings = result.Data
-                if (!settings) return;
+                if (!result.Data) return;
+
+                this.settings = result.Data;
 
                 this.systemChat = true
-                if (settings.TotalOpenedTickets) {
+                if (this.settings.TotalOpenedTickets) {
                     this.systemChat = false;
                     return;
                 }
 
-                if (settings.GreetFrom === 'bot') {
+                if (this.settings.GreetFrom === 'bot') {
                     client.openSystemChat(this.channel)
                 } else {
                     const now = new Date()
@@ -677,22 +683,24 @@ export default {
                         Id: now.getTime(),
                         Author: "user",
                         CreatedAt: now,
-                        Text: settings.Message,
+                        Text: this.settings.Message,
                         Payload: 'text',
                         Read: true,
                         SystemMessage: true, // for auto-invite logic
                         UserId: now.getTime(),
                         User: {
-                            DisplayName: settings.OperatorName,
-                            Name: settings.OperatorName,
+                            Id: this.settings.UserId,
+                            DisplayName: this.settings.Pseudonym ? this.settings.Pseudonym : this.settings.OperatorName,
+                            Name: this.settings.OperatorName,
                             Active: true,
+                            AvatarId: this.settings.AvatarId
                         }
                     };
                     this.appendMessage(message, true)
                     setTimeout(() => {
                         this.removeMessage(message);
                         this.systemChat = false
-                    }, 1000 * settings.Lifetime)
+                    }, 1000 * this.settings.Lifetime)
                 }
             })
         },
@@ -1105,12 +1113,12 @@ export default {
         },
 
         handleIncomingUpdatedFile(event) {
-            const message = this.getMessageById(event.MessageId);
+            let message = this.getMessageById(event.MessageId);
             if (!message) {
                 return;
             }
             client.getFile(message.FileId).then(file => {
-                message.File.State = file.State;
+                message = { ...message, File: file };
                 this.replaceMessage(message);
             })
         },
@@ -1154,7 +1162,6 @@ export default {
             messageForm.Metadata = this.metadata;
             this.appendLocalMessage(messageForm, true);
 
-
             client.channelSend(this.channel, messageForm);
         },
 
@@ -1180,7 +1187,7 @@ export default {
         },
 
         onStartTyping(text) {
-            this.$emit("on-typing"); 
+            this.$emit("on-typing");
             client.channelTyping(this.channel, this.chatType, text).catch(() => {
                 // ignore error, cause event is transitive
             });
@@ -1250,7 +1257,7 @@ export default {
         .header#header(v-else)
             .content#header-content(v-if="!isMultiple")
                 div.client-name-container(v-if="mode !== 'mobile'")
-                    p {{ client.Name }}
+                    p {{ settings.ChatTitle }}
                     p(v-if="anonymous")
                         a.logout(href="#" @click.prevent="onLogoutClicked") удалить переписку
                     a.close(href="#" @click.prevent="onCloseClicked" title="Закрыть переписку")
