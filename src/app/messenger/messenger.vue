@@ -683,10 +683,10 @@ export default {
 
                 this.settings = result.Data;
 
+                let text = this.settings.Message
                 if (this.settings.Languages) {
                     this.loadLanguages();
 
-                    let text = this.settings.Message
                     if (this.settings?.Translations?.length) {
                         const translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
                         if (translation) {
