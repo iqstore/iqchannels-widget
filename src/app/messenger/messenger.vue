@@ -688,7 +688,12 @@ export default {
                     this.loadLanguages();
 
                     if (this.settings?.Translations?.length) {
-                        const translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
+                        let translation;
+                        if (this.client.LanguageCode) {
+                            translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
+                        } else {
+                            translation = this.settings?.Translations.find((translation) => translation.Default)
+                        }
                         if (translation) {
                             text = translation.Translation
                         }
