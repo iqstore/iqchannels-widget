@@ -80,7 +80,6 @@ export default {
             isBottom: false,
             settings: {},
             languages: [],
-            clientLanguage: {},
             defaultLanguage: {},
         };
     },
@@ -323,12 +322,8 @@ export default {
                     this.defaultLanguage = defaultLanguage
                 }
 
-                if (this.client.LanguageCode) {
-                    const clientLanguage = this.languages.find((language) => language.Code === this.client.LanguageCode)
-                    this.clientLanguage = clientLanguage
-                } else {
+                if (!this.client.LanguageCode) {
                     this.client.LanguageCode = defaultLanguage.Code
-                    this.clientLanguage = defaultLanguage
                 }
             });
         },
@@ -1026,8 +1021,6 @@ export default {
         onClientLanguageSelected(event) {
             const languageCode = event.target.value
             client.LanguageCode = languageCode
-            const clientLanguage = this.languages.find((language) => language.Code === this.client.LanguageCode)
-            this.clientLanguage = clientLanguage
             this.setLanguage(languageCode);
         },
 
