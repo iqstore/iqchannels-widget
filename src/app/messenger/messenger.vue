@@ -80,7 +80,8 @@ export default {
             isBottom: false,
             settings: {},
             languages: [],
-            clientLanguage: {}
+            clientLanguage: {},
+            defaultLanguage: {},
         };
     },
 
@@ -317,15 +318,17 @@ export default {
             client.getLanguages(this.channel).then((languages) => {
                 this.languages = languages
 
+                const defaultLanguage = this.languages.find((language) => language.Default)
+                if (defaultLanguage) {
+                    this.defaultLanguage = defaultLanguage
+                }
+
                 if (this.client.LanguageCode) {
                     const clientLanguage = this.languages.find((language) => language.Code === this.client.LanguageCode)
                     this.clientLanguage = clientLanguage
                 } else {
-                    const defaultLanguage = this.languages.find((language) => language.Default)
-                    if (defaultLanguage) {
-                        this.client.LanguageCode = defaultLanguage.Code
-                        this.clientLanguage = defaultLanguage
-                    }
+                    this.client.LanguageCode = defaultLanguage.Code
+                    this.clientLanguage = defaultLanguage
                 }
             });
         },
@@ -692,10 +695,7 @@ export default {
                         if (this.client.LanguageCode) {
                             translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
                         } else {
-                            const defaultLanguage = this.settings.Languages.find((language) => language.Default)
-                            if (defaultLanguage) {
-                                translation = this.settings?.Translations.find((translation) => translation.LanguageCode === defaultLanguage.Code)
-                            }
+                            translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.defaultLanguage.Code)
                         }
                         if (translation) {
                             text = translation.Translation
