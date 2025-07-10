@@ -80,7 +80,6 @@ export default {
             isBottom: false,
             settings: {},
             languages: [],
-            defaultLanguage: {},
         };
     },
 
@@ -310,21 +309,6 @@ export default {
 
                 this.$emit('on-messages-loaded')
                 this.sendGreeting();
-            });
-        },
-
-        loadLanguages() {
-            client.getLanguages(this.channel).then((languages) => {
-                this.languages = languages
-
-                const defaultLanguage = this.languages.find((language) => language.Default)
-                if (defaultLanguage) {
-                    this.defaultLanguage = defaultLanguage
-                }
-
-                if (!this.client.LanguageCode) {
-                    this.client.LanguageCode = defaultLanguage.Code
-                }
             });
         },
 
@@ -675,72 +659,76 @@ export default {
             groups.unshift(group);
         },
 
-        sendGreeting() {
-            client.getChatSettings(this.channel, this.client.Id).then(result => {
-                if (!result.Data) return;
+        async sendGreeting() {
+            const result = await client.getChatSettings(this.channel, this.client.Id)
+            if (!result.Data) return;
 
-                this.settings = result.Data;
+            this.settings = result.Data;
 
-                let text = this.settings.Message
-                if (this.settings.Languages) {
-                    this.loadLanguages();
+            let text = this.settings.Message
+            if (this.settings.Languages) {
+                this.languages = await client.getLanguages(this.channel)
+                const defaultLanguage = this.languages.find((language) => language.Default)
 
-                    if (this.settings?.Translations?.length) {
-                        let translation;
-                        if (this.client.LanguageCode) {
-                            translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
-                        } else {
-                            translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.defaultLanguage.Code)
-                        }
-                        if (translation) {
-                            text = translation.Translation
-                        }
+                if (!this.client.LanguageCode) {
+                    this.client.LanguageCode = defaultLanguage.Code
+                }
+
+                if (this.settings?.Translations?.length) {
+                    let translation;
+                    if (this.client.LanguageCode) {
+                        translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
+                    } else {
+                        translation = this.settings?.Translations.find((translation) => translation.LanguageCode === defaultLanguage.Code)
+                    }
+                    if (translation) {
+                        text = translation.Translation
                     }
                 }
+            }
 
-                if (this.systemChat === true) {
-                    return;
-                }
+            if (this.systemChat) {
+                return;
+            }
 
-                const lastGroup = this.groups[this.groups.length - 1]
-                if (lastGroup && !lastGroup.Rating) {
-                    return;
-                }
+            const lastGroup = this.groups[this.groups.length - 1]
+            if (lastGroup && !lastGroup.Rating) {
+                return;
+            }
 
-                this.systemChat = true
-                if (this.settings.TotalOpenedTickets) {
-                    this.systemChat = false;
-                    return;
-                }
+            this.systemChat = true
+            if (this.settings.TotalOpenedTickets) {
+                this.systemChat = false;
+                return;
+            }
 
-                if (this.settings.GreetFrom === 'bot') {
-                    client.openSystemChat(this.channel)
-                } else {
-                    const now = new Date()
-                    const message = {
-                        Id: now.getTime(),
-                        Author: "user",
-                        CreatedAt: now,
-                        Text: text,
-                        Payload: 'text',
-                        Read: true,
-                        SystemMessage: true, // for auto-invite logic
-                        UserId: now.getTime(),
-                        User: {
-                            Id: this.settings.UserId,
-                            DisplayName: this.settings.Pseudonym ? this.settings.Pseudonym : this.settings.OperatorName,
-                            Name: this.settings.OperatorName,
-                            Active: true,
-                            AvatarId: this.settings.AvatarId
-                        }
-                    };
-                    this.appendMessage(message, true)
-                    setTimeout(() => {
-                        this.removeMessage(message);
-                        this.systemChat = false
-                    }, 1000 * this.settings.Lifetime)
-                }
-            })
+            if (this.settings.GreetFrom === 'bot') {
+                client.openSystemChat(this.channel)
+            } else {
+                const now = new Date()
+                const message = {
+                    Id: now.getTime(),
+                    Author: "user",
+                    CreatedAt: now,
+                    Text: text,
+                    Payload: 'text',
+                    Read: true,
+                    SystemMessage: true, // for auto-invite logic
+                    UserId: now.getTime(),
+                    User: {
+                        Id: this.settings.UserId,
+                        DisplayName: this.settings.Pseudonym ? this.settings.Pseudonym : this.settings.OperatorName,
+                        Name: this.settings.OperatorName,
+                        Active: true,
+                        AvatarId: this.settings.AvatarId
+                    }
+                };
+                this.appendMessage(message, true)
+                setTimeout(() => {
+                    this.removeMessage(message);
+                    this.systemChat = false
+                }, 1000 * this.settings.Lifetime)
+            }
         },
 
         getNextLocalId() {
