@@ -692,7 +692,10 @@ export default {
                         if (this.client.LanguageCode) {
                             translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
                         } else {
-                            translation = this.settings?.Translations.find((translation) => translation.Default)
+                            const defaultLanguage = this.settings.Languages.find((language) => language.Default)
+                            if (defaultLanguage) {
+                                translation = this.settings?.Translations.find((translation) => translation.LanguageCode === defaultLanguage.Code)
+                            }
                         }
                         if (translation) {
                             text = translation.Translation
