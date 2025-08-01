@@ -692,7 +692,7 @@ export default {
             }
 
             const lastGroup = this.groups[this.groups.length - 1]
-            if (lastGroup && !lastGroup.Rating) {
+            if (lastGroup && lastGroup.Rating && !lastGroup.LastMessage.RatingId) {
                 return;
             }
 
