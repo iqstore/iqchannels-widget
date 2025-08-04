@@ -1619,8 +1619,7 @@ a.logout:focus {
     display: flex;
     gap: 5px;
     position: absolute;
-    transform: translate(265px, -2px);
-
+    left: 20px;
     .language-select {
         background-color: transparent;
         border: 0;
