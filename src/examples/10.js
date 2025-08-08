@@ -9,6 +9,30 @@ var w = new IQChannelsWidget({
   width: 425,
   iconOptions: { show: true }
 });
+const mockEventData = {
+  type: "UPDATE_TICKET_CATEGORY",
+  payload: {
+    TicketId: 170477,
+    Category: {
+      ExternalCategoryId: "CAT_001",
+      CategoryTitle: "Техподдержка",
+      Parent: {
+        ExternalCategoryId: "CAT_PARENT_01",
+        CategoryTitle: "Поддержка",
+        Parent: {
+          ExternalCategoryId: "CAT_ROOT",
+          CategoryTitle: "Услуги"
+        }
+      }
+    }
+  }
+}
+
+const elem = document.getElementById("event-message");
+elem.value = JSON.stringify(mockEventData);
+elem.style.height = '';
+elem.style.height = elem.scrollHeight + 'px';
+
 w.on('open', function () {
   console.log('WIDGET OPENED');
 
