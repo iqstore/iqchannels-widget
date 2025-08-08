@@ -29,7 +29,7 @@ const mockEventData = {
 }
 
 const elem = document.getElementById("event-message");
-elem.value = JSON.stringify(mockEventData);
+elem.value = JSON.stringify(mockEventData, null, 2);
 elem.style.height = '';
 elem.style.height = elem.scrollHeight + 'px';
 
