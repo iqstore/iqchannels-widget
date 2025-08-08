@@ -44,3 +44,8 @@ html
       span &nbsp;
       button(type="button", onclick="widget.destroy();") Уничтожить
       span &nbsp;
+    div 
+      h3 Отправка event:
+      div(style="display:flex; gap: 10px; align-items: flex-end;")
+        textarea#event-message(style="height: 100%;width: 600px;box-sizing: border-box;font-family: monospace;padding: 10px;", oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'")  
+        button(onclick="widget.mockEvent();") Отправить

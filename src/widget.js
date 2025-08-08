@@ -85,7 +85,7 @@ const defaultHandlers = {
 			case LINK_TYPE_PHONE:
 				window.location.href = `tel:${value}`;
 				break;
-		} 
+		}
 	},
 }
 
@@ -103,7 +103,7 @@ class IQChannelsWidget extends EventEmitter {
 			iconOptions = {},
 			DOMIdentifier,
 			chats = [],
-            metadata = null,
+			metadata = null,
 			imgModalOptions = {
 				enabled: true,
 				state: 'web'
@@ -125,9 +125,9 @@ class IQChannelsWidget extends EventEmitter {
 		this.padBody = padBody;
 		this.requireName = requireName;
 
-        this.prepareMetadata(metadata);
+		this.prepareMetadata(metadata);
 
-        this.iconOptions = cleanIconOptions(iconOptions);
+		this.iconOptions = cleanIconOptions(iconOptions);
 
 		this.pushToken = null;
 		this.opened = false;
@@ -168,37 +168,37 @@ class IQChannelsWidget extends EventEmitter {
 		this.initIcon();
 	}
 
-    prepareMetadata = (metadata) => {
-        this.metadata = JSON.parse(metadata || '{}');
-        if (this.metadata.version) {
-            this.metadata.Version = this.metadata.version;
-        }
-        if (this.metadata.manufacturer) {
-            this.metadata.Manufacturer = this.metadata.manufacturer;
-        }
-        if (this.metadata.model) {
-            this.metadata.Model = this.metadata.model;
-        }
-        delete this.metadata.version;
-        delete this.metadata.manufacturer;
-        delete this.metadata.model;
+	prepareMetadata = (metadata) => {
+		this.metadata = JSON.parse(metadata || '{}');
+		if (this.metadata.version) {
+			this.metadata.Version = this.metadata.version;
+		}
+		if (this.metadata.manufacturer) {
+			this.metadata.Manufacturer = this.metadata.manufacturer;
+		}
+		if (this.metadata.model) {
+			this.metadata.Model = this.metadata.model;
+		}
+		delete this.metadata.version;
+		delete this.metadata.manufacturer;
+		delete this.metadata.model;
 
-        this.metadata.Fields = {
-            ...this.metadata,
-        }
-        delete this.metadata.Fields.Version;
-        delete this.metadata.Fields.OS;
-        delete this.metadata.Fields.Model;
-        delete this.metadata.Fields.Manufacturer;
+		this.metadata.Fields = {
+			...this.metadata,
+		}
+		delete this.metadata.Fields.Version;
+		delete this.metadata.Fields.OS;
+		delete this.metadata.Fields.Model;
+		delete this.metadata.Fields.Manufacturer;
 
-        if (!Object.keys(this.metadata.Fields).length) {
-            delete this.metadata.Fields;
-        }
+		if (!Object.keys(this.metadata.Fields).length) {
+			delete this.metadata.Fields;
+		}
 
-        if (!Object.keys(this.metadata).length) {
-            this.metadata = null;
-        }
-    }
+		if (!Object.keys(this.metadata).length) {
+			this.metadata = null;
+		}
+	}
 
 	initIcon = () => {
 		this.icon = document.createElement('a');
@@ -272,7 +272,7 @@ class IQChannelsWidget extends EventEmitter {
 		// Find and store frame window to post messages
 		const frame = document.getElementById('iqchannels-widget-iframe');
 		this.frameWindow = frame.contentWindow || frame.contentDocument.defaultView;
-        
+
 		frame.addEventListener('load', () => {
 			const event = newChatEvent('init', {
 				channel: this.channel,
@@ -280,7 +280,7 @@ class IQChannelsWidget extends EventEmitter {
 				mode: this.mode,
 				project: this.project,
 				requireName: this.requireName,
-                metadata: this.metadata,
+				metadata: this.metadata,
 				pushToken: this.pushToken,
 				imgModalOptions: this.imgModalOptions,
 				chats: this.chats,
@@ -447,6 +447,23 @@ class IQChannelsWidget extends EventEmitter {
 	refreshClient = () => {
 		const event = newChatEvent('refresh_client');
 		this.frameWindow?.postMessage(JSON.stringify(event), '*');
+	};
+
+
+	mockEvent = () => {
+		const frame = document.getElementById('iqchannels-app-iframe');
+		const msg = document.getElementById("event-message").value ?? ""
+		if (msg === '') return
+
+		let payload;
+		try {
+			payload = JSON.parse(msg);
+		} catch (e) {
+			console.error("Invalid JSON in message input");
+			return;
+		}
+
+		frame.contentWindow.postMessage(payload, "*");
 	};
 
 	setIPhonePushToken = (token) => {
