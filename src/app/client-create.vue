@@ -27,6 +27,7 @@ export default {
     mounted() {
         client.getInfoLinkByChannel(this.channel).then((link) => {
             this.processDataLink = link.Data
+            this.personalDataForm.ProcessingDataLink = link.Data
         })
     },
 
