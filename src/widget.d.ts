@@ -21,6 +21,7 @@ declare class IQChannelsWidget extends EventEmitter {
     destroy(): void;
     toggle(): void;
     logout(): void;
+    sendPrefilledMessage(): void;
     refreshClient(): void;
     setIPhonePushToken(token: string): void;
     setAndroidPushToken(token: string): void;

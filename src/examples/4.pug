@@ -40,7 +40,27 @@ html
       button(type="button", onclick="widget.logout();") Выйти
       span &nbsp;
       button(type="button", onclick="widget.destroy();") Уничтожить
+      span &nbsp;
+      button(type="button", onclick="togglePrefillMessageBlock();") Предзаполненные сообщения
+        | &nbsp;
 
+    br
+    span Количество непрочитанных (обновляется само):
+    span(id="unread_count")
+
+    br
+    br
+    span(id="prefill_message_block")
+      span(id="prefill_input_row")
+        label(for="prefill_message") Введите текст:
+        input(type="text", id="prefill_message")
       br
-      span Количество непрочитанных (обновляется само):
-      span(id="unread_count")
+      br
+      span(id="prefill_button_row")
+        button(onclick="document.getElementById('file_input').click()") Загрузить файлы
+        input(type="file" multiple="multiple" id="file_input" style="display:none;") 
+        br
+        span(id="file_names")
+        br
+        br
+        button(type="button", onclick="widget.sendPrefilledMessage();") Отправить

@@ -89,6 +89,8 @@ const defaultHandlers = {
 	},
 }
 
+window.prefilledFiles = [];
+
 class IQChannelsWidget extends EventEmitter {
 	constructor(
 		{
@@ -345,6 +347,11 @@ class IQChannelsWidget extends EventEmitter {
 		this.frameWindow?.postMessage(JSON.stringify(event), '*');
 	};
 
+	uploadFiles = () => {
+		const event = newChatEvent('append_file');
+		this.frameWindow?.postMessage(JSON.stringify(event), '*');
+	};
+
 	close = () => {
 		if (!this.opened) {
 			return;
@@ -373,6 +380,24 @@ class IQChannelsWidget extends EventEmitter {
 		}
 		if (this.icon && this.icon.parentNode) {
 			this.icon.parentNode.removeChild(this.icon);
+		}
+	};
+
+	prefilledFIles = [];
+
+	sendPrefilledMessage = () => {
+		const message = document.getElementById("prefill_message");
+		const files = document.getElementById("file_input").files;
+		
+		if (this.opened) {
+			return;
+		}
+		window.prefilledFiles = files;
+
+		this.open(message.value)
+
+		if (files.length > 0) {
+			this.uploadFiles(files);
 		}
 	};
 
