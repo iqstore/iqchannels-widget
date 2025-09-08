@@ -156,6 +156,20 @@ export default {
                     }
                     break;
 
+                case 'append_file':
+                    const ffiles = window.parent.prefilledFiles;
+
+                    if (!ffiles) {
+                        return;
+                    }
+
+                    const composer = this.$refs.messenger.$refs.composer;
+
+                    composer.$refs.uploadInput.files = ffiles;
+                    composer.uploadFile()
+                    composer.trySendMessage();
+                    break;
+
                 case 'push_token':
                     const tdata = event.data;
                     if (!tdata) {

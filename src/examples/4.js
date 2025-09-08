@@ -1,5 +1,8 @@
 import 'normalize.css';
 import { LOCALSTORAGE_CHANNEL_NAME } from "../schema";
+import { togglePrefillMessageBlock } from "./examples-utils";
+
+window.togglePrefillMessageBlock = togglePrefillMessageBlock
 
 /* globals IQChannelsWidget */
 window.widget = new IQChannelsWidget({

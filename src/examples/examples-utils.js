@@ -35,3 +35,22 @@ export function configureWidget(key, defaultConfig) {
         element.innerHTML = configTyped ? `${JSON.stringify(JSON.parse(configTyped), null, 2)}` : `Нету конфигурации.`;
     }
 }
+
+export function togglePrefillMessageBlock() {
+  const block = document.getElementById("prefill_message_block");
+  if (!block) return;
+  block.style.display = block.style.display === "none" ? "block" : "none";
+}
+
+document.getElementById('file_input').addEventListener('change', function(event) {
+    var files = event.target.files;
+    var fileNames = document.getElementById( 'file_names' );
+    var fullName = "";
+
+    if (event.target.files.length > 0) {
+        for (var i = 0; i < files.length; i++) { 
+            fullName += files[i].name + ", "
+        }
+    }
+    fileNames.textContent = fullName
+});
