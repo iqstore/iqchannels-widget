@@ -89,7 +89,6 @@ const defaultHandlers = {
 	},
 }
 
-window.prefilledFiles = [];
 
 class IQChannelsWidget extends EventEmitter {
 	constructor(
@@ -110,6 +109,7 @@ class IQChannelsWidget extends EventEmitter {
 				enabled: true,
 				state: 'web'
 			},
+			prefilledFiles = [],
 			handlers = defaultHandlers,
 		}
 	) {
@@ -136,6 +136,7 @@ class IQChannelsWidget extends EventEmitter {
 		this.DOMIdentifier = DOMIdentifier || null;
 		this.imgModalOptions = imgModalOptions;
 		this.chats = chats;
+		this.prefilledFiles = prefilledFiles;
 		this.isMultipleChats = this.chats.length > 0;
 		this.handlers = handlers;
 
@@ -383,21 +384,17 @@ class IQChannelsWidget extends EventEmitter {
 		}
 	};
 
-	prefilledFIles = [];
-
 	sendPrefilledMessage = () => {
 		const message = document.getElementById("prefill_message");
-		const files = document.getElementById("file_input").files;
 		
 		if (this.opened) {
 			return;
 		}
-		window.prefilledFiles = files;
 
 		this.open(message.value)
 
-		if (files.length > 0) {
-			this.uploadFiles(files);
+		if (this.prefilledFiles.length > 0) {
+			this.uploadFiles(this.prefilledFiles);
 		}
 	};
 

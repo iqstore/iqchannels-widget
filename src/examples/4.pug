@@ -58,7 +58,7 @@ html
       br
       span(id="prefill_button_row")
         button(onclick="document.getElementById('file_input').click()") Загрузить файлы
-        input(type="file" multiple="multiple" id="file_input" style="display:none;") 
+        input(type="file" multiple="multiple" id="file_input" onchange="handleFileSelection(this.files)" style="display:none;") 
         br
         span(id="file_names")
         br

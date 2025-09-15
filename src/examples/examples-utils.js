@@ -1,5 +1,7 @@
 import { DefaultThirdClientConfig, LOCALSTORAGE_CHANNEL_NAME, LOCALSTORAGE_WIDGET_CONFIG } from "../schema";
 
+const dataTransfer = new DataTransfer();
+
 export function selectChannel() {
     const current = document.getElementById("current_channel");
 
@@ -37,20 +39,26 @@ export function configureWidget(key, defaultConfig) {
 }
 
 export function togglePrefillMessageBlock() {
-  const block = document.getElementById("prefill_message_block");
-  if (!block) return;
-  block.style.display = block.style.display === "none" ? "block" : "none";
+    const block = document.getElementById("prefill_message_block");
+    if (!block) return;
+    block.style.display = block.style.display === "none" ? "block" : "none";
 }
 
-document.getElementById('file_input').addEventListener('change', function(event) {
-    var files = event.target.files;
-    var fileNames = document.getElementById( 'file_names' );
-    var fullName = "";
-
-    if (event.target.files.length > 0) {
-        for (var i = 0; i < files.length; i++) { 
-            fullName += files[i].name + ", "
-        }
+export function handleFileSelection(files) {
+    if (!files || files.length === 0) return;
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      
+      const isDuplicate = Array.from(dataTransfer.files).some(
+        f => f.name === file.name && f.size === file.size
+      );
+      
+      if (!isDuplicate) {
+        dataTransfer.items.add(file);
+      }
     }
-    fileNames.textContent = fullName
-});
+
+    window.widget.prefilledFiles = dataTransfer.files;
+    
+}

@@ -157,7 +157,7 @@ export default {
                     break;
 
                 case 'append_file':
-                    const ffiles = window.parent.prefilledFiles;
+                    const ffiles = window.parent.widget.prefilledFiles;
 
                     if (!ffiles) {
                         return;
