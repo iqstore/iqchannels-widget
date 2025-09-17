@@ -1,21 +1,25 @@
 /* globals EventSource, FormData */
 
-import 'es6-promise/auto';
-import 'event-source-polyfill';
-import jsSHA from 'jssha';
-import config from '../config';
-import AppError, { ErrExpired, ErrFileImageDimensionsTooLarge, ErrFileTypeNotAllowed, ErrMaxFileSize } from './errors';
-import Relations from './relations';
-import Request from './request';
-import { reactive } from 'vue';
+import "es6-promise/auto";
+import "event-source-polyfill";
+import jsSHA from "jssha";
+import config from "../config";
+import AppError, {
+  ErrExpired,
+  ErrFileImageDimensionsTooLarge,
+  ErrFileTypeNotAllowed,
+  ErrMaxFileSize,
+} from "./errors";
+import Relations from "./relations";
+import Request from "./request";
+import { reactive } from "vue";
 import { imageSize } from "../lib/files";
 import * as schema from "../schema";
 
-
-const XClientAuthorizationHeader = 'X-Client-Authorization';
+const XClientAuthorizationHeader = "X-Client-Authorization";
 
 class Client {
-  constructor () {
+  constructor() {
     this.sendQueue = [];
     this.sending = null;
 
@@ -25,18 +29,18 @@ class Client {
     this.iQVersion = null;
     this.configFiles = {};
     this.state = reactive({
-      error: null
+      error: null,
     });
 
     this.endAppealSettings = null;
   }
 
-  clearAuth () {
+  clearAuth() {
     this.authToken = null;
     this.authSessionID = null;
   }
 
-  setAuth (auth) {
+  setAuth(auth) {
     if (!auth) {
       return;
     }
@@ -46,18 +50,34 @@ class Client {
 
     let s = auth.Session;
     this.authToken = s.Token;
+
+    if (!this.getCookie("client-session")) {
+      document.cookie = `client-session=${s.Token}`;
+
+      if (!this.getCookie("client-session")) {
+        localStorage.setItem("client-session", s.Token);
+      }
+    }
+
     this.authSessionID = s.Id;
   }
 
-  setMultiAuth (channel) {
+  getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+  }
+
+  setMultiAuth(channel) {
     if (channel && this.multiClientAuth[channel]) {
       this.setAuth(this.multiClientAuth[channel]);
     } else {
-        client.logMessage('Неверный канал')
+      client.logMessage("Неверный канал");
     }
   }
 
-  post (path, data) {
+  post(path, data) {
     let headers = {};
     if (this.authToken) {
       headers[XClientAuthorizationHeader] = this.authToken;
@@ -65,11 +85,11 @@ class Client {
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', config.apiUrl(path), true);
+      xhr.open("POST", config.apiUrl(path), true);
       xhr.withCredentials = true;
 
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      Object.keys(headers).forEach(key => {
+      xhr.setRequestHeader("Content-Type", "application/json");
+      Object.keys(headers).forEach((key) => {
         xhr.setRequestHeader(key, headers[key]);
       });
 
@@ -79,7 +99,7 @@ class Client {
           try {
             response = JSON.parse(xhr.responseText);
           } catch (e) {
-            reject(new AppError('Invalid JSON response'));
+            reject(new AppError("Invalid JSON response"));
             return;
           }
           this.handleResponse(response, resolve, reject);
@@ -96,7 +116,7 @@ class Client {
     });
   }
 
-  get (path, data) {
+  get(path, data) {
     let headers = {};
     if (this.authToken) {
       headers[XClientAuthorizationHeader] = this.authToken;
@@ -106,11 +126,11 @@ class Client {
       const xhr = new XMLHttpRequest();
       const url = config.apiUrl(path);
 
-      xhr.open('GET', url, true);
+      xhr.open("GET", url, true);
       xhr.withCredentials = true;
 
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      Object.keys(headers).forEach(key => {
+      xhr.setRequestHeader("Content-Type", "application/json");
+      Object.keys(headers).forEach((key) => {
         xhr.setRequestHeader(key, headers[key]);
       });
 
@@ -130,7 +150,7 @@ class Client {
     });
   }
 
-  multipart (path, data, onSuccess, onError, onProgress) {
+  multipart(path, data, onSuccess, onError, onProgress) {
     let headers = new Headers();
     if (this.authToken) {
       headers.append(XClientAuthorizationHeader, this.authToken);
@@ -138,7 +158,7 @@ class Client {
 
     return new Promise((resolve, reject) => {
       let xhr = new XMLHttpRequest();
-      xhr.open('POST', config.apiUrl(path), true);
+      xhr.open("POST", config.apiUrl(path), true);
       xhr.withCredentials = true;
 
       xhr.upload.onprogress = (event) => {
@@ -153,7 +173,7 @@ class Client {
           try {
             response = JSON.parse(xhr.responseText);
           } catch (e) {
-            const error = new AppError('Invalid JSON response');
+            const error = new AppError("Invalid JSON response");
             reject(onError(error));
             return;
           }
@@ -177,7 +197,7 @@ class Client {
     });
   }
 
-  handleResponse (response, onSuccess, onError) {
+  handleResponse(response, onSuccess, onError) {
     if (response.OK) {
       return onSuccess(response);
     }
@@ -185,183 +205,264 @@ class Client {
     onError(error);
   }
 
-  anonymousAuth () {
+  anonymousAuth() {
     const options = { shouldRetry: (error) => !error.unauthorized() };
-    return this._enqueueRequest('/clients/anonymous/auth', null, options)
-      .then(response => {
+    return this._enqueueRequest("/clients/anonymous/auth", null, options).then(
+      (response) => {
         let auth = response.Result;
         this.setAuth(auth);
 
         return auth;
-      });
+      }
+    );
   }
 
-  anonymousSignup (name, channel, personalData) {
+  anonymousSignup(name, channel, personalData) {
     const data = { Name: name, Channel: channel, PersonalData: personalData };
     const options = { shouldRetry: (error) => error.http() };
 
-    return this._enqueueRequest('/clients/anonymous/signup', data, options)
-      .then(response => {
-        let auth = response.Result;
-        this.setAuth(auth);
+    return this._enqueueRequest(
+      "/clients/anonymous/signup",
+      data,
+      options
+    ).then((response) => {
+      let auth = response.Result;
+      this.setAuth(auth);
 
-        return auth.Client;
-      });
+      return auth.Client;
+    });
   }
 
-  authorize (credentials, channel) {
+  authorize(credentials, channel) {
     const data = {
       Credentials: credentials,
-      Channel: channel
+      Channel: channel,
     };
 
-    const options = { shouldRetry: (error) => !(error.unauthorized() || error.invalid()) };
+    const options = {
+      shouldRetry: (error) => !(error.unauthorized() || error.invalid()),
+    };
 
-    return this._enqueueRequest('/clients/integration_auth', data, options)
-      .then(response => {
-        let auth = response.Result;
-        if (channel) {
-          this.multiClientAuth[channel] = auth;
-        }
-        this.setAuth(auth);
+    return this._enqueueRequest(
+      "/clients/integration_auth",
+      data,
+      options
+    ).then((response) => {
+      let auth = response.Result;
+      if (channel) {
+        this.multiClientAuth[channel] = auth;
+      }
+      this.setAuth(auth);
 
-        return auth.Client;
-      });
+      return auth.Client;
+    });
   }
 
   // Deprecated.
-  authorizeInProject (credentials, project) {
+  authorizeInProject(credentials, project) {
     const data = {
       Credentials: credentials,
-      Project: project
+      Project: project,
     };
-    const options = { shouldRetry: (error) => !(error.unauthorized() || error.invalid()) };
+    const options = {
+      shouldRetry: (error) => !(error.unauthorized() || error.invalid()),
+    };
 
-    return this._enqueueRequest('/clients/integration_auth_in_project', data, options)
-      .then(response => {
-        let auth = response.Result;
-        this.setAuth(auth);
+    return this._enqueueRequest(
+      "/clients/integration_auth_in_project",
+      data,
+      options
+    ).then((response) => {
+      let auth = response.Result;
+      this.setAuth(auth);
 
-        return auth.Client;
-      });
+      return auth.Client;
+    });
   }
 
-  refreshClient (credentials) {
+  refreshClient(credentials) {
     const data = {
-      Credentials: credentials
+      Credentials: credentials,
     };
 
-    return this.post('/clients/integration_refresh', data)
-      .then(response => response.Result.Client);
+    return this.post("/clients/integration_refresh", data).then(
+      (response) => response.Result.Client
+    );
   }
 
-  channelMessages (channel, chatType, searchTerm, fromId, toId, limit = config.REQUEST_MESSAGES_LIMIT) {
+  channelMessages(
+    channel,
+    chatType,
+    searchTerm,
+    fromId,
+    toId,
+    limit = config.REQUEST_MESSAGES_LIMIT
+  ) {
     const data = {
       ChatType: chatType,
       Limit: limit,
       Q: searchTerm,
       FromId: fromId,
-      ToId: toId
+      ToId: toId,
     };
-    return this._enqueueRequest(`/chats/channel/messages/${channel}`, data)
-      .then(response => new Relations(config, response.Rels).messages(response.Result));
+    return this._enqueueRequest(
+      `/chats/channel/messages/${channel}`,
+      data
+    ).then((response) =>
+      new Relations(config, response.Rels).messages(response.Result)
+    );
   }
 
-  channelTyping (channel, chatType, text) {
+  channelTyping(channel, chatType, text) {
     const data = { ChatType: chatType, Text: text };
     const options = { timeout: 5000 };
-    return this._enqueueRequest(`/chats/channel/typing/${channel}`, data, options);
+    return this._enqueueRequest(
+      `/chats/channel/typing/${channel}`,
+      data,
+      options
+    );
   }
 
-  channelSend (channel, message) {
+  channelSend(channel, message) {
     return this._enqueueRequest(`/chats/channel/send/${channel}`, message);
   }
 
-  checkMessage (msgText) {
-    return this._enqueueRequest('/bad_words/check_message', { MsgText: msgText }, { shouldRetry: (error) => !error });
+  checkMessage(msgText) {
+    return this._enqueueRequest(
+      "/bad_words/check_message",
+      { MsgText: msgText },
+      { shouldRetry: (error) => !error }
+    );
   }
 
-  listTicketsByClient (channel, clientId, query) {
-    return this._enqueueRequest(`/chats/channel/tickets/existing/${channel}`, { ClientId: clientId, Query: query });
+  listTicketsByClient(channel, clientId, query) {
+    return this._enqueueRequest(`/chats/channel/tickets/existing/${channel}`, {
+      ClientId: clientId,
+      Query: query,
+    });
   }
 
-  getPoll (query) {
-    return this._enqueueRequest(`/ratings/query_poll`, { Query: query }, { shouldRetry: (error) => !error });
+  getPoll(query) {
+    return this._enqueueRequest(
+      `/ratings/query_poll`,
+      { Query: query },
+      { shouldRetry: (error) => !error }
+    );
   }
 
-  sendPoll (input) {
-    return this._enqueueRequest(`/ratings/send_poll`, { RatingPollClientAnswerInput: input });
+  sendPoll(input) {
+    return this._enqueueRequest(`/ratings/send_poll`, {
+      RatingPollClientAnswerInput: input,
+    });
   }
 
-  finishPoll (ratingId, pollId, rated) {
-    return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId, Rated: rated });
+  finishPoll(ratingId, pollId, rated) {
+    return this._enqueueRequest(`/ratings/finish_poll`, {
+      RatingId: ratingId,
+      RatingPollId: pollId,
+      Rated: rated,
+    });
   }
 
-  getChatSettings (channel, clientId) {
-    return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`, { ClientId: clientId }, { shouldRetry: (error) => !error });
+  getChatSettings(channel, clientId) {
+    return this._enqueueRequest(
+      `/chats/channel/chat/get_settings/${channel}`,
+      { ClientId: clientId },
+      { shouldRetry: (error) => !error }
+    );
   }
 
-  openSystemChat (channel) {
+  openSystemChat(channel) {
     return this._enqueueRequest(`/chats/channel/system_chats/send/${channel}`);
   }
 
-  checkIfAudioMsgEnabled (channel) {
-    return this._enqueueRequest(`/chats/channel/audio_messages_enabled/${channel}`, {}, { shouldRetry: (error) => !error });
+  checkIfAudioMsgEnabled(channel) {
+    return this._enqueueRequest(
+      `/chats/channel/audio_messages_enabled/${channel}`,
+      {},
+      { shouldRetry: (error) => !error }
+    );
   }
 
-  getBlocker (channel) {
-    return this._enqueueRequest(`/chats/channel/blocker/${channel}`, {}, { shouldRetry: (error) => !error });
+  getBlocker(channel) {
+    return this._enqueueRequest(
+      `/chats/channel/blocker/${channel}`,
+      {},
+      { shouldRetry: (error) => !error }
+    );
   }
 
-  getWidgetGreetingsWithRequestType (channel) {
-    return this._enqueueRequest(`/widget/greetings/${channel}`, {}, { shouldRetry: (error) => !error });
+  getWidgetGreetingsWithRequestType(channel) {
+    return this._enqueueRequest(
+      `/widget/greetings/${channel}`,
+      {},
+      { shouldRetry: (error) => !error }
+    );
   }
 
-  getWidgetPersonalDataForm (channel) {
-    return this._enqueueRequest(`/widget/personal_data_form/${channel}`, {}, { shouldRetry: (error) => !error });
+  getWidgetPersonalDataForm(channel) {
+    return this._enqueueRequest(
+      `/widget/personal_data_form/${channel}`,
+      {},
+      { shouldRetry: (error) => !error }
+    );
   }
 
-  getEndAppealSettings(channel){
+  getEndAppealSettings(channel) {
     if (!this.endAppealSettings) {
-        this.endAppealSettings = this.get(`/widget/get_end_appeals_settings/${channel}`, {}, { shouldRetry: (error) => !error });
+      this.endAppealSettings = this.get(
+        `/widget/get_end_appeals_settings/${channel}`,
+        {},
+        { shouldRetry: (error) => !error }
+      );
     }
-    return this.endAppealSettings
+    return this.endAppealSettings;
   }
 
-  acceptProductMessage (messageId, productId) {
-    return this._enqueueRequest(`/chats/messages/accept_product`, { MessageId: messageId, ProductId: productId });
+  acceptProductMessage(messageId, productId) {
+    return this._enqueueRequest(`/chats/messages/accept_product`, {
+      MessageId: messageId,
+      ProductId: productId,
+    });
   }
 
-  declineProductMessage (messageId, productId) {
-    return this._enqueueRequest(`/chats/messages/decline_product`, { MessageId: messageId, ProductId: productId });
+  declineProductMessage(messageId, productId) {
+    return this._enqueueRequest(`/chats/messages/decline_product`, {
+      MessageId: messageId,
+      ProductId: productId,
+    });
   }
 
-  channelMessagesRead (messagesIds) {
+  channelMessagesRead(messagesIds) {
     return this._enqueueRequest(`/chats/messages/read`, messagesIds);
   }
 
-  channelMessagesListen (messageId) {
+  channelMessagesListen(messageId) {
     return this._enqueueRequest(`/chats/messages/listen`, messageId);
   }
 
-  channelMessagesReceived (messagesIds) {
+  channelMessagesReceived(messagesIds) {
     return this._enqueueRequest(`/chats/messages/received`, messagesIds);
   }
 
-  version () {
-    return this._enqueueRequest(`/chats/version`, {}, { shouldRetry: (error) => !error });
+  version() {
+    return this._enqueueRequest(
+      `/chats/version`,
+      {},
+      { shouldRetry: (error) => !error }
+    );
   }
 
   filesConfig() {
-    return this.get(`/files/config`, {}, { shouldRetry: (error) => !error })
+    return this.get(`/files/config`, {}, { shouldRetry: (error) => !error });
   }
 
-  channelPushToken (channel, type, token) {
+  channelPushToken(channel, type, token) {
     switch (type) {
-      case 'apns':
+      case "apns":
         return this.channelAPNSToken(channel, token);
 
-      case 'fcm':
+      case "fcm":
         return this.channelFCMToken(channel, token);
 
       default:
@@ -369,85 +470,95 @@ class Client {
     }
   }
 
-  channelAPNSToken (channel, token) {
+  channelAPNSToken(channel, token) {
     let body = {
-      Type: 'apns',
-      Token: token
+      Type: "apns",
+      Token: token,
     };
     return this._enqueueRequest(`/push/channel/apns/${channel}`, body);
   }
 
-  channelFCMToken (channel, token) {
+  channelFCMToken(channel, token) {
     let body = {
-      Type: 'fcm',
-      Token: token
+      Type: "fcm",
+      Token: token,
     };
     return this._enqueueRequest(`/push/channel/fcm/${channel}`, body);
   }
 
-  rateRating (ratingId, value, comment) {
+  rateRating(ratingId, value, comment) {
     const request = {
       RatingId: ratingId,
       Rating: {
         Value: value,
-        Comment: comment
-      }
+        Comment: comment,
+      },
     };
-    return this._enqueueRequest(`/ratings/rate`, request)
-      .then(response => new Relations(config, response.Rels).rating(response.Result));
+    return this._enqueueRequest(`/ratings/rate`, request).then((response) =>
+      new Relations(config, response.Rels).rating(response.Result)
+    );
   }
 
-  ignoreRating (ratingId) {
+  ignoreRating(ratingId) {
     const request = { RatingId: ratingId };
-    return this._enqueueRequest(`/ratings/ignore`, request)
-      .then(response => new Relations(config, response.Rels).rating(response.Result));
+    return this._enqueueRequest(`/ratings/ignore`, request).then((response) =>
+      new Relations(config, response.Rels).rating(response.Result)
+    );
   }
 
-  getInfoLinkByChannel (channel) {
+  getInfoLinkByChannel(channel) {
     return this._enqueueRequest(`/info_requests/${channel}`);
   }
 
-  sendInfo (info) {
+  sendInfo(info) {
     const request = {
       RequestId: info.Id,
       ClientId: info.ClientId,
       ClientConsent: info.ClientConsent,
-      Form: info.Form
+      Form: info.Form,
     };
-    return this._enqueueRequest(`/info_requests/respond`, request)
-      .then(response => new Relations(config, response.Rels).infoRequest(response.Result));
+    return this._enqueueRequest(`/info_requests/respond`, request).then(
+      (response) =>
+        new Relations(config, response.Rels).infoRequest(response.Result)
+    );
   }
 
-  ignoreInfo (requestId) {
+  ignoreInfo(requestId) {
     const request = { RequestId: requestId };
-    return this._enqueueRequest(`/info_requests/ignore`, request)
-      .then(response => new Relations(config, response.Rels).infoRequest(response.Result));
+    return this._enqueueRequest(`/info_requests/ignore`, request).then(
+      (response) =>
+        new Relations(config, response.Rels).infoRequest(response.Result)
+    );
   }
 
-  fileToken (fileId) {
+  fileToken(fileId) {
     const request = { FileId: fileId };
-    return this.post(`/files/token`, request).then(response => {
+    return this.post(`/files/token`, request).then((response) => {
       let token = response.Result;
       return token.Token;
     });
   }
 
-  fileSignedUrl (fileId) {
-    return this.fileToken(fileId).then(token => {
+  fileSignedUrl(fileId) {
+    return this.fileToken(fileId).then((token) => {
       let path = `/files/get/${fileId}?token=${token}`;
       let fullpath = config.apiUrl(path);
-      let url = window.location.protocol + '//' + window.location.host + fullpath;
+      let url =
+        window.location.protocol + "//" + window.location.host + fullpath;
       return url;
     });
   }
 
-  getFile (fileId) {
-    return this.get(`/files/get_file/${fileId}`, {}).
-      then(resp => resp.Result).
-      then(file => {
+  getFile(fileId) {
+    return this.get(`/files/get_file/${fileId}`, {})
+      .then((resp) => resp.Result)
+      .then((file) => {
         file.URL = config.fileUrl(file.Id);
         if (file.Type === schema.FileTypeImage) {
-          file.ThumbnailURL = config.imageUrl(file.Id, schema.ImageSizeThumbnail);
+          file.ThumbnailURL = config.imageUrl(
+            file.Id,
+            schema.ImageSizeThumbnail
+          );
           file.PreviewURL = config.imageUrl(file.Id, schema.ImageSizePreview);
         }
         return file;
@@ -456,62 +567,74 @@ class Client {
 
   checkFileBeforeUpload(file, type, onError) {
     let err = null;
-    if (type === 'image') {
+    if (type === "image") {
       imageSize(file).then(({ height, width }) => {
-        if (height > this.configFiles.MaxImageHeight || width > this.configFiles.MaxImageWidth) {
+        if (
+          height > this.configFiles.MaxImageHeight ||
+          width > this.configFiles.MaxImageWidth
+        ) {
           err = ErrFileImageDimensionsTooLarge;
         }
       });
     }
-    if (file.size > this.configFiles.MaxFileSizeMb*1024*1024) {
+    if (file.size > this.configFiles.MaxFileSizeMb * 1024 * 1024) {
       err = ErrMaxFileSize;
     }
-    const split = file.name.split('.');
+    const split = file.name.split(".");
     const ext = split[split.length - 1];
-    if (this.configFiles.ForbiddenExtensions && this.configFiles.ForbiddenExtensions.includes(ext) ||
-      this.configFiles.AllowedExtensions && !this.configFiles.AllowedExtensions.includes(ext)
+    if (
+      (this.configFiles.ForbiddenExtensions &&
+        this.configFiles.ForbiddenExtensions.includes(ext)) ||
+      (this.configFiles.AllowedExtensions &&
+        !this.configFiles.AllowedExtensions.includes(ext))
     ) {
       err = ErrFileTypeNotAllowed;
     }
     if (err) {
       return new Promise((resolve, reject) => {
         reject(onError(err));
-      })
+      });
     }
     return null;
   }
 
-  uploadFile (file, onSuccess, onError, onProgress) {
-    let type = 'file';
-    if (file.type.startsWith('image/')) {
-      type = 'image';
+  uploadFile(file, onSuccess, onError, onProgress) {
+    let type = "file";
+    if (file.type.startsWith("image/")) {
+      type = "image";
     }
 
-    if (file.type.toString().startsWith('audio')) {
-      type = 'audio';
+    if (file.type.toString().startsWith("audio")) {
+      type = "audio";
     }
     const checking = this.checkFileBeforeUpload(file, type, onError);
     if (checking) {
       return checking;
     }
     const data = new FormData();
-    data.append('Type', type);
-    data.append('File', file);
+    data.append("Type", type);
+    data.append("File", file);
 
     const _onSuccess = (response) => {
       const data = new Relations(config, response.Rels).file(response.Result);
       onSuccess(data);
     };
 
-    return this.multipart('/files/upload', data, _onSuccess, onError, onProgress);
+    return this.multipart(
+      "/files/upload",
+      data,
+      _onSuccess,
+      onError,
+      onProgress
+    );
   }
 
-  channelListen (channel, chatType, lastEventId, onMessage, onError) {
+  channelListen(channel, chatType, lastEventId, onMessage, onError) {
     let token = this._encryptToken();
     let url = config.apiUrl(`/sse/chats/channel/events/${channel}`);
 
     if (chatType || lastEventId || token) {
-      url += '?';
+      url += "?";
     }
 
     if (chatType) {
@@ -520,26 +643,28 @@ class Client {
 
     if (lastEventId) {
       if (chatType) {
-        url += '&';
+        url += "&";
       }
       url += `LastEventId=${lastEventId}`;
     }
 
     if (token) {
       if (chatType || lastEventId) {
-        url += '&';
+        url += "&";
       }
       url += `x-client-token=${token}`;
     }
 
     const source = new EventSource(url, { withCredentials: true });
-    source.addEventListener('message', message => {
+    source.addEventListener("message", (message) => {
       try {
         const response = JSON.parse(message.data);
         if (!response.OK) {
           throw AppError.fromApiError(response.Error);
         }
-        const events = new Relations(config, response.Rels).events(response.Result);
+        const events = new Relations(config, response.Rels).events(
+          response.Result
+        );
         if (events.length) {
           onMessage(events);
         }
@@ -548,7 +673,7 @@ class Client {
         onError(error);
       }
     });
-    source.addEventListener('error', error => {
+    source.addEventListener("error", (error) => {
       source.close();
       onError(error);
     });
@@ -556,17 +681,15 @@ class Client {
   }
 
   logMessage(message) {
-    return this._enqueueRequest("/log/message",
-        { Widget: true,
-          Level: 2,
-          Message: message,
-        },
-        {
-            shouldRetry: () => false
-        }
+    return this._enqueueRequest(
+      "/log/message",
+      { Widget: true, Level: 2, Message: message },
+      {
+        shouldRetry: () => false,
+      }
     );
   }
-  _enqueueRequest (url, data, options = { timeout: 0, shouldRetry: null }) {
+  _enqueueRequest(url, data, options = { timeout: 0, shouldRetry: null }) {
     const req = new Request(url, data ?? {}, options);
     const promise = new Promise((resolve, reject) => {
       req.onError(reject);
@@ -577,7 +700,7 @@ class Client {
     return promise;
   }
 
-  _nextRequest () {
+  _nextRequest() {
     while (this.sendQueue.length) {
       const req = this.sendQueue.shift();
       if (!req.expired()) return req;
@@ -586,7 +709,7 @@ class Client {
     return null;
   }
 
-  _triggerFlush ({ timeout = 1, clearSending = false }) {
+  _triggerFlush({ timeout = 1, clearSending = false }) {
     setTimeout(() => {
       if (clearSending) {
         this.sending = null;
@@ -595,64 +718,67 @@ class Client {
     }, timeout);
   }
 
-	_flush = () => {
-	  if (this.sending) return;
+  _flush = () => {
+    if (this.sending) return;
 
-	  const req = this._nextRequest();
-	  if (!req) return;
+    const req = this._nextRequest();
+    if (!req) return;
 
-	  this.sending = this
-	    .post(req.url, req.data)
-	    .then(response => {
-	      this.state.error = null;
-	      req.done(response);
-	      this._triggerFlush({ clearSending: true });
-	    })
-	    .catch(error => {
-            const shouldRetry = req.shouldRetry(error);
-            if (shouldRetry) {
-                this.state.error = { type: 'connection', data: error, retryAttempt: req.retryAttempt };
-                const timeout = req.retryTimeout();
-                this.sendQueue.unshift(req);
-                this._triggerFlush({ timeout: timeout, clearSending: true });
-	        } else {
-                req.error(error);
-                this._triggerFlush({ clearSending: true });
-	        }
-	    });
-	}
+    this.sending = this.post(req.url, req.data)
+      .then((response) => {
+        this.state.error = null;
+        req.done(response);
+        this._triggerFlush({ clearSending: true });
+      })
+      .catch((error) => {
+        const shouldRetry = req.shouldRetry(error);
+        if (shouldRetry) {
+          this.state.error = {
+            type: "connection",
+            data: error,
+            retryAttempt: req.retryAttempt,
+          };
+          const timeout = req.retryTimeout();
+          this.sendQueue.unshift(req);
+          this._triggerFlush({ timeout: timeout, clearSending: true });
+        } else {
+          req.error(error);
+          this._triggerFlush({ clearSending: true });
+        }
+      });
+  };
 
-	// _encryptToken returns signed x-client-token for SSE connections.
-	_encryptToken () {
-	  if (!this.authToken || !this.authSessionID) {
-	    return;
-	  }
+  // _encryptToken returns signed x-client-token for SSE connections.
+  _encryptToken() {
+    if (!this.authToken || !this.authSessionID) {
+      return;
+    }
 
-	  // Combine a session and the current timestamp.
-	  let time = +new Date();
-	  let token = { SessionID: this.authSessionID, Time: time };
-	  let text = JSON.stringify(token);
+    // Combine a session and the current timestamp.
+    let time = +new Date();
+    let token = { SessionID: this.authSessionID, Time: time };
+    let text = JSON.stringify(token);
 
-	  // Sign them as JSON using the auth token.
-	  // eslint-disable-next-line new-cap
-	  let hmac = new jsSHA('SHA-1', 'TEXT', {
-	    hmacKey: { value: this.authToken, format: 'TEXT' }
-	  });
-	  hmac.update(text);
-	  let sign = hmac.getHash('HEX');
+    // Sign them as JSON using the auth token.
+    // eslint-disable-next-line new-cap
+    let hmac = new jsSHA("SHA-1", "TEXT", {
+      hmacKey: { value: this.authToken, format: "TEXT" },
+    });
+    hmac.update(text);
+    let sign = hmac.getHash("HEX");
 
-	  // Convert to JSON.
-	  let signed = {
-	    Token: text,
-	    Sign: sign
-	  };
-	  let json = JSON.stringify(signed);
+    // Convert to JSON.
+    let signed = {
+      Token: text,
+      Sign: sign,
+    };
+    let json = JSON.stringify(signed);
 
-	  // Base64 encode the result.
-	  // eslint-disable-next-line no-undef
-	  let b64 = btoa(json);
-	  return b64;
-	}
+    // Base64 encode the result.
+    // eslint-disable-next-line no-undef
+    let b64 = btoa(json);
+    return b64;
+  }
 }
 
 export default new Client();

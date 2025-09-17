@@ -20,9 +20,13 @@ class Config {
   fileUrl = (fileId) => this.apiUrl(`/files/get/${fileId}`);
 
   imageUrl = (imageId, size) => {
-    const token = this.getCookie(this.CLIENT_SESSION_COOKIE);
-    
-    const tokenParam = token ? `&x-client-token=${encodeURIComponent(token)}` : '';
+    var token = this.getCookie(this.CLIENT_SESSION_COOKIE);
+
+    if (!token) {
+      token = localStorage.getItem(this.CLIENT_SESSION_COOKIE)
+    }
+
+    const tokenParam = token ? `&x-client-token=${token}` : "&x-client-token=not-found";
     return this.apiUrl(`/files/image/${imageId}?size=${size}${tokenParam}`);
   };
 }
