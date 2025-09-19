@@ -4,6 +4,8 @@ import { clearCookie } from '../lib/web';
 import client from '../client';
 import { provide, ref, watch } from "vue";
 import ErrorBoundary from "./components/error-boundary.vue";
+import {WIDGET_VERSION} from "../version"
+
 
 export default {
     name: 'app',
@@ -89,6 +91,7 @@ export default {
             isMultipleChats: false,
             multiClient: null,
             metadata: null,
+            widget_version: WIDGET_VERSION ?? ''
         };
     },
 
@@ -295,6 +298,7 @@ export default {
 </script>
 
 <template lang="pug">
+    span.widget-version {{ this.widget_version }}
     div(v-if="initialized")
         error-boundary(:error="appError")
             link(type="text/css" rel="stylesheet" :href="stylesURL")
