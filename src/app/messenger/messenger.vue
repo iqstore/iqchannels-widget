@@ -9,6 +9,7 @@ import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
 import { ChatEventRatingIgnored } from "../../schema";
+import {WIDGET_VERSION} from "../../version"
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -78,7 +79,8 @@ export default {
             loadingMore: false,
             existingMsgIds: {},
             isBottom: false,
-            settings: {}
+            settings: {},
+            widget_version: WIDGET_VERSION ?? "версия не указана"
         };
     },
 
@@ -1172,7 +1174,7 @@ export default {
                     Id: now.getTime(),
                     Author: "user",
                     CreatedAt: now,
-                    Text: res.Data.Version,
+                    Text: `Версия сервера: ${res.Data.Version}\nВерсия виджета: ${this.widget_version}`,
                     Payload: 'text',
                     Read: true,
                     UserId: now.getTime(),
