@@ -88,12 +88,12 @@ export default {
             this.$emit("scroll-to-bottom", msg, event);
         },
 
-        cancelUpload(localId) {
-            this.$emit("cancel-upload", localId);
+        cancelUpload(localID) {
+            this.$emit("cancel-upload", localID);
         },
 
-        retryUpload(localId) {
-            this.$emit("retry-upload", localId);
+        retryUpload(localID) {
+            this.$emit("retry-upload", localID);
         },
 
         getCardBlockClass(msg) {
@@ -107,10 +107,10 @@ export default {
             const hasMessages = this.group.Messages && this.group.Messages.length > 0;
             const isUserMessage = msg.Author === 'user';
             const hasTextOrFile = msg.Text || msg.File;
-            const hasAvatarId = msg.User.AvatarId ?? false;
+            const hasAvatarID = msg.User.AvatarID ?? false;
 
-            if (hasAvatarId && msg.SystemMessage && isUserMessage) {
-                msg.User.AvatarURL = config.imageUrl(msg.User.AvatarId, schema.ImageSizeAvatar)
+            if (hasAvatarID && msg.SystemMessage && isUserMessage) {
+                msg.User.AvatarURL = config.imageUrl(msg.User.AvatarID, schema.ImageSizeAvatar)
                 return true
             }
 
@@ -123,8 +123,8 @@ export default {
 
             const lastMessage = this.group.Messages[this.group.Messages.length - 1];
             const secondLastMessage = this.group.Messages[this.group.Messages.length - 2];
-            const isLastMessage = msg.Id === lastMessage.Id;
-            const isBeforeLast = msg.Id === secondLastMessage?.Id;
+            const isLastMessage = msg.ID === lastMessage.ID;
+            const isBeforeLast = msg.ID === secondLastMessage?.ID;
 
             return isUserMessage && hasTextOrFile && (isLastMessage || (isBeforeLast && !lastMessage.Text));
         },
@@ -135,7 +135,7 @@ export default {
 </script>
 
 <template lang="pug">
-    .author(v-if="group.Messages[0].Id === msg.Id")
+    .author(v-if="group.Messages[0].ID === msg.ID")
         span(v-if="group.User") {{ group.User.DisplayName }}
         span(v-if="group.Client") {{ group.Client.Name }}
 
@@ -151,7 +151,7 @@ export default {
             v-touch:longtap="longtapEvent(msg)",
             @contextmenu.prevent="($event) => OnContextMessage($event)",
             :title="getTitle()",
-            :class="{scroll: searching, sending: !msg.Id, first: index === 0, last: index === group.Messages.length - 1 && ! (msg.File && msg.File.Type === 'image'), 'message-with-file': msg.File && msg.File.Type === 'image' && (!msg.File.State || msg.File.State  === '' || msg.File.State === 'approved'), 'message-with-file-no-reply' :  msg.File && msg.File.Type === 'image' && !msg.ReplyToMessageId && (!msg.File.State || msg.File.State  === '' || msg.File.State === 'approved')  }"
+            :class="{scroll: searching, sending: !msg.ID, first: index === 0, last: index === group.Messages.length - 1 && ! (msg.File && msg.File.Type === 'image'), 'message-with-file': msg.File && msg.File.Type === 'image' && (!msg.File.State || msg.File.State  === '' || msg.File.State === 'approved'), 'message-with-file-no-reply' :  msg.File && msg.File.Type === 'image' && !msg.ReplyToMessageID && (!msg.File.State || msg.File.State  === '' || msg.File.State === 'approved')  }"
         )
 
             reply(
@@ -174,16 +174,16 @@ export default {
                         .filename {{ msg.Upload?.name || msg.File?.Name }}
                         .filesize {{ humanSize(msg.Upload?.size || msg.File?.Size || 0) }} - Загружено {{ msg.UploadProgress || 100 }}%
                         a.button.cancel(
-                            v-if="msg.LocalId",
-                            @click.prevent="cancelUpload(msg.LocalId)",
+                            v-if="msg.LocalID",
+                            @click.prevent="cancelUpload(msg.LocalID)",
                             href="#"
                         ) Отмена
                     div(v-if="msg.UploadError")
                         .filename {{ msg.Upload?.name }}
                         .filesize {{ humanSize(msg.Upload?.size || 0) }}
                         .error {{ msg.UploadError }}
-                        a.button.cancel(@click.prevent="cancelUpload(msg.LocalId)" href="#") Отмена
-                        a.button.retry(@click.prevent="retryUpload(msg.LocalId)" href="#") Повтор
+                        a.button.cancel(@click.prevent="cancelUpload(msg.LocalID)" href="#") Отмена
+                        a.button.retry(@click.prevent="retryUpload(msg.LocalID)" href="#") Повтор
 
                 div(v-else-if="msg.Payload === 'carousel' && !msg.File")
                     pre.text(v-html="linkifyText(msg.Text)" @click="clickLink(msg.Text, $event, linkifyText(msg.Text))")
@@ -221,7 +221,7 @@ export default {
 
                     div.img-caption(v-if="msg.Text")
                         pre.text(v-html="linkifyText(msg.Text)" @click.prevent="scrollToMessage(msg, $event, linkifyText(msg.Text))")
-                audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
+                audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.ID}`"
                     :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
 
                 messageFooter(

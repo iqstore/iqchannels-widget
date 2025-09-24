@@ -83,7 +83,7 @@ export default {
         },
 
         getChatType(value) {
-            if (value.PersonalManagerId && value.MultiChatsInfo?.EnableForPersonalManagers) {
+            if (value.PersonalManagerID && value.MultiChatsInfo?.EnableForPersonalManagers) {
                 return 'personal_manager'
             }
             if (value.MultiChatsInfo?.EnableChat) {
@@ -115,7 +115,7 @@ export default {
                 v-wave,
                 :id="'channel-'+getChatType(value)+'-'+name",
                 @click.prevent="setCurrentChat(name, 'personal_manager')",
-                v-if="value.PersonalManagerId && value.MultiChatsInfo?.EnableForPersonalManagers"
+                v-if="value.PersonalManagerID && value.MultiChatsInfo?.EnableForPersonalManagers"
             )
                 chat-container(:chat="value", :chat-name="name", :is-with-personal-manager="true")
 

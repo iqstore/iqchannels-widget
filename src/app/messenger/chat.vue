@@ -21,7 +21,7 @@ export default {
         rating: Object,
         client: Object,
         channel: String,
-        firstUnreadMessageId: Number,
+        firstUnreadMessageID: Number,
     },
 
     data: function () {
@@ -29,7 +29,7 @@ export default {
             swipeRange: 100,
             showImageModal: false,
             modalImageMsg: null,
-            animateMsgIds: {},
+            animateMsgIDs: {},
             imgModalOptions: {},
         }
     },
@@ -67,7 +67,7 @@ export default {
                 if (this.msg && this.msgVisible) {
                     this.$emit("message-composed", {
                         messageText,
-                        replyToMessageId: this.msg.Id,
+                        replyToMessageID: this.msg.ID,
                         botpressPayload: botpressPayload
                     });
                 } else {
@@ -89,15 +89,15 @@ export default {
             if (!this.searching) {
                 return;
             }
-            this.$emit("scroll-to-message", msg.Id);
+            this.$emit("scroll-to-message", msg.ID);
         },
 
         scrollToBottom(event) {
             this.$emit("scroll-to-bottom", event);
         },
 
-        scrollToRating(ratingId, index) {
-            this.$emit("scroll-to-rating", ratingId, index);
+        scrollToRating(ratingID, index) {
+            this.$emit("scroll-to-rating", ratingID, index);
         },
 
         getProductMsgText(message) {
@@ -134,14 +134,14 @@ export default {
         acceptProduct(msg) {
             const product = msg.Product;
             if (product) {
-                client.acceptProductMessage(msg.Id, product.Id);
+                client.acceptProductMessage(msg.ID, product.ID);
             }
         },
 
         declineProduct(msg) {
             const product = msg.Product;
             if (product) {
-                client.declineProductMessage(msg.Id, product.Id);
+                client.declineProductMessage(msg.ID, product.ID);
             }
         },
 
@@ -149,21 +149,21 @@ export default {
             if (msg.My) {
                 return;
             }
-            const elId = "audio-track-" + msg.Id;
-            const track = document.getElementById(elId);
+            const elID = "audio-track-" + msg.ID;
+            const track = document.getElementById(elID);
             // listen for ended event and set listened flag
             track.onended = () => {
                 if (!msg.Listened) {
                     msg.Listened = true;
-                    client.channelMessagesListen(msg.Id)
+                    client.channelMessagesListen(msg.ID)
                 }
             };
         },
 
-        animateMsgAfterScroll(msgId) {
-            this.animateMsgIds[+msgId] = true;
+        animateMsgAfterScroll(msgID) {
+            this.animateMsgIDs[+msgID] = true;
             setTimeout(() => {
-                delete this.animateMsgIds[+msgId];
+                delete this.animateMsgIDs[+msgID];
             }, 5000);
         },
 
@@ -205,12 +205,12 @@ export default {
             }, 100);
         },
 
-        cancelUpload(localId) {
-            this.$emit("cancel-upload", localId);
+        cancelUpload(localID) {
+            this.$emit("cancel-upload", localID);
         },
 
-        retryUpload(localId) {
-            this.$emit("retry-upload", localId);
+        retryUpload(localID) {
+            this.$emit("retry-upload", localID);
         },
 
         rateRating(rating) {
@@ -329,7 +329,7 @@ export default {
         .no-messages-wrapper(v-if="groups.length === 0")
             span.no-messages Сообщений не найдено
 
-        .group(v-for="group in groups" :class="{ client: group.ClientId, user: group.UserId }" )
+        .group(v-for="group in groups" :class="{ client: group.ClientID, user: group.UserID }" )
             .date(v-if="group.IsNewDay")
                 span.title {{ humanDate(group.LastMessage.CreatedAt) }}
 
@@ -339,8 +339,8 @@ export default {
                         :searching="searching",
                         :group="group",
                         :groups="groups",
-                        :firstUnreadMessageId="firstUnreadMessageId",
-                        :animateMsgIds="animateMsgIds",
+                        :firstUnreadMessageID="firstUnreadMessageID",
+                        :animateMsgIDs="animateMsgIDs",
                         :imgModalOptions="imgModalOptions",
                         @reply-msg="optionClicked",
                         @swipe-rigth="swipeRight",
@@ -362,7 +362,7 @@ export default {
                     button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
                         span {{ getProductMsgText(group.LastMessage) }}
                     button.choice_button(type="button", @click.prevent="declineProduct(group.LastMessage)") Отказаться
-                div(v-if="group.LastMessage", :id="'message-'+group.LastMessage?.Id")
+                div(v-if="group.LastMessage", :id="'message-'+group.LastMessage?.ID")
             rating#rating(
                 v-if="group.Rating",
                 :rating="group.Rating",
@@ -370,7 +370,7 @@ export default {
                 :channel="channel",
                 @rate-rating="rateRating",
                 @ignore-rating="ignoreRating",
-                @on-poll-question-chaned="(ratingId, index) => scrollToRating(ratingId, index)")
+                @on-poll-question-chaned="(ratingID, index) => scrollToRating(ratingID, index)")
             inforequest#info-request(
                 v-if="group.InfoRequest",
                 :request="group.InfoRequest",

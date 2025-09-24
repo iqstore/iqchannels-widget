@@ -101,7 +101,7 @@ class IQChannelsWidget extends EventEmitter {
 			padBody = true,
 			requireName = true,
 			iconOptions = {},
-			DOMIdentifier,
+			DOMIDentifier,
 			chats = [],
 			metadata = null,
 			imgModalOptions = {
@@ -131,7 +131,7 @@ class IQChannelsWidget extends EventEmitter {
 
 		this.pushToken = null;
 		this.opened = false;
-		this.DOMIdentifier = DOMIdentifier || null;
+		this.DOMIDentifier = DOMIDentifier || null;
 		this.imgModalOptions = imgModalOptions;
 		this.chats = chats;
 		this.isMultipleChats = this.chats.length > 0;
@@ -253,7 +253,7 @@ class IQChannelsWidget extends EventEmitter {
 	appendWidgetsContainer = () => {
 		document.body.appendChild(this.icon);
 
-		const widgetContainer = document.getElementById(this.DOMIdentifier);
+		const widgetContainer = document.getElementById(this.DOMIDentifier);
 		const containerToAppend = widgetContainer || document.body;
 		containerToAppend.appendChild(this.frameContainer);
 

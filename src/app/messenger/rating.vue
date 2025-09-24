@@ -26,10 +26,10 @@ export default {
 
     watch: {
         index: function (newValue, oldValue) {
-            this.$emit("on-poll-question-chaned", this.rating.Id, newValue);
+            this.$emit("on-poll-question-chaned", this.rating.ID, newValue);
         },
         start: function (newValue, oldValue) {
-            this.$emit("on-poll-question-chaned", this.rating.Id, this.index);
+            this.$emit("on-poll-question-chaned", this.rating.ID, this.index);
         },
     },
 
@@ -64,10 +64,10 @@ export default {
             temp[this.index] = {
                 Type: "stars",
                 AnswerStars: value,
-                RatingPollQuestionId: this.poll.Questions[this.index].Id,
-                RatingId: this.rating.Id,
-                ClientId: this.client.Id,
-                ProjectId: this.client.ProjectId,
+                RatingPollQuestionID: this.poll.Questions[this.index].ID,
+                RatingID: this.rating.ID,
+                ClientID: this.client.ID,
+                ProjectID: this.client.ProjectID,
             };
             this.pollResult = temp;
         },
@@ -77,10 +77,10 @@ export default {
             temp[this.index] = {
                 Type: "input",
                 AnswerInput: $event.target.value,
-                RatingPollQuestionId: this.poll.Questions[this.index].Id,
-                RatingId: this.rating.Id,
-                ClientId: this.client.Id,
-                ProjectId: this.client.ProjectId,
+                RatingPollQuestionID: this.poll.Questions[this.index].ID,
+                RatingID: this.rating.ID,
+                ClientID: this.client.ID,
+                ProjectID: this.client.ProjectID,
             };
             this.pollResult = temp;
         },
@@ -89,11 +89,11 @@ export default {
             let temp = [...this.pollResult];
             temp[this.index] = {
                 Type: "one_of_list",
-                RatingPollAnswerId: answer.Id,
-                RatingPollQuestionId: this.poll.Questions[this.index].Id,
-                RatingId: this.rating.Id,
-                ClientId: this.client.Id,
-                ProjectId: this.client.ProjectId,
+                RatingPollAnswerID: answer.ID,
+                RatingPollQuestionID: this.poll.Questions[this.index].ID,
+                RatingID: this.rating.ID,
+                ClientID: this.client.ID,
+                ProjectID: this.client.ProjectID,
             };
             this.pollResult = temp;
         },
@@ -102,12 +102,12 @@ export default {
             let temp = [...this.pollResult];
             temp[this.index] = {
                 Type: "fcr",
-                RatingPollAnswerId: answer.Id,
-                RatingPollQuestionId: this.poll.Questions[this.index].Id,
+                RatingPollAnswerID: answer.ID,
+                RatingPollQuestionID: this.poll.Questions[this.index].ID,
                 FCR: answer.FCR,
-                RatingId: this.rating.Id,
-                ClientId: this.client.Id,
-                ProjectId: this.client.ProjectId,
+                RatingID: this.rating.ID,
+                ClientID: this.client.ID,
+                ProjectID: this.client.ProjectID,
             };
             this.pollResult = temp;
         },
@@ -137,11 +137,11 @@ export default {
             let temp = [...this.pollResult];
             temp[this.index] = {
                 Type: "scale",
-                RatingPollQuestionId: this.poll.Questions[this.index].Id,
+                RatingPollQuestionID: this.poll.Questions[this.index].ID,
                 AnswerScale: value,
-                RatingId: this.rating.Id,
-                ClientId: this.client.Id,
-                ProjectId: this.client.ProjectId,
+                RatingID: this.rating.ID,
+                ClientID: this.client.ID,
+                ProjectID: this.client.ProjectID,
             };
             this.pollResult = temp;
         },
@@ -176,12 +176,12 @@ export default {
         setRating(value) {
             this.rating.Value = value;
             this.value = value;
-            this.$emit("on-poll-question-chaned", this.rating.Id, this.index);
+            this.$emit("on-poll-question-chaned", this.rating.ID, this.index);
         },
 
         finishPoll() {
             client
-                .finishPoll(this.rating.Id, this.poll.Id, true)
+                .finishPoll(this.rating.ID, this.poll.ID, true)
                 .then((res) => {
                     if (res.OK) {
                         this.rating.State = "finished";
@@ -208,7 +208,7 @@ export default {
 
         finishRating() {
             client
-                .finishPoll(this.rating.Id, this.poll.Id, false)
+                .finishPoll(this.rating.ID, this.poll.ID, false)
                 .then((res) => {
                     if (res.OK) {
                         this.rating.State = "ignored";
@@ -338,11 +338,11 @@ export default {
                 .buttons-one-of-list.m-b(v-for="(answer, i) in poll.Questions[index].Answers",
                     @click.prevent="setPollVariant(answer)"
                 )
-                    button.button.button_one_of_list(@click.prevent="setPollVariant(answer)", :class="{'button_active': answer.Id === pollResult[index].RatingPollAnswerId }") {{ answer.Text }}
+                    button.button.button_one_of_list(@click.prevent="setPollVariant(answer)", :class="{'button_active': answer.ID === pollResult[index].RatingPollAnswerID }") {{ answer.Text }}
             .fcr.mt(v-if="poll.Questions[index].Type === 'fcr'")
                 .buttons-fcr.mt
-                    button.button.button_one_of_list(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])", :class="{'button_active': poll.Questions[index].Answers[0].Id === pollResult[index].RatingPollAnswerId}") {{ poll.Questions[index].Answers[0].Text }}
-                    button.button.button_one_of_list(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[1])", :class="{'button_active': poll.Questions[index].Answers[1].Id === pollResult[index].RatingPollAnswerId}") {{ poll.Questions[index].Answers[1].Text }}
+                    button.button.button_one_of_list(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[0])", :class="{'button_active': poll.Questions[index].Answers[0].ID === pollResult[index].RatingPollAnswerID}") {{ poll.Questions[index].Answers[0].Text }}
+                    button.button.button_one_of_list(@click.prevent="setPollVariantFCR(poll.Questions[index].Answers[1])", :class="{'button_active': poll.Questions[index].Answers[1].ID === pollResult[index].RatingPollAnswerID}") {{ poll.Questions[index].Answers[1].Text }}
 
             .input(v-if="poll.Questions[index].Type === 'input'")
                 textarea.poll_text.mt(type="text", v-model="inputText", @change="changeText($event)", placeholder="Ваш ответ", maxlength="4000", rows="5")
@@ -369,7 +369,7 @@ export default {
                 svg(xmlns="http://www.w3.org/2000/svg" height="3em" fill="#2D98F4" viewBox="0 0 512 512")
                     path(d="M190.5 68.8L225.3 128H224 152c-22.1 0-40-17.9-40-40s17.9-40 40-40h2.2c14.9 0 28.8 7.9 36.3 20.8zM64 88c0 14.4 3.5 28 9.6 40H32c-17.7 0-32 14.3-32 32v64c0 17.7 14.3 32 32 32H480c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32H438.4c6.1-12 9.6-25.6 9.6-40c0-48.6-39.4-88-88-88h-2.2c-31.9 0-61.5 16.9-77.7 44.4L256 85.5l-24.1-41C215.7 16.9 186.1 0 154.2 0H152C103.4 0 64 39.4 64 88zm336 0c0 22.1-17.9 40-40 40H288h-1.3l34.8-59.2C329.1 55.9 342.9 48 357.8 48H360c22.1 0 40 17.9 40 40zM32 288V464c0 26.5 21.5 48 48 48H224V288H32zM288 512H432c26.5 0 48-21.5 48-48V288H288V512z")
                 .title.color-thanks {{ thanksFeedbackText }}
-    div(:id="'rating-'+rating.Id+'-index-'+index")
+    div(:id="'rating-'+rating.ID+'-index-'+index")
 
 </template>
 

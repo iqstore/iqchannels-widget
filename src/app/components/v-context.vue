@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ul ref="ctxMenu" :id="elementId" class="vue-simple-context-menu" v-click-outside="onClickOutside">
+        <ul ref="ctxMenu" :id="elementID" class="vue-simple-context-menu" v-click-outside="onClickOutside">
             <li
                 v-for="(option, index) in options"
                 :key="index"
@@ -20,7 +20,7 @@ import vClickOutside from 'click-outside-vue3';
 export default {
     name: 'v-context',
     props: {
-        elementId: {
+        elementID: {
             type: String,
             required: true,
         },

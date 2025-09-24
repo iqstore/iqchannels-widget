@@ -9,7 +9,7 @@ declare class IQChannelsWidget extends EventEmitter {
         padBody?: boolean;
         requireName?: boolean;
         iconOptions?: IconOptions; // deprecated
-        DOMIdentifier?: string;
+        DOMIDentifier?: string;
         chats?: Chat[];
         enableImgModals?: boolean; // deprecated
         imgModalOptions?: ImgModalOptions;
@@ -61,10 +61,10 @@ type ImgModalState = 'mobile' | 'web';
 type WidgetErrorType = "connetion"
 
 interface Rating {
-    Id: number;
-    ProjectId: number;
-    TicketId: number;
-    ClientId: number;
+    ID: number;
+    ProjectID: number;
+    TicketID: number;
+    ClientID: number;
 
     State: RatingState;
     Value: number;
@@ -77,25 +77,25 @@ interface Rating {
 type RatingState = "pending" | "ignored" | "rated";
 
 interface ChatMessage {
-    Id: number;
-    ReplyToMessageId?: number;
-    ChatId: number;
-    LocalId?: number;
-    EventId: number;
-    TicketMessageId: number;
-    TicketId: number;
-    MailingMessageId?: number;
-    ProductId?: number;
+    ID: number;
+    ReplyToMessageID?: number;
+    ChatID: number;
+    LocalID?: number;
+    EventID: number;
+    TicketMessageID: number;
+    TicketID: number;
+    MailingMessageID?: number;
+    ProductID?: number;
     ProductOfferState?: number;
 
     Author: ActorType;
-    ClientId: number;
-    UserId: number;
+    ClientID: number;
+    UserID: number;
 
     Text: string;
-    RatingId?: string;
+    RatingID?: string;
     BotpressPayload?: string;
-    FileId?: string;
+    FileID?: string;
     FileURL?: string;
 
     Received?: boolean;

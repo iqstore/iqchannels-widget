@@ -375,12 +375,12 @@ export default {
                 this.scrollToLastMessage();
                 if (this.currentFiles.length > 0) {
                     if (this.msgVisible && this.msg) {
-                        this.$emit("file-selected", this.currentFiles, messageText, this.msg.Id);
+                        this.$emit("file-selected", this.currentFiles, messageText, this.msg.ID);
                     } else {
                         this.$emit("file-selected", this.currentFiles, messageText, null);
                     }
                 } else if (this.msg && this.msgVisible) {
-                    this.$emit("message-composed", { messageText, replyToMessageId: this.msg.Id, payload: payload });
+                    this.$emit("message-composed", { messageText, replyToMessageID: this.msg.ID, payload: payload });
                 } else {
                     this.$emit("message-composed", { messageText, payload: payload });
                 }
@@ -551,7 +551,7 @@ export default {
                         @click="clickFile(msg, $event)")
                         span.filename {{ msg.File.Name }}
                         .filesize {{ humanSize(msg.File.Size) }}
-                audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.Id}`"
+                audio(v-else-if="msg.File && msg.File.Type === 'audio'"  controls="true" :id="`audio-track-${msg.ID}`"
                     :src="msg.File.URL",  @play.prevent="listenForAudioEvents(msg)")
                 .replayed-text {{ msg.Text }}
             svg(width='9' height='9' viewbox='0 0 9 9' fill='none' xmlns='http://www.w3.org/2000/svg' @click="resetReplayedMsg()")

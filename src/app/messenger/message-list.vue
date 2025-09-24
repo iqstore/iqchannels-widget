@@ -9,9 +9,9 @@ export default {
         searching: Boolean,
         group: Object,
         groups: Array,
-        firstUnreadMessageId: Number,
+        firstUnreadMessageID: Number,
         imgModalOptions: Object,
-        animateMsgIds: Object
+        animateMsgIDs: Object
     },
 
     methods: {
@@ -24,7 +24,7 @@ export default {
         },
 
         scrollToBottom(msg, event) {
-            if (!this.firstUnreadMessageId) {
+            if (!this.firstUnreadMessageID) {
                 this.$emit("scroll-to-bottom", msg, event);
             }
         },
@@ -33,12 +33,12 @@ export default {
             this.$emit("send-message", messageText, botpressPayload, url)
         },
 
-        cancelUpload(localId) {
-            this.$emit("cancel-upload", localId);
+        cancelUpload(localID) {
+            this.$emit("cancel-upload", localID);
         },
 
-        retryUpload(localId) {
-            this.$emit("retry-upload", localId);
+        retryUpload(localID) {
+            this.$emit("retry-upload", localID);
         },
 
         clickFileImage(msg) {
@@ -56,10 +56,10 @@ export default {
 <template lang="pug">
     .message-wrapper(v-for="(msg, index) in group.Messages",
         v-hammer:pan="(event) => swipeRight(event, msg)",
-        :class="{ scroll_msg_animation_client: msg.My && animateMsgIds[msg.Id], scroll_msg_animation_user: !msg.My && animateMsgIds[msg.Id] }",
+        :class="{ scroll_msg_animation_client: msg.My && animateMsgIDs[msg.ID], scroll_msg_animation_user: !msg.My && animateMsgIDs[msg.ID] }",
         )
 
-        .unread-divider(v-if="firstUnreadMessageId === msg.Id")
+        .unread-divider(v-if="firstUnreadMessageID === msg.ID")
             span Непрочитанные сообщения
 
         message(
@@ -79,7 +79,7 @@ export default {
             :imgModalOptions="imgModalOptions",
         )
     
-        div(v-if="msg.Id !== group.LastMessage?.Id", :id="'message-'+msg.Id")
+        div(v-if="msg.ID !== group.LastMessage?.ID", :id="'message-'+msg.ID")
 
 </template>
 

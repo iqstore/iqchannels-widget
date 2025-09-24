@@ -12,15 +12,15 @@ var w = new IQChannelsWidget({
 const mockEventData = {
   type: "UPDATE_TICKET_CATEGORY",
   payload: {
-    TicketId: 170477,
+    TicketID: 170477,
     Category: {
-      ExternalCategoryId: "CAT_001",
+      ExternalCategoryID: "CAT_001",
       CategoryTitle: "Техподдержка",
       Parent: {
-        ExternalCategoryId: "CAT_PARENT_01",
+        ExternalCategoryID: "CAT_PARENT_01",
         CategoryTitle: "Поддержка",
         Parent: {
-          ExternalCategoryId: "CAT_ROOT",
+          ExternalCategoryID: "CAT_ROOT",
           CategoryTitle: "Услуги"
         }
       }

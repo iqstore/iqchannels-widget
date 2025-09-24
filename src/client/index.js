@@ -46,7 +46,7 @@ class Client {
 
     let s = auth.Session;
     this.authToken = s.Token;
-    this.authSessionID = s.Id;
+    this.authSessionID = s.ID;
   }
 
   setMultiAuth (channel) {
@@ -255,13 +255,13 @@ class Client {
       .then(response => response.Result.Client);
   }
 
-  channelMessages (channel, chatType, searchTerm, fromId, toId, limit = config.REQUEST_MESSAGES_LIMIT) {
+  channelMessages (channel, chatType, searchTerm, fromID, toID, limit = config.REQUEST_MESSAGES_LIMIT) {
     const data = {
       ChatType: chatType,
       Limit: limit,
       Q: searchTerm,
-      FromId: fromId,
-      ToId: toId
+      FromID: fromID,
+      ToID: toID
     };
     return this._enqueueRequest(`/chats/channel/messages/${channel}`, data)
       .then(response => new Relations(config, response.Rels).messages(response.Result));
@@ -281,8 +281,8 @@ class Client {
     return this._enqueueRequest('/bad_words/check_message', { MsgText: msgText }, { shouldRetry: (error) => !error });
   }
 
-  listTicketsByClient (channel, clientId, query) {
-    return this._enqueueRequest(`/chats/channel/tickets/existing/${channel}`, { ClientId: clientId, Query: query });
+  listTicketsByClient (channel, clientID, query) {
+    return this._enqueueRequest(`/chats/channel/tickets/existing/${channel}`, { ClientID: clientID, Query: query });
   }
 
   getPoll (query) {
@@ -293,12 +293,12 @@ class Client {
     return this._enqueueRequest(`/ratings/send_poll`, { RatingPollClientAnswerInput: input });
   }
 
-  finishPoll (ratingId, pollId, rated) {
-    return this._enqueueRequest(`/ratings/finish_poll`, { RatingId: ratingId, RatingPollId: pollId, Rated: rated });
+  finishPoll (ratingID, pollID, rated) {
+    return this._enqueueRequest(`/ratings/finish_poll`, { RatingID: ratingID, RatingPollID: pollID, Rated: rated });
   }
 
-  getChatSettings (channel, clientId) {
-    return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`, { ClientId: clientId }, { shouldRetry: (error) => !error });
+  getChatSettings (channel, clientID) {
+    return this._enqueueRequest(`/chats/channel/chat/get_settings/${channel}`, { ClientID: clientID }, { shouldRetry: (error) => !error });
   }
 
   openSystemChat (channel) {
@@ -341,24 +341,24 @@ class Client {
     return this._enqueueRequest(`/clients/set_language`, { Code: code });
   }
 
-  acceptProductMessage (messageId, productId) {
-    return this._enqueueRequest(`/chats/messages/accept_product`, { MessageId: messageId, ProductId: productId });
+  acceptProductMessage (messageID, productID) {
+    return this._enqueueRequest(`/chats/messages/accept_product`, { MessageID: messageID, ProductID: productID });
   }
 
-  declineProductMessage (messageId, productId) {
-    return this._enqueueRequest(`/chats/messages/decline_product`, { MessageId: messageId, ProductId: productId });
+  declineProductMessage (messageID, productID) {
+    return this._enqueueRequest(`/chats/messages/decline_product`, { MessageID: messageID, ProductID: productID });
   }
 
-  channelMessagesRead (messagesIds) {
-    return this._enqueueRequest(`/chats/messages/read`, messagesIds);
+  channelMessagesRead (messagesIDs) {
+    return this._enqueueRequest(`/chats/messages/read`, messagesIDs);
   }
 
-  channelMessagesListen (messageId) {
-    return this._enqueueRequest(`/chats/messages/listen`, messageId);
+  channelMessagesListen (messageID) {
+    return this._enqueueRequest(`/chats/messages/listen`, messageID);
   }
 
-  channelMessagesReceived (messagesIds) {
-    return this._enqueueRequest(`/chats/messages/received`, messagesIds);
+  channelMessagesReceived (messagesIDs) {
+    return this._enqueueRequest(`/chats/messages/received`, messagesIDs);
   }
 
   version () {
@@ -398,9 +398,9 @@ class Client {
     return this._enqueueRequest(`/push/channel/fcm/${channel}`, body);
   }
 
-  rateRating (ratingId, value, comment) {
+  rateRating (ratingID, value, comment) {
     const request = {
-      RatingId: ratingId,
+      RatingID: ratingID,
       Rating: {
         Value: value,
         Comment: comment
@@ -410,8 +410,8 @@ class Client {
       .then(response => new Relations(config, response.Rels).rating(response.Result));
   }
 
-  ignoreRating (ratingId) {
-    const request = { RatingId: ratingId };
+  ignoreRating (ratingID) {
+    const request = { RatingID: ratingID };
     return this._enqueueRequest(`/ratings/ignore`, request)
       .then(response => new Relations(config, response.Rels).rating(response.Result));
   }
@@ -422,8 +422,8 @@ class Client {
 
   sendInfo (info) {
     const request = {
-      RequestId: info.Id,
-      ClientId: info.ClientId,
+      RequestID: info.ID,
+      ClientID: info.ClientID,
       ClientConsent: info.ClientConsent,
       Form: info.Form
     };
@@ -431,37 +431,37 @@ class Client {
       .then(response => new Relations(config, response.Rels).infoRequest(response.Result));
   }
 
-  ignoreInfo (requestId) {
-    const request = { RequestId: requestId };
+  ignoreInfo (requestID) {
+    const request = { RequestID: requestID };
     return this._enqueueRequest(`/info_requests/ignore`, request)
       .then(response => new Relations(config, response.Rels).infoRequest(response.Result));
   }
 
-  fileToken (fileId) {
-    const request = { FileId: fileId };
+  fileToken (fileID) {
+    const request = { FileID: fileID };
     return this.post(`/files/token`, request).then(response => {
       let token = response.Result;
       return token.Token;
     });
   }
 
-  fileSignedUrl (fileId) {
-    return this.fileToken(fileId).then(token => {
-      let path = `/files/get/${fileId}?token=${token}`;
+  fileSignedUrl (fileID) {
+    return this.fileToken(fileID).then(token => {
+      let path = `/files/get/${fileID}?token=${token}`;
       let fullpath = config.apiUrl(path);
       let url = window.location.protocol + '//' + window.location.host + fullpath;
       return url;
     });
   }
 
-  getFile (fileId) {
-    return this.get(`/files/get_file/${fileId}`, {}).
+  getFile (fileID) {
+    return this.get(`/files/get_file/${fileID}`, {}).
       then(resp => resp.Result).
       then(file => {
-        file.URL = config.fileUrl(file.Id);
+        file.URL = config.fileUrl(file.ID);
         if (file.Type === schema.FileTypeImage) {
-          file.ThumbnailURL = config.imageUrl(file.Id, schema.ImageSizeThumbnail);
-          file.PreviewURL = config.imageUrl(file.Id, schema.ImageSizePreview);
+          file.ThumbnailURL = config.imageUrl(file.ID, schema.ImageSizeThumbnail);
+          file.PreviewURL = config.imageUrl(file.ID, schema.ImageSizePreview);
         }
         return file;
       });
@@ -519,11 +519,11 @@ class Client {
     return this.multipart('/files/upload', data, _onSuccess, onError, onProgress);
   }
 
-  channelListen (channel, chatType, lastEventId, onMessage, onError) {
+  channelListen (channel, chatType, lastEventID, onMessage, onError) {
     let token = this._encryptToken();
     let url = config.apiUrl(`/sse/chats/channel/events/${channel}`);
 
-    if (chatType || lastEventId || token) {
+    if (chatType || lastEventID || token) {
       url += '?';
     }
 
@@ -531,15 +531,15 @@ class Client {
       url += `ChatType=${chatType}`;
     }
 
-    if (lastEventId) {
+    if (lastEventID) {
       if (chatType) {
         url += '&';
       }
-      url += `LastEventId=${lastEventId}`;
+      url += `LastEventID=${lastEventID}`;
     }
 
     if (token) {
-      if (chatType || lastEventId) {
+      if (chatType || lastEventID) {
         url += '&';
       }
       url += `x-client-token=${token}`;

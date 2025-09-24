@@ -20,42 +20,42 @@ export default class Relations {
 
     if (rels.Clients) {
       rels.Clients.forEach(client => {
-        this.rels.Clients[client.Id] = client;
+        this.rels.Clients[client.ID] = client;
       });
     }
 
     if (rels.Users) {
       this.users(rels.Users).forEach(user => {
-        this.rels.Users[user.Id] = user;
+        this.rels.Users[user.ID] = user;
       });
     }
 
     if (rels.Files) {
       this.files(rels.Files).forEach(file => {
-        this.rels.Files[file.Id] = file;
+        this.rels.Files[file.ID] = file;
       });
     }
 
     if (rels.RatingPolls) {
       this.ratingPolls(rels.RatingPolls).forEach(poll => {
-        this.rels.RatingPolls[poll.Id] = poll;
+        this.rels.RatingPolls[poll.ID] = poll;
       });
     }
 
     if (rels.Ratings) {
       this.ratings(rels.Ratings).forEach(rating => {
-        this.rels.Ratings[rating.Id] = rating;
+        this.rels.Ratings[rating.ID] = rating;
       });
     }
     if (rels.InfoRequests) {
       this.infoRequests(rels.InfoRequests).forEach(request => {
-        this.rels.InfoRequests[request.Id] = request;
+        this.rels.InfoRequests[request.ID] = request;
       });
     }
 
     if (rels.ChatMessages) {
       this.messages(rels.ChatMessages).forEach(message => {
-        this.rels.ChatMessages[message.Id] = message;
+        this.rels.ChatMessages[message.ID] = message;
       });
     }
   }
@@ -65,8 +65,8 @@ export default class Relations {
   }
 
   user (user) {
-    if (user.AvatarId) {
-      user.AvatarURL = this.config.imageUrl(user.AvatarId, schema.ImageSizeAvatar);
+    if (user.AvatarID) {
+      user.AvatarURL = this.config.imageUrl(user.AvatarID, schema.ImageSizeAvatar);
     }
     return user;
   }
@@ -76,21 +76,21 @@ export default class Relations {
   }
 
   message (message) {
-    if (message.ClientId) {
-      message.Client = this.rels.Clients[message.ClientId];
+    if (message.ClientID) {
+      message.Client = this.rels.Clients[message.ClientID];
     }
-    if (message.UserId) {
-      message.User = this.rels.Users[message.UserId];
+    if (message.UserID) {
+      message.User = this.rels.Users[message.UserID];
     }
-    if (message.FileId) {
-      message.File = this.rels.Files[message.FileId];
+    if (message.FileID) {
+      message.File = this.rels.Files[message.FileID];
     }
-    if (message.RatingId) {
-      message.Rating = this.rels.Ratings[message.RatingId];
+    if (message.RatingID) {
+      message.Rating = this.rels.Ratings[message.RatingID];
     }
 
-    if (message.InfoRequestId) {
-      const infoReq = this.rels.InfoRequests[message.InfoRequestId];
+    if (message.InfoRequestID) {
+      const infoReq = this.rels.InfoRequests[message.InfoRequestID];
       if (infoReq && infoReq.State === 'pending') {
         message.InfoRequest = infoReq;
       };
@@ -105,10 +105,10 @@ export default class Relations {
   }
 
   file (file) {
-    file.URL = this.config.fileUrl(file.Id);
+    file.URL = this.config.fileUrl(file.ID);
     if (file.Type === schema.FileTypeImage) {
-      file.ThumbnailURL = this.config.imageUrl(file.Id, schema.ImageSizeThumbnail);
-      file.PreviewURL = this.config.imageUrl(file.Id, schema.ImageSizePreview);
+      file.ThumbnailURL = this.config.imageUrl(file.ID, schema.ImageSizeThumbnail);
+      file.PreviewURL = this.config.imageUrl(file.ID, schema.ImageSizePreview);
     }
     return file;
   }
@@ -118,14 +118,14 @@ export default class Relations {
   }
 
   event (event) {
-    if (event.ClientId) {
-      event.Client = this.rels.Clients[event.ClientId];
+    if (event.ClientID) {
+      event.Client = this.rels.Clients[event.ClientID];
     }
-    if (event.UserId) {
-      event.User = this.rels.Users[event.UserId];
+    if (event.UserID) {
+      event.User = this.rels.Users[event.UserID];
     }
-    if (event.MessageId) {
-      event.Message = this.rels.ChatMessages[event.MessageId];
+    if (event.MessageID) {
+      event.Message = this.rels.ChatMessages[event.MessageID];
     }
     return event;
   }
@@ -135,8 +135,8 @@ export default class Relations {
   }
 
   rating (rating) {
-    if (rating.RatingPollId) {
-      rating.RatingPoll = this.rels.RatingPolls[rating.RatingPollId];
+    if (rating.RatingPollID) {
+      rating.RatingPoll = this.rels.RatingPolls[rating.RatingPollID];
     }
     return rating;
   }

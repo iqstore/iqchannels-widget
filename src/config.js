@@ -11,9 +11,9 @@ class Config {
 
   apiUrl = (path) => this.apiBaseUrl + this.apiVersion + path;
 
-  fileUrl = (fileId) => this.apiUrl(`/files/get/${fileId}`);
+  fileUrl = (fileID) => this.apiUrl(`/files/get/${fileID}`);
 
-  imageUrl = (imageId, size) => this.apiUrl(`/files/image/${imageId}?size=${size}`);
+  imageUrl = (imageID, size) => this.apiUrl(`/files/image/${imageID}?size=${size}`);
 
 }
 

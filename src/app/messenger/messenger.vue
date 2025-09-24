@@ -44,10 +44,10 @@ export default {
 
         // last event id, updated in events handler
         // used in subscribe to channel
-        this.lastEventId = null;
+        this.lastEventID = null;
         // last generated local message id, to make
         // sure next generated value will be greater
-        this.lastLocalId = 0;
+        this.lastLocalID = 0;
 
         this.chatType = this.chatTypeProp;
     },
@@ -74,9 +74,9 @@ export default {
             disableFreeText: false,
             badWordError: null,
             chatType: 'regular',
-            firstUnreadMessageId: 0,
+            firstUnreadMessageID: 0,
             loadingMore: false,
-            existingMsgIds: {},
+            existingMsgIDs: {},
             isBottom: false,
             settings: {},
             languages: [],
@@ -88,7 +88,7 @@ export default {
             if (!this.client) return [];
             return this.groups.reduce(
                 (result, group) => {
-                    result = [...result, ...group.Messages].filter(m => !m.ClientId)
+                    result = [...result, ...group.Messages].filter(m => !m.ClientID)
                     return result
                 },
                 []
@@ -107,7 +107,7 @@ export default {
             return this.client.Type === "anonymous";
         },
         hasPersonalManager() {
-            return !!this.client.PersonalManagerId || !!this.client.PersonalManagerGroupId;
+            return !!this.client.PersonalManagerID || !!this.client.PersonalManagerGroupID;
         },
 
     },
@@ -132,7 +132,7 @@ export default {
 
             // widget closed
             if (!newValue) {
-                this.firstUnreadMessageId = null;
+                this.firstUnreadMessageID = null;
             }
 
         },
@@ -163,13 +163,13 @@ export default {
         },
         closeSystemChat: function () {
             this.groups = [];
-            this.existingMsgIds = {};
+            this.existingMsgIDs = {};
         }
     },
 
     // options: {checkIsBottom: Boolean, scrollIsBottomValue: boolean, scrollToLast: boolean, block: "center" | "end" | "nearest" | "start"}
     methods: {
-        scrollToMessage(msgId, options) {
+        scrollToMessage(msgID, options) {
             if (!this.opened) return;
 
             if (options?.checkIsBottom) {
@@ -178,27 +178,27 @@ export default {
                 }
             }
 
-            let scrollToMessageId;
+            let scrollToMessageID;
 
-            if (msgId) {
-                scrollToMessageId = msgId;
+            if (msgID) {
+                scrollToMessageID = msgID;
             }
 
-            if (this.firstUnreadMessageId) {
-                scrollToMessageId = this.firstUnreadMessageId;
+            if (this.firstUnreadMessageID) {
+                scrollToMessageID = this.firstUnreadMessageID;
             }
 
             const lastGroup = this.groups[this.groups.length - 1]
             const lastMsg = lastGroup?.Messages[lastGroup.Messages.length - 1]
             if (lastMsg) {
-                scrollToMessageId = lastMsg.Id
+                scrollToMessageID = lastMsg.ID
             }
 
-            if (!scrollToMessageId) {
+            if (!scrollToMessageID) {
                 return
             }
             const observer = new MutationObserver(() => {
-                const messageElement = document.getElementById('message-' + scrollToMessageId)
+                const messageElement = document.getElementById('message-' + scrollToMessageID)
                 if (messageElement) {
                     observer.disconnect()
                     messageElement.scrollIntoView({
@@ -221,9 +221,9 @@ export default {
             this.resetUnreadCount();
         },
 
-        scrollToRating(ratingId, index) {
+        scrollToRating(ratingID, index) {
             const observer = new MutationObserver(() => {
-                const rating = document.getElementById('rating-' + ratingId + '-index-' + index);
+                const rating = document.getElementById('rating-' + ratingID + '-index-' + index);
                 if (rating) {
                     observer.disconnect();
                     rating.scrollIntoView(false);
@@ -259,11 +259,11 @@ export default {
 
         queryMessages(value) {
             client.channelMessages(this.channel, this.chatType, value).then(messages => {
-                this.lastEventId = messages.length
-                    ? messages[messages.length - 1].EventId
+                this.lastEventID = messages.length
+                    ? messages[messages.length - 1].EventID
                     : null;
                 this.groups = [];
-                this.existingMsgIds = {};
+                this.existingMsgIDs = {};
                 this.appendMessages(messages);
             })
         },
@@ -288,19 +288,19 @@ export default {
             this.$refs.composer.appendText(text);
         },
 
-        animateMsgAfterScroll(msgId) {
-            this.$refs.chat.animateMsgAfterScroll(msgId);
+        animateMsgAfterScroll(msgID) {
+            this.$refs.chat.animateMsgAfterScroll(msgID);
         },
 
         // Private
 
         loadHistory(subscribeNeeded = true) {
             client.channelMessages(this.channel, this.chatType).then(messages => {
-                this.lastEventId = messages.length
-                    ? messages[messages.length - 1].EventId
+                this.lastEventID = messages.length
+                    ? messages[messages.length - 1].EventID
                     : null;
                 this.groups = [];
-                this.existingMsgIds = {};
+                this.existingMsgIDs = {};
                 this.appendMessages(messages, true);
                 this.markMessages();
                 if (subscribeNeeded) {
@@ -328,7 +328,7 @@ export default {
             this.subscription = client.channelListen(
                 this.channel,
                 this.chatType,
-                this.lastEventId,
+                this.lastEventID,
                 this.onChannelEvents,
                 this.onSubscriptionError
             );
@@ -363,7 +363,7 @@ export default {
         markMessagesAsReceived() {
             const ids = [];
             for (let message of this.unreceivedMessages) {
-                ids.push(message.Id);
+                ids.push(message.ID);
                 message.Received = true;
                 message.ReceivedAt = new Date().getTime();
             }
@@ -373,7 +373,7 @@ export default {
         },
 
         markMessagesAsRead() {
-            const ids = this.unreadMessages.map(({ Id }) => Id);
+            const ids = this.unreadMessages.map(({ ID }) => ID);
             if (ids.length) {
                 client.channelMessagesRead(ids);
             }
@@ -402,7 +402,7 @@ export default {
         },
 
         prependMessage(message) {
-            if (this.existingMsgIds[message.Id]) {
+            if (this.existingMsgIDs[message.ID]) {
                 return;
             }
             this.messageGroupsPrepend(this.groups, message);
@@ -410,14 +410,14 @@ export default {
 
 
         appendMessage(message, scrollToMessage) {
-            if (this.existingMsgIds[message.Id]) {
+            if (this.existingMsgIDs[message.ID]) {
                 return;
             }
             this.messageGroupsAppend(this.groups, message);
 
 
             if (scrollToMessage) {
-                this.scrollToMessage(message.Id);
+                this.scrollToMessage(message.ID);
             }
         },
 
@@ -429,14 +429,14 @@ export default {
             })
 
             const message = Object.assign({}, messageForm, {
-                Id: new Date().getTime() + "",
+                ID: new Date().getTime() + "",
                 Client: this.client,
-                ClientId: this.client.Id,
+                ClientID: this.client.ID,
                 Author: "client",
                 CreatedAt: new Date(),
-                ReplyToMessageId: messageForm.ReplyToMessageId
+                ReplyToMessageID: messageForm.ReplyToMessageID
             });
-            this.firstUnreadMessageId = null;
+            this.firstUnreadMessageID = null;
 
             this.appendMessage(message, scrollToMessage);
             return message;
@@ -449,8 +449,8 @@ export default {
                 return true;
             }
 
-            if (scrollToMessage && message.Id) {
-                this.scrollToMessage(message.Id);
+            if (scrollToMessage && message.ID) {
+                this.scrollToMessage(message.ID);
             }
 
             return false;
@@ -465,11 +465,11 @@ export default {
             return false;
         },
 
-        getMessageByLocalId(localId) {
+        getMessageByLocalID(localID) {
             for (let g = this.groups.length - 1; g >= 0; g--) {
                 for (let i = this.groups[g].Messages.length - 1; i >= 0; i--) {
                     const message = this.groups[g].Messages[i];
-                    if (message.LocalId === localId) {
+                    if (message.LocalID === localID) {
                         return message;
                     }
                 }
@@ -477,11 +477,11 @@ export default {
             return null;
         },
 
-        getMessageById(id) {
+        getMessageByID(id) {
             for (let g = this.groups.length - 1; g >= 0; g--) {
                 for (let i = this.groups[g].Messages.length - 1; i >= 0; i--) {
                     const message = this.groups[g].Messages[i];
-                    if (message.Id && message.Id === id) {
+                    if (message.ID && message.ID === id) {
                         return message;
                     }
                 }
@@ -495,13 +495,13 @@ export default {
                 for (let i = groups[g].Messages.length - 1; i >= 0; i--) {
                     const msg = group.Messages[i];
                     if (
-                        (msg.Id && msg.Id === message.Id) ||
-                        msg.LocalId === message.LocalId
+                        (msg.ID && msg.ID === message.ID) ||
+                        msg.LocalID === message.LocalID
                     ) {
-                        const old = group.Messages[i].Id;
+                        const old = group.Messages[i].ID;
                         group.Messages[i] = { ...message };
-                        delete this.existingMsgIds[old];
-                        this.existingMsgIds[message.Id] = true;
+                        delete this.existingMsgIDs[old];
+                        this.existingMsgIDs[message.ID] = true;
 
                         if (i === group.Messages.length - 1) {
                             group.LastMessage = message;
@@ -527,11 +527,11 @@ export default {
                 for (let i = group.Messages.length - 1; i >= 0; i--) {
                     const msg = group.Messages[i];
                     if (
-                        (msg.Id && msg.Id === message.Id) ||
-                        msg.LocalId === message.LocalId
+                        (msg.ID && msg.ID === message.ID) ||
+                        msg.LocalID === message.LocalID
                     ) {
                         const deleted = group.Messages.splice(i, 1);
-                        delete this.existingMsgIds[deleted[0].Id];
+                        delete this.existingMsgIDs[deleted[0].ID];
                         if (group.Messages.length === 0) {
                             groups.splice(g, 1);
                         } else {
@@ -552,23 +552,23 @@ export default {
                 const lastMessage = lastGroup.Messages[lastGroup.Messages.length - 1];
                 if (
                     lastGroup.Author === message.Author &&
-                    lastGroup.UserId === message.UserId &&
-                    lastGroup.ClientId === message.ClientId &&
+                    lastGroup.UserID === message.UserID &&
+                    lastGroup.ClientID === message.ClientID &&
                     message.CreatedAt - lastMessage.CreatedAt < 60000 &&
                     isSameDate(message.CreatedAt, lastMessage.CreatedAt) &&
-                    message.TicketId === lastMessage.TicketId
+                    message.TicketID === lastMessage.TicketID
                 ) {
 
                     if (!message.Read && message.Author === 'user'
                         && !this.opened
-                        && (!this.firstUnreadMessageId || this.firstUnreadMessageId > message.Id)) {
-                        this.firstUnreadMessageId = message.Id;
+                        && (!this.firstUnreadMessageID || this.firstUnreadMessageID > message.ID)) {
+                        this.firstUnreadMessageID = message.ID;
                     }
-                    if (message.My && message.Id > this.firstUnreadMessageId) {
-                        this.firstUnreadMessageId = null;
+                    if (message.My && message.ID > this.firstUnreadMessageID) {
+                        this.firstUnreadMessageID = null;
                     }
                     lastGroup.Messages.push(message);
-                    this.existingMsgIds[message.Id] = true;
+                    this.existingMsgIDs[message.ID] = true;
                     lastGroup.LastMessage = message;
                     this.singleChoices = lastGroup.LastMessage.SingleChoices
                     this.disableFreeText = lastGroup.LastMessage.DisableFreeText
@@ -593,10 +593,10 @@ export default {
                     : true;
 
             const group = {
-                Id: groups.length + 1,
+                ID: groups.length + 1,
                 Author: message.Author,
-                UserId: message.UserId,
-                ClientId: message.ClientId,
+                UserID: message.UserID,
+                ClientID: message.ClientID,
 
                 User: message.User,
                 Client: message.Client,
@@ -612,7 +612,7 @@ export default {
                 group.InfoRequest = message.InfoRequest;
             }
             groups.push(group);
-            this.existingMsgIds[message.Id] = true;
+            this.existingMsgIDs[message.ID] = true;
         },
 
         messageGroupsPrepend(groups, message) {
@@ -622,13 +622,13 @@ export default {
 
                 if (
                     firstGroup.Author === message.Author &&
-                    firstGroup.UserId === message.UserId &&
-                    firstGroup.ClientId === message.ClientId &&
+                    firstGroup.UserID === message.UserID &&
+                    firstGroup.ClientID === message.ClientID &&
                     firstMessage.CreatedAt - message.CreatedAt < 60000 &&
                     isSameDate(message.CreatedAt, firstMessage.CreatedAt)
                 ) {
                     firstGroup.Messages.unshift(message);
-                    this.existingMsgIds[message.Id] = true;
+                    this.existingMsgIDs[message.ID] = true;
                     return;
                 }
             }
@@ -642,10 +642,10 @@ export default {
                     : true;
 
             const group = {
-                Id: groups.length + 1,
+                ID: groups.length + 1,
                 Author: message.Author,
-                UserId: message.UserId,
-                ClientId: message.ClientId,
+                UserID: message.UserID,
+                ClientID: message.ClientID,
 
                 User: message.User,
                 Client: message.Client,
@@ -660,7 +660,7 @@ export default {
         },
 
         async sendGreeting() {
-            const result = await client.getChatSettings(this.channel, this.client.Id)
+            const result = await client.getChatSettings(this.channel, this.client.ID)
             if (!result.Data) return;
 
             this.settings = result.Data;
@@ -692,7 +692,7 @@ export default {
             }
 
             const lastGroup = this.groups[this.groups.length - 1]
-            if (lastGroup && lastGroup.Rating && !lastGroup.LastMessage.RatingId) {
+            if (lastGroup && lastGroup.Rating && !lastGroup.LastMessage.RatingID) {
                 return;
             }
 
@@ -707,20 +707,20 @@ export default {
             } else {
                 const now = new Date()
                 const message = {
-                    Id: now.getTime(),
+                    ID: now.getTime(),
                     Author: "user",
                     CreatedAt: now,
                     Text: text,
                     Payload: 'text',
                     Read: true,
                     SystemMessage: true, // for auto-invite logic
-                    UserId: now.getTime(),
+                    UserID: now.getTime(),
                     User: {
-                        Id: this.settings.UserId,
+                        ID: this.settings.UserID,
                         DisplayName: this.settings.Pseudonym ? this.settings.Pseudonym : this.settings.OperatorName,
                         Name: this.settings.OperatorName,
                         Active: true,
-                        AvatarId: this.settings.AvatarId
+                        AvatarID: this.settings.AvatarID
                     }
                 };
                 this.appendMessage(message, true)
@@ -731,18 +731,18 @@ export default {
             }
         },
 
-        getNextLocalId() {
-            let localId = new Date().getTime();
-            if (localId <= this.lastLocalId) {
-                localId = this.lastLocalId + 1;
+        getNextLocalID() {
+            let localID = new Date().getTime();
+            if (localID <= this.lastLocalID) {
+                localID = this.lastLocalID + 1;
             }
-            this.lastLocalId = localId;
-            return localId;
+            this.lastLocalID = localID;
+            return localID;
         },
 
         newTextMessage(text, botpressPayload) {
             const msg = {
-                LocalId: this.getNextLocalId(),
+                LocalID: this.getNextLocalID(),
                 Payload: schema.ChatPayloadText,
                 Text: text,
                 BotpressPayload: botpressPayload,
@@ -756,10 +756,10 @@ export default {
 
         newTextMessageWithReply(text, id) {
             const msg = {
-                LocalId: this.getNextLocalId(),
+                LocalID: this.getNextLocalID(),
                 Payload: schema.ChatPayloadText,
                 Text: text,
-                ReplyToMessageId: id,
+                ReplyToMessageID: id,
                 ChatType: this.chatType
             }
             if (this.disableFreeText) {
@@ -770,7 +770,7 @@ export default {
 
         newFileMessage(file, text) {
             return {
-                LocalId: this.getNextLocalId(),
+                LocalID: this.getNextLocalID(),
                 Payload: schema.ChatPayloadFile,
                 Text: text,
                 Upload: file,
@@ -780,11 +780,11 @@ export default {
 
         newFileMessageWithReply(file, id, text) {
             return {
-                LocalId: this.getNextLocalId(),
+                LocalID: this.getNextLocalID(),
                 Payload: schema.ChatPayloadFile,
                 Text: text,
                 Upload: file,
-                ReplyToMessageId: id,
+                ReplyToMessageID: id,
                 ChatType: this.chatType
             };
         },
@@ -800,7 +800,7 @@ export default {
                     message.UploadProgress = undefined;
                     message.Uploading = undefined;
                     message.File = file;
-                    message.FileId = file.Id;
+                    message.FileID = file.ID;
                     client.channelSend(this.channel, message);
                     this.replaceMessage(message, true);
                 },
@@ -817,8 +817,8 @@ export default {
             );
         },
 
-        cancelUpload(localId) {
-            const message = this.getMessageByLocalId(localId);
+        cancelUpload(localID) {
+            const message = this.getMessageByLocalID(localID);
             if (!message) {
                 return;
             }
@@ -831,8 +831,8 @@ export default {
             this.removeMessage(message);
         },
 
-        retryUpload(localId) {
-            const message = this.getMesssageByLocalId(localId);
+        retryUpload(localID) {
+            const message = this.getMesssageByLocalID(localID);
             if (!message) {
                 return;
             }
@@ -847,7 +847,7 @@ export default {
             }
 
             rating.Sending = client
-                .rateRating(rating.Id, rating.Value, rating.Comment)
+                .rateRating(rating.ID, rating.Value, rating.Comment)
                 .then(
                     rated => {
                         rating.Sending = null;
@@ -867,7 +867,7 @@ export default {
                 return;
             }
 
-            rating.Sending = client.ignoreRating(rating.Id).then(
+            rating.Sending = client.ignoreRating(rating.ID).then(
                 ignored => {
                     rating.Sending = null;
                     rating.State = ignored.State;
@@ -935,7 +935,7 @@ export default {
                 return;
             }
 
-            info.Sending = client.ignoreInfo(info.Id).then(
+            info.Sending = client.ignoreInfo(info.ID).then(
                 ignored => {
                     info.Sending = null;
                     info.State = ignored.State;
@@ -948,7 +948,7 @@ export default {
         },
 
         downloadFile(file) {
-            client.fileSignedUrl(file.Id).then(
+            client.fileSignedUrl(file.ID).then(
                 url => {
                     const a = document.createElement('a');
                     a.style.display = 'none';
@@ -965,8 +965,8 @@ export default {
         },
 
         clickFile(file) {
-            if (file.Id) {
-                client.fileSignedUrl(file.Id).then(
+            if (file.ID) {
+                client.fileSignedUrl(file.ID).then(
                     url => {
                         this.$emit("on-file-clicked", url);
                     },
@@ -1068,7 +1068,7 @@ export default {
                     default:
                         client.logMessage("Unhandled channel event" + JSON.stringify(event));
                 }
-                this.lastEventId = event.Id;
+                this.lastEventID = event.ID;
             }
 
             if (messagesReceived) {
@@ -1107,7 +1107,7 @@ export default {
         },
 
         handleIncomingRead(event) {
-            const message = this.getMessageById(event.MessageId);
+            const message = this.getMessageByID(event.MessageID);
             if (!message) {
                 return;
             }
@@ -1117,7 +1117,7 @@ export default {
         },
 
         handleIncomingListened(event) {
-            const message = this.getMessageById(event.MessageId);
+            const message = this.getMessageByID(event.MessageID);
             if (!message) {
                 return;
             }
@@ -1131,7 +1131,7 @@ export default {
         },
 
         handleIncomingReceived(event) {
-            const message = this.getMessageById(event.MessageId);
+            const message = this.getMessageByID(event.MessageID);
             if (!message) {
                 return;
             }
@@ -1145,11 +1145,11 @@ export default {
         },
 
         handleIncomingUpdatedFile(event) {
-            let message = this.getMessageById(event.MessageId);
+            let message = this.getMessageByID(event.MessageID);
             if (!message) {
                 return;
             }
-            client.getFile(message.FileId).then(file => {
+            client.getFile(message.FileID).then(file => {
                 message = { ...message, File: file };
                 this.replaceMessage(message);
             })
@@ -1188,7 +1188,7 @@ export default {
             if (typeof text !== 'object') {
                 messageForm = this.newTextMessage(text, botpressPayload);
             } else {
-                messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageId, botpressPayload);
+                messageForm = this.newTextMessageWithReply(text.messageText, text.replyToMessageID, botpressPayload);
             }
 
             messageForm.Metadata = this.metadata;
@@ -1202,13 +1202,13 @@ export default {
             client.version().then(res => {
                 const now = new Date()
                 const message = {
-                    Id: now.getTime(),
+                    ID: now.getTime(),
                     Author: "user",
                     CreatedAt: now,
                     Text: res.Data.Version,
                     Payload: 'text',
                     Read: true,
-                    UserId: now.getTime(),
+                    UserID: now.getTime(),
                     User: {
                         DisplayName: "Система",
                         Name: "Система",
@@ -1247,7 +1247,7 @@ export default {
             const oldScrollHeight = chat.scrollHeight;
             const oldScrollTop = chat.scrollTop;
             this.loadingMore = true;
-            client.channelMessages(this.channel, this.chatType, null, null, this.groups[0]?.Messages[0].Id).then(messages => {
+            client.channelMessages(this.channel, this.chatType, null, null, this.groups[0]?.Messages[0].ID).then(messages => {
                 this.prependMessages(messages.reverse());
                 this.loadingMore = false;
                 this.$nextTick(() => {
@@ -1344,7 +1344,7 @@ export default {
                 :singleChoices="singleChoices",
                 :searching="searching",
                 :imgModalOptions="imgModalOptions",
-                :firstUnreadMessageId="firstUnreadMessageId",
+                :firstUnreadMessageID="firstUnreadMessageID",
                 @cancel-upload="cancelUpload",
                 @retry-upload="retryUpload",
                 @rate-rating="rateRating",
@@ -1357,7 +1357,7 @@ export default {
                 @reply-msg="reply",
                 @scroll-to-message="(id) => scrollToFoundMessage(id)",
                 @scroll-to-bottom="() => scrollToBottom()",
-                @scroll-to-rating="(ratingId, index) => scrollToRating(ratingId, index)",
+                @scroll-to-rating="(ratingID, index) => scrollToRating(ratingID, index)",
                 @click-file="clickFile",
                 @click-file-img="clickFileImg",
                 @download-file="downloadFile",
