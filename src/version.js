@@ -1,1 +1,1 @@
-export const WIDGET_VERSION = '4.8.12'
+export const WIDGET_VERSION = '4.8.13'
