@@ -57,7 +57,7 @@ export default {
             });
         },
 
-        trySendMessage(messageText, botpressPayload, url) {
+        trySendMessage(messageText, botpressPayload, url, groupWithSingleChoicesId) {
             if (url) {
                 window.open(url, "_blank")
                 return;
@@ -75,6 +75,15 @@ export default {
                 }
             }
             this.titleVisible = true;
+
+            if (groupWithSingleChoicesId) {
+                const index = this.groups.findIndex((group) => group.Id === groupWithSingleChoicesId)
+                if (index > -1) {
+                    const group = this.groups[index]
+                    group.LastMessage.SingleChoices = null;
+                    this.groups.splice(index, 1, group)
+                }
+            }
         },
 
         isTextPayload(payload) {
@@ -357,7 +366,7 @@ export default {
                         div.choice_box_dropdown(v-for="choice in group.LastMessage.SingleChoices")
                             button.choice_button(type="button", style="text-align: center"
                                 v-if="!choice.Deleted",
-                                @click.prevent="trySendMessage(choice.title, choice.value)") {{ choice.title }}
+                                @click.prevent="trySendMessage(choice.title, choice.value, null, group.Id)") {{ choice.title }}
                 div#products.choice_box_dropdown(v-if="group.LastMessage.Payload === 'product'")
                     button.choice_button(type="button", style="margin-top:5px", @click.prevent="acceptProduct(group.LastMessage)")
                         span {{ getProductMsgText(group.LastMessage) }}
