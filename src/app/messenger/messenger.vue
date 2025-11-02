@@ -8,7 +8,6 @@ import { retryTimeout } from '../../lib/timeout';
 import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
-import { ChatEventRatingIgnored } from "../../schema";
 import { WIDGET_VERSION } from "../../version"
 
 export default {
@@ -1623,11 +1622,12 @@ a.logout:focus {
     display: flex;
     gap: 5px;
     position: absolute;
-    transform: translate(265px, -2px);
+    transform: translate(170%, -7%);
 
     .language-select {
         background-color: transparent;
         border: 0;
+        max-width: 785%;
     }
 }
 </style>
