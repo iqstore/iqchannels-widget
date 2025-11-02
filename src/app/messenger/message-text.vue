@@ -20,10 +20,10 @@ export default {
         },
 
         displayText() {
-            switch (true) {
-                case this.msg.Style === "html":
+            switch (this.msg.Style) {
+                case "html":
                     return this.msg.Text;
-                case this.msg.Style === "markdown":
+                case "markdown":
                     return this.transformMarkdown(this.msg.Text);
                 default:
                     return linkify(this.msg.Text);

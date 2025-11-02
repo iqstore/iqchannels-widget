@@ -9,7 +9,7 @@ import ChatContainer from "../components/chat-container.vue";
 import ScrollBottom from "../components/scroll-bottom.vue";
 import { isYoungerVersion } from "../../lib/version";
 import { ChatEventRatingIgnored } from "../../schema";
-import {WIDGET_VERSION} from "../../version"
+import { WIDGET_VERSION } from "../../version"
 
 export default {
     components: { ScrollBottom, ChatContainer, chat, composer },
@@ -28,7 +28,7 @@ export default {
         isMultiple: Boolean,
         appError: Object,
         metadata: Object,
-        chatTypeProp: String
+        chatTypeProp: String,
     },
 
     created() {
@@ -81,7 +81,8 @@ export default {
             isBottom: false,
             settings: {},
             languages: [],
-            widget_version: WIDGET_VERSION ?? "версия не указана"
+            widget_version: WIDGET_VERSION ?? "версия не указана",
+            defaultLanguage: {},
         };
     },
 
@@ -670,10 +671,10 @@ export default {
             let text = this.settings.Message
             if (this.settings.Languages) {
                 this.languages = await client.getLanguages(this.channel)
-                const defaultLanguage = this.languages.find((language) => language.Default)
+                this.defaultLanguage = this.languages.find((language) => language.Default)
 
                 if (!this.client.LanguageCode) {
-                    this.client.LanguageCode = defaultLanguage.Code
+                    this.client.LanguageCode = this.defaultLanguage.Code
                 }
 
                 if (this.settings?.Translations?.length) {
@@ -681,7 +682,7 @@ export default {
                     if (this.client.LanguageCode) {
                         translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.client.LanguageCode)
                     } else {
-                        translation = this.settings?.Translations.find((translation) => translation.LanguageCode === defaultLanguage.Code)
+                        translation = this.settings?.Translations.find((translation) => translation.LanguageCode === this.defaultLanguage.Code)
                     }
                     if (translation) {
                         text = translation.Translation
@@ -1347,6 +1348,7 @@ export default {
                 :searching="searching",
                 :imgModalOptions="imgModalOptions",
                 :firstUnreadMessageId="firstUnreadMessageId",
+                :defaultLanguage="defaultLanguage",
                 @cancel-upload="cancelUpload",
                 @retry-upload="retryUpload",
                 @rate-rating="rateRating",

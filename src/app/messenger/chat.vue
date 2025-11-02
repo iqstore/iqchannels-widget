@@ -22,6 +22,7 @@ export default {
         client: Object,
         channel: String,
         firstUnreadMessageId: Number,
+        defaultLanguage: Object,
     },
 
     data: function () {
@@ -377,6 +378,7 @@ export default {
                 :rating="group.Rating",
                 :client="client",
                 :channel="channel",
+                :defaultLanguage="defaultLanguage",
                 @rate-rating="rateRating",
                 @ignore-rating="ignoreRating",
                 @on-poll-question-chaned="(ratingId, index) => scrollToRating(ratingId, index)")
