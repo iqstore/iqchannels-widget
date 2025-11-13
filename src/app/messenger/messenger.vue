@@ -1079,10 +1079,15 @@ export default {
             }
         },
 
+        changeChannel(channel) {
+            this.$emit("change-channel", channel);
+        },
+
         handleIncomingMessage(message) {
             if (!message) {
                 return false;
             }
+
             if (!message.My) {
                 const lastGroup = this.groups[this.groups.length - 1]
                 const lastMsg = lastGroup?.Messages[lastGroup.Messages.length - 1]
@@ -1364,6 +1369,7 @@ export default {
                 @click-file="clickFile",
                 @click-file-img="clickFileImg",
                 @download-file="downloadFile",
+                @change-channel="changeChannel",
             )
             .div#single-choices(v-if="groups.length && groups[groups.length -1].LastMessage.SingleChoices !== null")
                 div.choice_box(v-if="groups[groups.length -1].LastMessage.IsDropDown")

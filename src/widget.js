@@ -452,6 +452,10 @@ class IQChannelsWidget extends EventEmitter {
 				this.handlers.onLinkClick(linkType, value);
 				break;
 
+            case 'iqchannels-channel-changed':
+				this.emit('channel-changed', JSON.parse(data));
+                break;
+                
 			default:
 				break;
 		}

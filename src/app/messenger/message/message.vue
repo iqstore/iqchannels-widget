@@ -6,6 +6,8 @@ import { humanSize } from '../../../lib/filters';
 import { linkify } from "../../../lib/linkify";
 import config from "../../../config";
 import * as schema from "../../../schema";
+import client from "../../../client";
+
 
 
 import reply from "./reply.vue";
@@ -101,6 +103,15 @@ export default {
                 return '';
             }
             return msg.Actions[0].Payload.split('|')[0];
+        },
+
+        changeChannel(msg) {
+            setTimeout(() => {
+                client.hideGoToProjectButton(msg.Id);
+                msg.TransferToChannel = null;
+            }, 5000)
+
+            this.$emit("change-channel", msg.TransferToChannel);
         },
 
         shouldShowAvatar(msg) {
@@ -228,6 +239,9 @@ export default {
                     v-bind:msg="msg",
                 )
 
+    .change-channel(v-if="msg.TransferToChannel")      
+        button(type="button", @click.prevent="changeChannel(msg)") Перейти в канал {{ msg.TransferToChannel.Title }}
+
 </template>
 
 <style lang="scss">
@@ -314,6 +328,46 @@ export default {
     color: #333333;
     margin-bottom: 5px;
     white-space: nowrap;
+}
+
+.change-channel {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+
+    button {
+        background-color: #d9d9d9;
+
+        min-height: 50px;
+        min-width: 90%;
+
+        border-radius: 14px;
+        border: none;
+
+        transition: all .3s;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+
+        &:before {
+            content: '';
+            position: absolute;
+            transform: translateX(-100%);
+            inset: 0;
+            background-color: darken(#d9d9d9, 15%);
+            transition: all .3s;
+            z-index: -1;
+            border-radius: 14px;
+        }
+
+        &:hover {
+            color: #656565;
+
+            &:before {
+                transform: translateX(0);
+            }
+        }
+    }
 }
 
 

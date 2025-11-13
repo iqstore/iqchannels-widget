@@ -4,7 +4,7 @@ import { clearCookie } from '../lib/web';
 import client from '../client';
 import { provide, ref, watch } from "vue";
 import ErrorBoundary from "./components/error-boundary.vue";
-import {WIDGET_VERSION} from "../version"
+import { WIDGET_VERSION } from "../version"
 
 
 export default {
@@ -30,7 +30,7 @@ export default {
         }, '*');
         const onRating = (rating) => parent.postMessage({ type: 'iqchannels-widget-rating', data: rating }, '*');
         const onTyping = () => {
-            parent.postMessage({ type: 'iqchannels-widget-typing'}, '*') 
+            parent.postMessage({ type: 'iqchannels-widget-typing' }, '*')
         };
         const onError = (error) => {
             if (!error) {
@@ -227,6 +227,10 @@ export default {
             parent.postMessage({ type: 'iqchannels-ready' }, "*");
         },
 
+        onChannelChanged(channel) {
+            parent.postMessage({ type: 'iqchannels-channel-changed', data: JSON.stringify(channel) }, "*");
+        },
+
         onLogout() {
             clearCookie(config.CLIENT_SESSION_COOKIE);
             this.credentials = null;
@@ -320,6 +324,7 @@ export default {
                     @on-rating="onRating",
                     @on-typing="onTyping",
                     @on-messages-loaded="onMessagesLoaded",
+                    @on-channel-changed="onChannelChanged",
                     :mode='mode',
                     :multiClient='multiClient',
                     :opened='opened',

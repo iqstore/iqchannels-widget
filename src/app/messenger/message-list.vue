@@ -48,6 +48,10 @@ export default {
         clickFile(msg, event) {
             this.$emit("click-file", msg, event);
         },
+
+        changeChannel(channel) {
+            this.$emit("change-channel", channel);
+        }
     }
 }
 
@@ -72,6 +76,7 @@ export default {
             @retry-upload="retryUpload",
             @click-file-image="clickFileImage",
             @click-file="clickFile",
+            @change-channel="changeChannel",
             :group="group",
             :groups="groups",
             :msg="msg",

@@ -49,12 +49,16 @@ class Client {
     this.authSessionID = s.Id;
   }
 
-  setMultiAuth (channel) {
+  setMultiAuth(channel) {
     if (channel && this.multiClientAuth[channel]) {
       this.setAuth(this.multiClientAuth[channel]);
     } else {
         client.logMessage('Неверный канал')
     }
+  }
+
+  hideGoToProjectButton(msgId) {
+    return this._enqueueRequest(`/chats/messages/${msgId}/delete_transfer_to_channel_id`)
   }
 
   post (path, data) {

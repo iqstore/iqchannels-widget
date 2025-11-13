@@ -323,6 +323,10 @@ export default {
             }
             this.currentMsgContext = null;
         },
+
+        changeChannel(channel) {
+            this.$emit("change-channel", channel);
+        }
     }
 };
 </script>
@@ -361,7 +365,8 @@ export default {
                         @click-file-image="clickFileImage",
                         @listen-audio="listenForAudioEvents",
                         @scroll-to-message="scrollToMessage"
-                        @scroll-to-bottom="scrollToBottom")
+                        @scroll-to-bottom="scrollToBottom",
+                        @change-channel="changeChannel")
                 div#choices(v-if="group.LastMessage.SingleChoices !== null && !group.LastMessage.IsDropDown", style="margin-top:5px")
                     div
                         div.choice_box_dropdown(v-for="choice in group.LastMessage.SingleChoices")

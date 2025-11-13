@@ -30,11 +30,16 @@ export default {
     },
 
     methods: {
-        setCurrentChat(channel, type) {
+        setCurrentChannel(channel, type) {
             this.currentChannel = channel;
+
             client.setMultiAuth(this.currentChannel);
             this.chatSelected = true;
-            this.currentChatType = type;
+            if (type === 'iqchat') {
+                this.currentChatType = 'regular';
+            } else {
+                this.currentChatType = type;
+            }
         },
 
         // Events
@@ -70,6 +75,20 @@ export default {
             this.$emit("on-messages-loaded", rating);
         },
 
+        changeChannel(channel) {
+            this.chatSelected = false;
+            setTimeout(() => {
+                this.currentChannel = null;
+                this.currentChatType = null;
+            }, 150);
+
+            setTimeout(() => {
+                this.setCurrentChannel(channel.Name, channel.Type)
+            }, 250);
+
+            this.$emit("on-channel-changed", channel)
+        },
+
         onBack() {
             this.chatSelected = false;
             setTimeout(() => {
@@ -94,8 +113,8 @@ export default {
         onImageClicked(msg) {
             this.$emit("on-image-clicked", msg);
         },
-        onTyping(){
-            this.$emit("on-typing"); 
+        onTyping() {
+            this.$emit("on-typing");
         }
     }
 }
@@ -107,14 +126,14 @@ export default {
             .chat(
                 v-wave,
                 :id="'channel-'+getChatType(value)+'-'+name",
-                @click.prevent="setCurrentChat(name, 'regular')",
+                @click.prevent="setCurrentChannel(name, 'regular')",
                 v-if="value.MultiChatsInfo?.EnableChat"
             )
                 chat-container(:chat="value" :chat-name="name")
             .chat(
                 v-wave,
                 :id="'channel-'+getChatType(value)+'-'+name",
-                @click.prevent="setCurrentChat(name, 'personal_manager')",
+                @click.prevent="setCurrentChannel(name, 'personal_manager')",
                 v-if="value.PersonalManagerId && value.MultiChatsInfo?.EnableForPersonalManagers"
             )
                 chat-container(:chat="value", :chat-name="name", :is-with-personal-manager="true")
@@ -134,6 +153,7 @@ export default {
             @on-typing="onTyping",
             @on-back="onBack",
             @on-messages-loaded="onMessagesLoaded",
+            @change-channel="changeChannel",
             :mode="mode",
             :client="multiClient[currentChannel]",
             :opened="opened",
